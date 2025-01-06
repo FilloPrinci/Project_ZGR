@@ -6,6 +6,7 @@ public class InputManager : MonoBehaviour
 
     private float verticalInput;
     private float horizontalInput;
+    private float steerDeadZone = 0.05f;
 
     private void Awake()
     {
@@ -37,6 +38,12 @@ public class InputManager : MonoBehaviour
     }
 
     public float steer() {
-        return horizontalInput;
+        float steeringValue = 0;
+        
+        if (Mathf.Abs(horizontalInput) > steerDeadZone) {
+            steeringValue = horizontalInput;
+        }
+
+        return steeringValue;
     }
 }
