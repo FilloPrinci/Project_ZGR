@@ -105,10 +105,9 @@ public class PlayerController : MonoBehaviour
 
     void ApplyGravityAndHover()
     {
-        float hoverHeight = 2.0f;          // Altezza fissa sopra la superficie
-        float positionAdjustSpeed = 5f;   // Velocità di adattamento verticale
+        float hoverHeight = 1.5f;          // Altezza fissa sopra la superficie
         float rotationAdjustSpeed = 10f;  // Velocità di adattamento dell'orientamento
-        float gravityFallbackSpeed = 10f; // Velocità della gravità quando non tocca terra
+        float gravityFallbackSpeed = 50; // Velocità della gravità quando non tocca terra
 
         RaycastHit hit;
 
@@ -118,12 +117,8 @@ public class PlayerController : MonoBehaviour
             // Posizione target: punto d'impatto + altezza desiderata sopra il terreno
             Vector3 desiredPosition = hit.point + hit.normal * hoverHeight;
 
-            // Interpolazione dell'altezza verso la posizione target con ExpDecay
-            currentHoverHeight = ExpDecay(currentHoverHeight, desiredPosition.y, positionAdjustSpeed, deltaTime);
-            targetPosition = new Vector3(transform.position.x, currentHoverHeight, transform.position.z);
-
             // Imposta la posizione verticale con stabilità magnetica
-            transform.position = targetPosition;
+            transform.position = desiredPosition;
 
             // Rotazione: allineamento graduale alla normale
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
@@ -132,7 +127,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             // Se non c'è contatto con il terreno, usa la gravità
-            transform.position += Vector3.up * gravityFallbackSpeed * deltaTime;
+            transform.position += Vector3.down * gravityFallbackSpeed * deltaTime;
         }
     }
 }
