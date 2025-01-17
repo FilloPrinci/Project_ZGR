@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -105,28 +106,42 @@ public class PlayerController : MonoBehaviour
 
     void ApplyGravityAndHover()
     {
-        float hoverHeight = 1.5f;          // Altezza fissa sopra la superficie
-        float rotationAdjustSpeed = 10f;  // Velocità di adattamento dell'orientamento
-        float gravityFallbackSpeed = 50; // Velocità della gravità quando non tocca terra
+        float hoverHeight = 1.5f;
+        float rotationAdjustSpeed = 20f;
+        float gravityFallbackSpeed = 50;
 
         RaycastHit hit;
 
-        // Raycast verso il basso
+        // Raycast 
         if (Physics.Raycast(transform.position, -transform.up, out hit, hoverHeight * 2f))
         {
-            // Posizione target: punto d'impatto + altezza desiderata sopra il terreno
+            // Target position
             Vector3 desiredPosition = hit.point + hit.normal * hoverHeight;
 
-            // Imposta la posizione verticale con stabilità magnetica
             transform.position = desiredPosition;
 
-            // Rotazione: allineamento graduale alla normale
+            // normal based rotation lerped
+
+            float angleThreshold = 0.1f;
+
+
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, deltaTime * rotationAdjustSpeed);
+
+            float angleDifference = Quaternion.Angle(transform.rotation, targetRotation);
+
+            if (angleDifference <= angleThreshold)
+            {
+                transform.rotation = targetRotation;
+            }
+            else {
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, deltaTime * rotationAdjustSpeed);
+            }
+                
+            
         }
         else
         {
-            // Se non c'è contatto con il terreno, usa la gravità
+            // Use gravity when no plane is detected
             transform.position += Vector3.down * gravityFallbackSpeed * deltaTime;
         }
     }
