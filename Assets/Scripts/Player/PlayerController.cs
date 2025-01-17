@@ -35,10 +35,12 @@ public class PlayerController : MonoBehaviour
     {
         deltaTime = Time.deltaTime;
 
-        ApplyGravityAndHover();
+        
         HandleSteering();
         HandleMovement();
-        
+
+        ApplyGravityAndHover();
+
     }
 
     void HandleSteering() {
@@ -82,19 +84,25 @@ public class PlayerController : MonoBehaviour
 
     float AccellerateRotationSpeed(float targetSpeed, float accelleration)
     {
-        currentRotationSpeed = ExpDecay(currentRotationSpeed, targetSpeed, accelleration, deltaTime);
-        if (Mathf.Abs(targetSpeed - currentRotationSpeed) < 0.01)
+        
+        if (Mathf.Abs(targetSpeed - currentRotationSpeed) < 0.1)
         {
             currentRotationSpeed = targetSpeed;
+        }
+        else {
+            currentRotationSpeed = ExpDecay(currentRotationSpeed, targetSpeed, accelleration, deltaTime);
         }
         return currentRotationSpeed;
     }
 
     float AccellerateSpeed(float targetSpeed, float accelleration) {
-        currentSpeed = ExpDecay(currentSpeed, targetSpeed, accelleration, deltaTime);
-        if (Mathf.Abs(targetSpeed - currentSpeed) < 0.01)
+        
+        if (Mathf.Abs(targetSpeed - currentSpeed) < 0.1)
         {
             currentSpeed = targetSpeed;
+        }
+        else {
+            currentSpeed = ExpDecay(currentSpeed, targetSpeed, accelleration, deltaTime);
         }
         return currentSpeed;
     }
@@ -107,7 +115,7 @@ public class PlayerController : MonoBehaviour
     void ApplyGravityAndHover()
     {
         float hoverHeight = 1.5f;
-        float rotationAdjustSpeed = 20f;
+        
         float gravityFallbackSpeed = 50;
 
         RaycastHit hit;
@@ -122,22 +130,26 @@ public class PlayerController : MonoBehaviour
 
             // normal based rotation lerped
 
-            float angleThreshold = 0.1f;
+            float angleThreshold = 1f;
 
 
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
 
-            float angleDifference = Quaternion.Angle(transform.rotation, targetRotation);
+            transform.rotation = targetRotation;
 
+            /// TODO: use this part for camera and model animation only, not for the logic entity
+            /*
+            float rotationAdjustSpeed = 20f;
+            float angleDifference = Quaternion.Angle(transform.rotation, targetRotation);
             if (angleDifference <= angleThreshold)
             {
                 transform.rotation = targetRotation;
             }
             else {
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, deltaTime * rotationAdjustSpeed);
-            }
-                
-            
+            }*/
+
+
         }
         else
         {
