@@ -201,7 +201,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 calculateCollisionDirection(Collider collider) {
         Vector3 globalDirection = collider.transform.position - transform.position;
-        globalDirection.Normalize();
+        //globalDirection.Normalize();
         globalDirection = globalDirection * -1;
 
         return globalDirection;
