@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using System.Security.Cryptography;
 using UnityEngine;
 
@@ -21,6 +22,9 @@ public class PlayerController : MonoBehaviour
 
     private float deltaTime;
 
+    private bool collisionDetected = false;
+    private Vector3 lastCollisionDirection = Vector3.zero;
+
     private void Start()
     {
         inputManager = InputManager.Instance;
@@ -35,12 +39,29 @@ public class PlayerController : MonoBehaviour
     {
         deltaTime = Time.deltaTime;
 
+
+
+        if (!collisionDetected)
+        {
+            HandleSteering();
+            HandleMovement();
+        }
+        else {
+            // collision
+            Collide();
+        }
         
-        HandleSteering();
-        HandleMovement();
 
         ApplyGravityAndHover();
 
+    }
+
+    void Collide() {
+        currentSpeed = 0;
+        if (lastCollisionDirection != Vector3.zero) {
+            velocity = lastCollisionDirection * deltaTime;
+            transform.position += velocity;
+        }
     }
 
     void HandleSteering() {
@@ -128,17 +149,15 @@ public class PlayerController : MonoBehaviour
 
             transform.position = desiredPosition;
 
-            // normal based rotation lerped
-
-            float angleThreshold = 1f;
-
-
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
 
             transform.rotation = targetRotation;
 
             /// TODO: use this part for camera and model animation only, not for the logic entity
             /*
+            // normal based rotation lerped
+
+            float angleThreshold = 1f;
             float rotationAdjustSpeed = 20f;
             float angleDifference = Quaternion.Angle(transform.rotation, targetRotation);
             if (angleDifference <= angleThreshold)
@@ -157,4 +176,35 @@ public class PlayerController : MonoBehaviour
             transform.position += Vector3.down * gravityFallbackSpeed * deltaTime;
         }
     }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log($"Oggetto {other.name} è entrato nel trigger.");
+        collisionDetected = true;
+        lastCollisionDirection = calculateCollisionDirection(other);
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        Debug.Log($"Oggetto {other.name} è ancora nel trigger.");
+        collisionDetected = true;
+        lastCollisionDirection = calculateCollisionDirection(other);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        Debug.Log($"Oggetto {other.name} è uscito dal trigger.");
+        collisionDetected = false;
+        lastCollisionDirection = Vector3.zero;
+    }
+
+    private Vector3 calculateCollisionDirection(Collider collider) {
+        Vector3 globalDirection = collider.transform.position - transform.position;
+        globalDirection.Normalize();
+        globalDirection = globalDirection * -1;
+
+        return globalDirection;
+    }
+
 }
