@@ -8,11 +8,18 @@ public class PlayerController : MonoBehaviour
     public float rotationMaxSpeed = 10;
     public float rotationAccelleration = 5;
     public float accelleration = 5f;
+    public float bounceForce = 1f;
+    public float autoBrakeDecelleration = 1f;
+    public float brakeDecelleration = 2.5f;
+    public float collisionBounceDecelleration = 5f;
+
+    public GameObject collider;
 
     private InputManager inputManager;
 
-    private Vector3 velocity;
-    private float currentSpeed = 0;
+    private Vector3 normalMovementVelocity;
+
+    private Vector3 collisionVelocity;
 
     private float rotationVelocity = 0;
     private float currentRotationSpeed = 0;
@@ -39,28 +46,58 @@ public class PlayerController : MonoBehaviour
     {
         deltaTime = Time.deltaTime;
 
-
+        HandleSteering();
 
         if (!collisionDetected)
         {
-            HandleSteering();
+            if (collisionVelocity != Vector3.zero) {
+                Bounce();
+            }
+            
             HandleMovement();
         }
         else {
+
             // collision
             Collide();
         }
-        
+
+        // applyng velocity
+        transform.position += (normalMovementVelocity + collisionVelocity);
 
         ApplyGravityAndHover();
 
     }
 
+    void Bounce() {
+        float curerntCollisionSpeed = Speed(collisionVelocity);
+
+        collisionVelocity = collisionVelocity.normalized * AccellerateSpeed(0, collisionBounceDecelleration, curerntCollisionSpeed) * deltaTime;
+    }
+
     void Collide() {
-        currentSpeed = 0;
+
+        normalMovementVelocity = normalMovementVelocity / 2;
+
+        
         if (lastCollisionDirection != Vector3.zero) {
-            velocity = lastCollisionDirection * deltaTime;
-            transform.position += velocity;
+            /*
+            Vector3 collisionDirectionNormalized = lastCollisionDirection.normalized;
+
+            float collisionMagnitude = collisionDirectionNormalized.magnitude;
+            */
+
+            float currentSpeed = Speed(normalMovementVelocity);
+
+            float finalBounceForce = currentSpeed;
+
+            if (currentSpeed < bounceForce) {
+                finalBounceForce = bounceForce;
+            }
+
+            
+
+            collisionVelocity = lastCollisionDirection.normalized * finalBounceForce * deltaTime;
         }
     }
 
@@ -84,22 +121,22 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
+        float currentSpeed = Speed(normalMovementVelocity);
+
         if (inputManager.accellerate())
         {
             // accellerate
-            velocity = transform.forward * AccellerateSpeed(maxSpeed, accelleration) * deltaTime;
+            normalMovementVelocity = transform.forward * AccellerateSpeed(maxSpeed, accelleration, currentSpeed) * deltaTime;
         }
         else if (inputManager.brake())
         {
             // brake
-            velocity = transform.forward * AccellerateSpeed(0, 1) * deltaTime;
+            normalMovementVelocity = transform.forward * AccellerateSpeed(0, brakeDecelleration, currentSpeed) * deltaTime;
         }
         else {
             // brake slowely
-            velocity = transform.forward * AccellerateSpeed(0, 1) * deltaTime;
+            normalMovementVelocity = transform.forward * AccellerateSpeed(0, autoBrakeDecelleration, currentSpeed) * deltaTime;
         }
-
-        transform.position += velocity;
 
     }
 
@@ -116,7 +153,7 @@ public class PlayerController : MonoBehaviour
         return currentRotationSpeed;
     }
 
-    float AccellerateSpeed(float targetSpeed, float accelleration) {
+    float AccellerateSpeed(float targetSpeed, float accelleration, float currentSpeed) {
         
         if (Mathf.Abs(targetSpeed - currentSpeed) < 0.1)
         {
@@ -200,11 +237,16 @@ public class PlayerController : MonoBehaviour
     }
 
     private Vector3 calculateCollisionDirection(Collider collider) {
-        Vector3 globalDirection = collider.transform.position - transform.position;
-        //globalDirection.Normalize();
+        Vector3 globalDirection = collider.ClosestPoint(transform.position) - transform.position;
         globalDirection = globalDirection * -1;
 
         return globalDirection;
+    }
+
+    float Speed(Vector3 spaceVector) { 
+        float speed = spaceVector.magnitude / deltaTime;
+        
+        return speed;
     }
 
 }

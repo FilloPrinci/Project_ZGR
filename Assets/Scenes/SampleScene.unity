@@ -926,6 +926,10 @@ MonoBehaviour:
   rotationMaxSpeed: 200
   rotationAccelleration: 5
   accelleration: 3
+  bounceForce: 10
+  autoBrakeDecelleration: 1
+  brakeDecelleration: 2.5
+  collider: {fileID: 1385173742}
 --- !u!54 &327105697
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5196,8 +5200,8 @@ Transform:
   m_GameObject: {fileID: 1939034968}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -17.06, y: -23.7, z: 20.03}
-  m_LocalScale: {x: 9.7858, y: 153.13602, z: 9.7858}
+  m_LocalPosition: {x: -17.06, y: -23.7, z: 68.4}
+  m_LocalScale: {x: 9.7858, y: 70.04861, z: 103.51875}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1573549242}
