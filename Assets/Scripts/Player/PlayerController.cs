@@ -1,5 +1,6 @@
 using System.Collections.Specialized;
 using System.Security.Cryptography;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -13,7 +14,7 @@ public class PlayerController : MonoBehaviour
     public float brakeDecelleration = 2.5f;
     public float collisionBounceDecelleration = 5f;
 
-    public GameObject collider;
+    public new Collider collider;
 
     private InputManager inputManager;
 
@@ -52,7 +53,7 @@ public class PlayerController : MonoBehaviour
         {
             if (collisionVelocity != Vector3.zero) {
                 Bounce();
-            }
+            } 
             
             HandleMovement();
         }
@@ -116,7 +117,7 @@ public class PlayerController : MonoBehaviour
         }
         
 
-        transform.Rotate(0, rotationVelocity * deltaTime, 0, Space.World);
+        transform.Rotate(0, rotationVelocity * deltaTime, 0, Space.Self);
     }
 
     void HandleMovement()
@@ -172,7 +173,7 @@ public class PlayerController : MonoBehaviour
 
     void ApplyGravityAndHover()
     {
-        float hoverHeight = 1.5f;
+        float hoverHeight = 0.75f;
         
         float gravityFallbackSpeed = 50;
 
@@ -189,21 +190,6 @@ public class PlayerController : MonoBehaviour
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
 
             transform.rotation = targetRotation;
-
-            /// TODO: use this part for camera and model animation only, not for the logic entity
-            /*
-            // normal based rotation lerped
-
-            float angleThreshold = 1f;
-            float rotationAdjustSpeed = 20f;
-            float angleDifference = Quaternion.Angle(transform.rotation, targetRotation);
-            if (angleDifference <= angleThreshold)
-            {
-                transform.rotation = targetRotation;
-            }
-            else {
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, deltaTime * rotationAdjustSpeed);
-            }*/
 
 
         }
@@ -236,10 +222,39 @@ public class PlayerController : MonoBehaviour
         lastCollisionDirection = Vector3.zero;
     }
 
-    private Vector3 calculateCollisionDirection(Collider collider) {
-        Vector3 globalDirection = collider.ClosestPoint(transform.position) - transform.position;
-        globalDirection = globalDirection * -1;
+    private Vector3 calculateCollisionDirection(Collider otherCollider)
+    {
+        Vector3 contactPoint;
 
+        if (otherCollider is BoxCollider || otherCollider is SphereCollider || otherCollider is CapsuleCollider ||
+            (otherCollider is MeshCollider meshCol && meshCol.convex))
+        {
+            contactPoint = otherCollider.ClosestPoint(transform.position);
+        }
+        else
+        {
+            Vector3 direction;
+            float distance;
+
+            bool isOverlapping = Physics.ComputePenetration(
+                collider, transform.position, transform.rotation,
+                otherCollider, otherCollider.transform.position, otherCollider.transform.rotation,
+                out direction, out distance
+            );
+
+            if (isOverlapping)
+            {
+                contactPoint = otherCollider.transform.position + (-direction * otherCollider.bounds.extents.magnitude);
+                Debug.Log($"[Penetration] Direzione: {direction}, Punto stimato: {contactPoint}, Distanza: {distance}");
+            }
+            else
+            {
+                contactPoint = otherCollider.bounds.ClosestPoint(transform.position);
+                Debug.LogWarning($"[Fallback] Collider {otherCollider.name} non supporta ClosestPoint. Usato BoundingBox.");
+            }
+        }
+
+        Vector3 globalDirection = (transform.position - contactPoint).normalized;
         return globalDirection;
     }
 
