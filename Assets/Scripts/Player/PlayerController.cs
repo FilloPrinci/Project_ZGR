@@ -15,23 +15,25 @@ public class PlayerController : MonoBehaviour
     public float collisionBounceDecelleration = 5f;
 
     public new Collider collider;
+    public Transform veichleModel;
 
     private InputManager inputManager;
 
     private Vector3 normalMovementVelocity;
-
     private Vector3 collisionVelocity;
 
     private float rotationVelocity = 0;
     private float currentRotationSpeed = 0;
-
-    private float currentHoverHeight;
-    private Vector3 targetPosition;
-
     private float deltaTime;
 
     private bool collisionDetected = false;
     private Vector3 lastCollisionDirection = Vector3.zero;
+
+    // Visual interpolation values
+    private Vector3 previousPosition;
+    private Vector3 currentPosition;
+    private Quaternion previousRotation;
+    private Quaternion currentRotation;
 
     private void Start()
     {
@@ -39,83 +41,96 @@ public class PlayerController : MonoBehaviour
         if (inputManager == null)
         {
             Debug.LogError("InputManager is not available in the scene. Make sure an InputManager exists.");
-            enabled = false; // Blocca l'esecuzione dello script
+            enabled = false;
+            return;
         }
+
+        // Initialize visual interpolation positions
+        currentPosition = transform.position;
+        previousPosition = currentPosition;
+        currentRotation = transform.rotation;
+        previousRotation = currentRotation;
+
+        veichleModel.position = transform.position;
+        veichleModel.rotation = transform.rotation;
+    }
+
+    private void LateUpdate()
+    {
+        // Calculate interpolation factor based on physics update lag
+        float interpolationFactor = (Time.time - Time.fixedTime) / Time.fixedDeltaTime;
+
+        // Smoothly interpolate the visual model between last and current position/rotation
+        veichleModel.position = Vector3.Lerp(previousPosition, currentPosition, interpolationFactor);
+        veichleModel.rotation = Quaternion.Slerp(previousRotation, currentRotation, interpolationFactor);
     }
 
     private void FixedUpdate()
     {
-        deltaTime = Time.deltaTime;
+        deltaTime = Time.fixedDeltaTime;
 
         HandleSteering();
 
         if (!collisionDetected)
         {
-            if (collisionVelocity != Vector3.zero) {
+            if (collisionVelocity != Vector3.zero)
+            {
                 Bounce();
-            } 
-            
+            }
             HandleMovement();
         }
-        else {
-
-            // collision
+        else
+        {
             Collide();
         }
 
-        // applyng velocity
         transform.position += (normalMovementVelocity + collisionVelocity);
 
         ApplyGravityAndHover();
 
+        // Store previous and current transforms for interpolation
+        previousPosition = currentPosition;
+        previousRotation = currentRotation;
+        currentPosition = transform.position;
+        currentRotation = transform.rotation;
+
+        if (lastCollisionDirection != Vector3.zero)
+        {
+            Debug.DrawRay(transform.position, lastCollisionDirection * 3f, Color.red, 0, false);
+        }
     }
 
-    void Bounce() {
-        float curerntCollisionSpeed = Speed(collisionVelocity);
-
-        collisionVelocity = collisionVelocity.normalized * AccellerateSpeed(0, collisionBounceDecelleration, curerntCollisionSpeed) * deltaTime;
+    void Bounce()
+    {
+        float currentCollisionSpeed = Speed(collisionVelocity);
+        collisionVelocity = collisionVelocity.normalized * AccellerateSpeed(0, collisionBounceDecelleration, currentCollisionSpeed) * deltaTime;
     }
 
-    void Collide() {
-
+    void Collide()
+    {
         normalMovementVelocity = normalMovementVelocity / 2;
 
-        
-        if (lastCollisionDirection != Vector3.zero) {
-            /*
-            Vector3 collisionDirectionNormalized = lastCollisionDirection.normalized;
-
-            float collisionMagnitude = collisionDirectionNormalized.magnitude;
-            */
-
+        if (lastCollisionDirection != Vector3.zero)
+        {
             float currentSpeed = Speed(normalMovementVelocity);
-
-            float finalBounceForce = currentSpeed;
-
-            if (currentSpeed < bounceForce) {
-                finalBounceForce = bounceForce;
-            }
-
-            
+            float finalBounceForce = Mathf.Max(currentSpeed, bounceForce);
 
             collisionVelocity = lastCollisionDirection.normalized * finalBounceForce * deltaTime;
         }
     }
 
-    void HandleSteering() {
+    void HandleSteering()
+    {
         float steerInput = inputManager.steer();
 
         if (steerInput != 0)
         {
-            // accellerate roation to desired rotation
             rotationVelocity = AccellerateRotationSpeed(rotationMaxSpeed * steerInput, rotationAccelleration);
         }
         else
         {
-            // brake rotation
             rotationVelocity = AccellerateRotationSpeed(0, rotationAccelleration);
         }
-        
 
         transform.Rotate(0, rotationVelocity * deltaTime, 0, Space.Self);
     }
@@ -126,41 +141,39 @@ public class PlayerController : MonoBehaviour
 
         if (inputManager.accellerate())
         {
-            // accellerate
             normalMovementVelocity = transform.forward * AccellerateSpeed(maxSpeed, accelleration, currentSpeed) * deltaTime;
         }
         else if (inputManager.brake())
         {
-            // brake
             normalMovementVelocity = transform.forward * AccellerateSpeed(0, brakeDecelleration, currentSpeed) * deltaTime;
         }
-        else {
-            // brake slowely
+        else
+        {
             normalMovementVelocity = transform.forward * AccellerateSpeed(0, autoBrakeDecelleration, currentSpeed) * deltaTime;
         }
-
     }
 
     float AccellerateRotationSpeed(float targetSpeed, float accelleration)
     {
-        
-        if (Mathf.Abs(targetSpeed - currentRotationSpeed) < 0.1)
+        if (Mathf.Abs(targetSpeed - currentRotationSpeed) < 0.1f)
         {
             currentRotationSpeed = targetSpeed;
         }
-        else {
+        else
+        {
             currentRotationSpeed = ExpDecay(currentRotationSpeed, targetSpeed, accelleration, deltaTime);
         }
         return currentRotationSpeed;
     }
 
-    float AccellerateSpeed(float targetSpeed, float accelleration, float currentSpeed) {
-        
-        if (Mathf.Abs(targetSpeed - currentSpeed) < 0.1)
+    float AccellerateSpeed(float targetSpeed, float accelleration, float currentSpeed)
+    {
+        if (Mathf.Abs(targetSpeed - currentSpeed) < 0.1f)
         {
             currentSpeed = targetSpeed;
         }
-        else {
+        else
+        {
             currentSpeed = ExpDecay(currentSpeed, targetSpeed, accelleration, deltaTime);
         }
         return currentSpeed;
@@ -174,62 +187,51 @@ public class PlayerController : MonoBehaviour
     void ApplyGravityAndHover()
     {
         float hoverHeight = 0.75f;
-        
-        float gravityFallbackSpeed = 50;
+        float gravityFallbackSpeed = 50f;
 
         RaycastHit hit;
-
-        // Raycast 
         if (Physics.Raycast(transform.position, -transform.up, out hit, hoverHeight * 2f))
         {
-            // Target position
             Vector3 desiredPosition = hit.point + hit.normal * hoverHeight;
-
             transform.position = desiredPosition;
 
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
-
             transform.rotation = targetRotation;
-
-
         }
         else
         {
-            // Use gravity when no plane is detected
             transform.position += Vector3.down * gravityFallbackSpeed * deltaTime;
         }
     }
 
-
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"Oggetto {other.name} è entrato nel trigger.");
+        Debug.Log($"Object {other.name} entered trigger.");
         collisionDetected = true;
         lastCollisionDirection = calculateCollisionDirection(other);
     }
 
     private void OnTriggerStay(Collider other)
     {
-        Debug.Log($"Oggetto {other.name} è ancora nel trigger.");
+        Debug.Log($"Object {other.name} stays in trigger.");
         collisionDetected = true;
         lastCollisionDirection = calculateCollisionDirection(other);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        Debug.Log($"Oggetto {other.name} è uscito dal trigger.");
+        Debug.Log($"Object {other.name} exited trigger.");
         collisionDetected = false;
         lastCollisionDirection = Vector3.zero;
     }
 
     private Vector3 calculateCollisionDirection(Collider otherCollider)
     {
-        Vector3 contactPoint;
-
         if (otherCollider is BoxCollider || otherCollider is SphereCollider || otherCollider is CapsuleCollider ||
             (otherCollider is MeshCollider meshCol && meshCol.convex))
         {
-            contactPoint = otherCollider.ClosestPoint(transform.position);
+            Vector3 contactPoint = otherCollider.ClosestPoint(transform.position);
+            return (transform.position - contactPoint).normalized;
         }
         else
         {
@@ -244,24 +246,20 @@ public class PlayerController : MonoBehaviour
 
             if (isOverlapping)
             {
-                contactPoint = otherCollider.transform.position + (-direction * otherCollider.bounds.extents.magnitude);
-                Debug.Log($"[Penetration] Direzione: {direction}, Punto stimato: {contactPoint}, Distanza: {distance}");
+                Debug.Log($"[Penetration] Exit direction: {direction}, Distance: {distance}");
+                return direction;
             }
             else
             {
-                contactPoint = otherCollider.bounds.ClosestPoint(transform.position);
-                Debug.LogWarning($"[Fallback] Collider {otherCollider.name} non supporta ClosestPoint. Usato BoundingBox.");
+                Vector3 fallbackContact = otherCollider.bounds.ClosestPoint(transform.position);
+                Debug.LogWarning($"[Fallback] Collider {otherCollider.name} does not support ClosestPoint. Used bounding box.");
+                return (transform.position - fallbackContact).normalized;
             }
         }
-
-        Vector3 globalDirection = (transform.position - contactPoint).normalized;
-        return globalDirection;
     }
 
-    float Speed(Vector3 spaceVector) { 
-        float speed = spaceVector.magnitude / deltaTime;
-        
-        return speed;
+    float Speed(Vector3 vector)
+    {
+        return vector.magnitude / deltaTime;
     }
-
 }
