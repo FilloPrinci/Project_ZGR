@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     public Transform veichleModel;
 
     private InputManager inputManager;
+    private FeedBackManager feedBackManager;
 
     private Vector3 normalMovementVelocity;
     private Vector3 collisionVelocity;
@@ -37,6 +38,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        feedBackManager = GetComponent<FeedBackManager>();
         inputManager = InputManager.Instance;
         if (inputManager == null)
         {
@@ -53,6 +55,11 @@ public class PlayerController : MonoBehaviour
 
         veichleModel.position = transform.position;
         veichleModel.rotation = transform.rotation;
+    }
+
+    private void Update()
+    {
+        feedBackManager.SetSteeringFeedBackAmount(inputManager.steer());
     }
 
     private void LateUpdate()
