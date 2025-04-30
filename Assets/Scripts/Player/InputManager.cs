@@ -6,6 +6,7 @@ public class InputManager : MonoBehaviour
 
     private float verticalInput;
     private float horizontalInput;
+    private float primaryButtonInput;
     private float steerDeadZone = 0.05f;
 
     private void Awake()
@@ -26,11 +27,12 @@ public class InputManager : MonoBehaviour
     void Update()
     {
         verticalInput = Input.GetAxis("Vertical");
+        primaryButtonInput = Input.GetAxis("Fire1");
         horizontalInput = Input.GetAxis("Horizontal");
     }
 
     public bool accellerate() {
-        return verticalInput > 0;
+        return primaryButtonInput > 0;
     }
 
     public bool brake() {

@@ -31,11 +31,24 @@ public class CameraController : MonoBehaviour
             ExpDecay(currentPosition.z, targetPosition.z, positionSmoothSpeed, deltaTime)
         );
 
-        // Rotazione smussata con ExpDecay
-        Quaternion targetRotation = Quaternion.LookRotation(cameraTarget.position - transform.position);
+        // Compute target rotation (look at target)
+        Quaternion lookRotation = Quaternion.LookRotation(cameraTarget.position - transform.position);
+
+        // Extract tilt (X and Z) from the target rotation
+        Vector3 targetEuler = lookRotation.eulerAngles;
+        Vector3 targetTilt = cameraTarget.rotation.eulerAngles;
+
+        // Blend Yaw (from lookRotation) and Pitch/Roll (from target)
+        Quaternion finalRotation = Quaternion.Euler(
+            targetTilt.x,                 // Pitch (inclinazione su X)
+            targetEuler.y,                // Yaw (direzione verso target)
+            targetTilt.z                  // Roll (inclinazione su Z)
+        );
+
+        // Smoothly interpolate to the final rotation
         transform.rotation = Quaternion.Slerp(
             transform.rotation,
-            targetRotation,
+            finalRotation,
             1 - Mathf.Exp(-rotationSmoothSpeed * deltaTime)
         );
     }
