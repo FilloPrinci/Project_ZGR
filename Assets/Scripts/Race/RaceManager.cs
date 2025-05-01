@@ -30,9 +30,13 @@ public enum RacePhaseEvent
 
 public class RaceManager : MonoBehaviour
 {
+    public GameObject mainCamera;
     public RaceMode mode;
     public List<PlayerData> playerDataList;
+    public GameObject veichlePivotPrefab;
+    public GameObject playerPrefab;
     public List<GameObject> checkPointList;
+    public List<Transform> spawnPointList;
     public int maxLaps;
 
     private int currentLap;
@@ -52,8 +56,14 @@ public class RaceManager : MonoBehaviour
             {
                 case RaceMode.Test:
                     playerInstanceList = new List<GameObject>();
-                    //GameObject testPlayer = 
-                    //playerInstanceList.Add(gameObject);
+                    GameObject testPlayer = Instantiate(playerPrefab, spawnPointList[0].position, spawnPointList[0].rotation);
+                    GameObject testVeichlePivot = Instantiate(veichlePivotPrefab);
+                    testPlayer.GetComponent<PlayerController>().veichlePivot = testVeichlePivot.GetComponent<Transform>();
+                    testPlayer.GetComponent<PlayerController>().veichlePrefab = playerDataList[0].playerVeichle;
+                    testPlayer.GetComponent<FeedBackManager>().playerCamera = mainCamera;
+                    mainCamera.GetComponent<CameraController>().cameraDesiredPosition = testVeichlePivot.transform.Find("CameraPositionTarget");
+                    playerInstanceList.Add(testPlayer);
+                    
                     break;
                 case RaceMode.TimeTrial:
                     break;

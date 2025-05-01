@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public Veichle veichle;
+    public GameObject veichlePrefab;
     private GameObject veichleModelInstance;
 
     public float maxSpeed = 300f;
@@ -17,7 +17,6 @@ public class PlayerController : MonoBehaviour
     public float brakeDecelleration = 2.5f;
     public float collisionBounceDecelleration = 5f;
 
-    public new Collider collider;
     public Transform veichlePivot;
 
     private InputManager inputManager;
@@ -39,13 +38,10 @@ public class PlayerController : MonoBehaviour
     private Quaternion previousRotation;
     private Quaternion currentRotation;
 
-    private void Awake()
-    {
-        veichleModelInstance = Instantiate(veichle.veichlePrefab, veichlePivot);
-    }
 
     private void Start()
     {
+        veichleModelInstance = Instantiate(veichlePrefab, veichlePivot);
         feedBackManager = GetComponent<FeedBackManager>();
         inputManager = InputManager.Instance;
         if (inputManager == null)
@@ -260,7 +256,7 @@ public class PlayerController : MonoBehaviour
             float distance;
 
             bool isOverlapping = Physics.ComputePenetration(
-                collider, transform.position, transform.rotation,
+                GetComponent<Collider>(), transform.position, transform.rotation,
                 otherCollider, otherCollider.transform.position, otherCollider.transform.rotation,
                 out direction, out distance
             );
