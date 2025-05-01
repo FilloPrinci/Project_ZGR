@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public Veichle veichle;
+    private GameObject veichleModelInstance;
+
     public float maxSpeed = 300f;
     public float rotationMaxSpeed = 10;
     public float rotationAccelleration = 5;
@@ -15,7 +18,7 @@ public class PlayerController : MonoBehaviour
     public float collisionBounceDecelleration = 5f;
 
     public new Collider collider;
-    public Transform veichleModel;
+    public Transform veichlePivot;
 
     private InputManager inputManager;
     private FeedBackManager feedBackManager;
@@ -36,6 +39,11 @@ public class PlayerController : MonoBehaviour
     private Quaternion previousRotation;
     private Quaternion currentRotation;
 
+    private void Awake()
+    {
+        veichleModelInstance = Instantiate(veichle.veichlePrefab, veichlePivot);
+    }
+
     private void Start()
     {
         feedBackManager = GetComponent<FeedBackManager>();
@@ -45,6 +53,8 @@ public class PlayerController : MonoBehaviour
             Debug.LogError("InputManager is not available in the scene. Make sure an InputManager exists.");
             enabled = false;
             return;
+
+
         }
 
         // Initialize visual interpolation positions
@@ -53,8 +63,10 @@ public class PlayerController : MonoBehaviour
         currentRotation = transform.rotation;
         previousRotation = currentRotation;
 
-        veichleModel.position = transform.position;
-        veichleModel.rotation = transform.rotation;
+        
+
+        veichlePivot.position = transform.position;
+        veichlePivot.rotation = transform.rotation;
     }
 
     private void Update()
@@ -68,8 +80,8 @@ public class PlayerController : MonoBehaviour
         float interpolationFactor = (Time.time - Time.fixedTime) / Time.fixedDeltaTime;
 
         // Smoothly interpolate the visual model between last and current position/rotation
-        veichleModel.position = Vector3.Lerp(previousPosition, currentPosition, interpolationFactor);
-        veichleModel.rotation = Quaternion.Slerp(previousRotation, currentRotation, interpolationFactor);
+        veichlePivot.position = Vector3.Lerp(previousPosition, currentPosition, interpolationFactor);
+        veichlePivot.rotation = Quaternion.Slerp(previousRotation, currentRotation, interpolationFactor);
     }
 
     private void FixedUpdate()
@@ -124,6 +136,8 @@ public class PlayerController : MonoBehaviour
 
             collisionVelocity = lastCollisionDirection.normalized * finalBounceForce * deltaTime;
         }
+
+        feedBackManager.TriggerCameraShake();
     }
 
     void HandleSteering()
@@ -268,5 +282,10 @@ public class PlayerController : MonoBehaviour
     float Speed(Vector3 vector)
     {
         return vector.magnitude / deltaTime;
+    }
+
+    public GameObject GetVeichleModel()
+    {
+        return veichleModelInstance;
     }
 }
