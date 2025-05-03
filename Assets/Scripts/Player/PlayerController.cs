@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public GameObject veichlePrefab;
+    public PlayerData playerData;
     private GameObject veichleModelInstance;
 
     public float maxSpeed = 300f;
@@ -16,10 +16,12 @@ public class PlayerController : MonoBehaviour
     public float autoBrakeDecelleration = 1f;
     public float brakeDecelleration = 2.5f;
     public float collisionBounceDecelleration = 5f;
+    public LayerMask hoverRaycastMask;
 
     public Transform veichlePivot;
 
     private InputManager inputManager;
+    private RaceManager raceManager;
     private FeedBackManager feedBackManager;
 
     private Vector3 normalMovementVelocity;
@@ -41,16 +43,15 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        veichleModelInstance = Instantiate(veichlePrefab, veichlePivot);
+        veichleModelInstance = Instantiate(playerData.veichlePrefab, veichlePivot);
         feedBackManager = GetComponent<FeedBackManager>();
         inputManager = InputManager.Instance;
+        raceManager = RaceManager.Instance;
         if (inputManager == null)
         {
             Debug.LogError("InputManager is not available in the scene. Make sure an InputManager exists.");
             enabled = false;
             return;
-
-
         }
 
         // Initialize visual interpolation positions
@@ -207,7 +208,8 @@ public class PlayerController : MonoBehaviour
         float gravityFallbackSpeed = 50f;
 
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, -transform.up, out hit, hoverHeight * 2f))
+        // Use the layer mask to filter the raycast
+        if (Physics.Raycast(transform.position, -transform.up, out hit, hoverHeight * 2f, hoverRaycastMask))
         {
             Vector3 desiredPosition = hit.point + hit.normal * hoverHeight;
             transform.position = desiredPosition;
@@ -221,25 +223,48 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private bool ShouldHandleCollision(Collider other)
+    {
+        bool handleCollision = true;
+
+        if (other.tag.Equals("Checkpoint"))
+        {
+            handleCollision = false;
+        }
+
+        return handleCollision;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"Object {other.name} entered trigger.");
-        collisionDetected = true;
-        lastCollisionDirection = calculateCollisionDirection(other);
+        if (ShouldHandleCollision(other))
+        {
+            collisionDetected = true;
+            lastCollisionDirection = calculateCollisionDirection(other);
+        }else if (other.tag.Equals("Checkpoint"))
+        {
+            // Checkpoint reached
+            raceManager.OnCheckpoint(playerData.getID(), other.gameObject);
+        }
+        
     }
 
     private void OnTriggerStay(Collider other)
     {
-        Debug.Log($"Object {other.name} stays in trigger.");
-        collisionDetected = true;
-        lastCollisionDirection = calculateCollisionDirection(other);
+        if (ShouldHandleCollision(other))
+        {
+            collisionDetected = true;
+            lastCollisionDirection = calculateCollisionDirection(other);
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        Debug.Log($"Object {other.name} exited trigger.");
-        collisionDetected = false;
-        lastCollisionDirection = Vector3.zero;
+        if (ShouldHandleCollision(other))
+        {
+            collisionDetected = false;
+            lastCollisionDirection = Vector3.zero;
+        }
     }
 
     private Vector3 calculateCollisionDirection(Collider otherCollider)
@@ -263,7 +288,6 @@ public class PlayerController : MonoBehaviour
 
             if (isOverlapping)
             {
-                Debug.Log($"[Penetration] Exit direction: {direction}, Distance: {distance}");
                 return direction;
             }
             else
