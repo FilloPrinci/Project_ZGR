@@ -47,7 +47,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8850ac1597a6fdb428d5ae1ca7fdfb61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  veichlePrefab: {fileID: 0}
+  playerData:
+    name: 
+    veichlePrefab: {fileID: 0}
+    playerInputIndex: 0
   maxSpeed: 100
   rotationMaxSpeed: 200
   rotationAccelleration: 5
@@ -56,6 +59,9 @@ MonoBehaviour:
   autoBrakeDecelleration: 1
   brakeDecelleration: 2.5
   collisionBounceDecelleration: 5
+  hoverRaycastMask:
+    serializedVersion: 2
+    m_Bits: 3
   veichlePivot: {fileID: 0}
 --- !u!54 &3221191640071817225
 Rigidbody:
