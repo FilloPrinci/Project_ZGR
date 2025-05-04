@@ -32,6 +32,7 @@ public class RaceGUI : MonoBehaviour
         PlayerRaceData currentPlayerRaceData = raceManager.GetRaceData().GetPlayerRaceDataByID(currentPlayerData.getID());
         string positionLine = "Position: " + currentPlayerRaceData.position;
         string currentLap = "Lap" + currentPlayerRaceData.currentLap + "/" + raceManager.maxLaps;
+        string raceStatus = "RaceStatus: " + raceManager.GetCurrentRacePhase().ToString();
 
         string finalString = "";
         /*
@@ -44,6 +45,8 @@ public class RaceGUI : MonoBehaviour
         finalString += positionLine;
         finalString += "\n";
         finalString += currentLap;
+        finalString += "\n";
+        finalString += raceStatus;
 
         raceDataText.text = finalString;
     }
