@@ -22,6 +22,16 @@ public class PlayerRaceData
         this.currentCheckpointDistance = currentCheckpointDistance;
         this.currentLap = currentLap;
     }
+
+    public bool RaceCompleted(int maxLaps) {
+        bool raceCompleted = false;
+        if (currentLap > maxLaps)
+        {
+            raceCompleted = true;
+        }
+
+        return raceCompleted;
+    }
 }
 
 public class RaceData

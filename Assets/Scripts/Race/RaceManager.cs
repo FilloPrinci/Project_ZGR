@@ -56,6 +56,11 @@ public class RaceManager : MonoBehaviour
         return raceData;
     }
 
+    public RacePhase GetCurrentRacePhase()
+    {
+        return currentRacePhase;   
+    }
+
     private void Awake()
     {
         if (Instance == null)
@@ -95,7 +100,7 @@ public class RaceManager : MonoBehaviour
 
                 for(int i = 0; i < playerDataList.Count; i++)
                 {
-                    playerRaceDataList.Add(new PlayerRaceData(playerDataList[i], 0, "", 0, 0, 0, 0));
+                    playerRaceDataList.Add(new PlayerRaceData(playerDataList[i], 0, "", 0, 0, 0, 1));
 
                 }
 
@@ -237,6 +242,10 @@ public class RaceManager : MonoBehaviour
                 if (raceData.playerRaceDataList[playerDataToUpdateIndex].currentLap > maxLaps)
                 {
                     // finish race
+                    if (isRaceEnded())
+                    {
+                        lastRacePhaseEvent = RacePhaseEvent.RaceEnd;
+                    }
                 }
             }
 
@@ -249,17 +258,17 @@ public class RaceManager : MonoBehaviour
 
     }
 
-    /*
-    public void UpdatePlayerData(string playerID, PlayerRaceData updatedRaceData)
+    bool isRaceEnded()
     {
-        int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.getID() == playerID);
-        if (playerDataToUpdateIndex != -1)
-        {
-            raceData.playerRaceDataList[playerDataToUpdateIndex] = updatedRaceData;
-        }
 
+        // Race is over only when all the players ended the race
+        bool isRaceEnded = true;
+        foreach (PlayerRaceData playerRasceData in raceData.playerRaceDataList)
+        {
+            isRaceEnded = isRaceEnded && playerRasceData.RaceCompleted(maxLaps);
+        }
+        return isRaceEnded;
     }
-    */
 
     public void TriggerRaceEvent(RacePhaseEvent newRacePhaseEvent)
     {
