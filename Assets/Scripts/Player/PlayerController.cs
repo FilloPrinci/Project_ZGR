@@ -20,7 +20,8 @@ public class PlayerController : MonoBehaviour
 
     public Transform veichlePivot;
 
-    private InputManager inputManager;
+    //private InputManager inputManager;
+    private PlayerInputHandler playerInputHandler;
     private RaceManager raceManager;
     private FeedBackManager feedBackManager;
 
@@ -45,14 +46,17 @@ public class PlayerController : MonoBehaviour
     {
         veichleModelInstance = Instantiate(playerData.veichlePrefab, veichlePivot);
         feedBackManager = GetComponent<FeedBackManager>();
-        inputManager = InputManager.Instance;
+        //inputManager = InputManager.Instance;
         raceManager = RaceManager.Instance;
+        /*
         if (inputManager == null)
         {
             Debug.LogError("InputManager is not available in the scene. Make sure an InputManager exists.");
             enabled = false;
             return;
-        }
+        }*/
+
+        playerInputHandler = GetComponent<PlayerInputHandler>();
 
         // Initialize visual interpolation positions
         currentPosition = transform.position;
@@ -68,7 +72,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        feedBackManager.SetSteeringFeedBackAmount(inputManager.steer());
+        feedBackManager.SetSteeringFeedBackAmount(playerInputHandler.SteerInput);
     }
 
     private void LateUpdate()
@@ -139,7 +143,7 @@ public class PlayerController : MonoBehaviour
 
     void HandleSteering()
     {
-        float steerInput = inputManager.steer();
+        float steerInput = playerInputHandler.SteerInput;
 
         if (steerInput != 0)
         {
@@ -157,13 +161,9 @@ public class PlayerController : MonoBehaviour
     {
         float currentSpeed = Speed(normalMovementVelocity);
 
-        if (inputManager.accellerate())
+        if (playerInputHandler.AccelerateInput)
         {
             normalMovementVelocity = transform.forward * AccellerateSpeed(maxSpeed, accelleration, currentSpeed) * deltaTime;
-        }
-        else if (inputManager.brake())
-        {
-            normalMovementVelocity = transform.forward * AccellerateSpeed(0, brakeDecelleration, currentSpeed) * deltaTime;
         }
         else
         {
