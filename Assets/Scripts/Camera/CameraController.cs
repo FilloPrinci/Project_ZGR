@@ -4,8 +4,8 @@ public class CameraController : MonoBehaviour
 {
     public Transform cameraDesiredPosition;
 
-    public float positionSmoothSpeed = 5f;
-    public float rotationSmoothSpeed = 5f;
+    public float positionSmoothSpeed = 60f;
+    public float rotationSmoothSpeed = 20f;
 
     private float deltaTime = 0;
 

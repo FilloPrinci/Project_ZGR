@@ -1,7 +1,9 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public enum RaceMode
 {
@@ -32,24 +34,21 @@ public class RaceManager : MonoBehaviour
 {
     public static RaceManager Instance { get; private set; }
 
-    public GameObject mainCamera;
+    public Camera mainCamera;
     public RaceMode mode;
     public List<PlayerData> playerDataList;
-    public GameObject veichlePivotPrefab;
     public GameObject playerPrefab;
     public List<GameObject> checkPointList;
     public List<Transform> spawnPointList;
     public int maxLaps;
-    public GameObject racePlayerCanvasPrefab;
+    public GameObject presentationManager;
 
     private int currentLap;
     private RacePhase currentRacePhase;
     private RacePhaseEvent lastRacePhaseEvent;
-    private bool isManagerReady = false;
     private List<GameObject> playerInstanceList;
     private List<int> sectorList;
     private RaceData raceData;
-    private List<GameObject> racePlayerCanvasInstanceList;
 
     public RaceData GetRaceData()
     {
@@ -109,19 +108,13 @@ public class RaceManager : MonoBehaviour
                 switch (mode)
                 {
                     case RaceMode.Test:
+
                         playerInstanceList = new List<GameObject>();
-                        GameObject testPlayer = Instantiate(playerPrefab, spawnPointList[0].position, spawnPointList[0].rotation);
-                        GameObject testVeichlePivot = Instantiate(veichlePivotPrefab);
 
-                        GameObject racePlayerCanvasInstance = Instantiate(racePlayerCanvasPrefab);
-                        racePlayerCanvasInstance.GetComponent<RaceGUI>().currentPlayer = testPlayer;
+                        GameObject newPlayer = InstantiatePlayer(playerDataList[0], spawnPointList[0]);
 
-                        testPlayer.GetComponent<PlayerController>().veichlePivot = testVeichlePivot.GetComponent<Transform>();
-                        testPlayer.GetComponent<PlayerController>().playerData = playerDataList[0];
-                        testPlayer.GetComponent<FeedBackManager>().playerCamera = mainCamera;
-                        mainCamera.GetComponent<CameraController>().cameraDesiredPosition = testVeichlePivot.transform.Find("CameraPositionTarget");
-                        playerInstanceList.Add(testPlayer);
-                        lastRacePhaseEvent = RacePhaseEvent.RaceStart;
+                        playerInstanceList.Add(newPlayer);
+                        lastRacePhaseEvent = RacePhaseEvent.Start;
                         break;
                     case RaceMode.TimeTrial:
                         break;
@@ -131,48 +124,80 @@ public class RaceManager : MonoBehaviour
                         break;
                 }
             }
-            isManagerReady = true;
+            TriggerRaceEvent(RacePhaseEvent.Start);
         }
-        else { 
-            
-        }
+    }
+    
+    public GameObject InstantiatePlayer(PlayerData playerData, Transform spawnPoint) {
 
-        
+        playerPrefab.GetComponent<PlayerStructure>().data = playerData;
+        GameObject newPlayer = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
+
+        return newPlayer;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (isManagerReady)
-        {
-            ManageRacePhase();
-
-            switch (currentRacePhase) {
-                case RacePhase.Presentation:
-                    // Do the presentation
-                    break;
-                case RacePhase.CountDown:
-                    // Do the countdown
-                    break;
-                case RacePhase.Race:
-                    // Manage the race
-                    ManageRace(mode);
-            
-                    break;
-                case RacePhase.Results:
-                    // Show race results
-                    break;
-            }
+        
+        switch (currentRacePhase) {
+            case RacePhase.Presentation:
+                // manage presentation
+                break;
+            case RacePhase.CountDown:
+                // manage countdown
+                break;
+            case RacePhase.Race:
+                // Manage the race
+                ManageRace(mode);
+        
+                break;
+            case RacePhase.Results:
+                // Show race results
+                break;
         }
         Debug.Log($"[RaceManager] [FixedUpdate]: currentRacePhase : {currentRacePhase}");
     }
 
+    private void OnTrackPresentationStart() {
+        if (presentationManager != null)
+        {
+            presentationManager.GetComponent<PresentationManager>().SetCamera(mainCamera);
+        }
+        else
+        {
+            mainCamera.transform.position = Vector3.zero;
+        }
+    }
+
+
+    private void OnCountDownStart() { 
+
+        mainCamera.gameObject.SetActive(false);
+
+        // switch to players cameras
+        foreach (GameObject playerInstnce in playerInstanceList)
+        {
+            PlayerStructure instanceStructure = playerInstnce.GetComponent<PlayerStructure>();
+            if (instanceStructure.data.playerInputIndex != InputIndex.CPU) {
+                if (mode != RaceMode.RaceMultiplayer) {
+                    instanceStructure.ActivatePlayerCamera(CameraMode.SinglePlayer);
+                }
+                else
+                {
+                    Debug.Log("Multiplayer camera not implemented yet");
+                }
+                
+            }
+        }
+
+        // start count down
+    }
     private void ManageRace(RaceMode raceMode)
     {
         switch (raceMode)
         {
             case RaceMode.Test:
-
                 break;
             case RaceMode.TimeTrial:
                 break;
@@ -186,25 +211,6 @@ public class RaceManager : MonoBehaviour
 
         RefreshPlayerRaceDataDistances();
         raceData.RefreshPositions();
-    }
-
-    private void ManageRacePhase()
-    {
-        switch (lastRacePhaseEvent)
-        {
-            case RacePhaseEvent.Start:
-                currentRacePhase = RacePhase.Presentation;
-                break;
-            case RacePhaseEvent.PresentationEnd:
-                currentRacePhase = RacePhase.CountDown;
-                break;
-            case RacePhaseEvent.RaceStart:
-                currentRacePhase = RacePhase.Race;
-                break;
-            case RacePhaseEvent.RaceEnd:
-                currentRacePhase = RacePhase.Results;
-                break;
-        }
     }
 
     public GameObject GetPlayerInstanceFromID(string id)
@@ -244,7 +250,7 @@ public class RaceManager : MonoBehaviour
                     // finish race
                     if (isRaceEnded())
                     {
-                        lastRacePhaseEvent = RacePhaseEvent.RaceEnd;
+                        TriggerRaceEvent(RacePhaseEvent.RaceEnd);
                     }
                 }
             }
@@ -272,6 +278,33 @@ public class RaceManager : MonoBehaviour
 
     public void TriggerRaceEvent(RacePhaseEvent newRacePhaseEvent)
     {
-        lastRacePhaseEvent = newRacePhaseEvent;
+        switch (newRacePhaseEvent)
+        {
+            case RacePhaseEvent.Start:
+                // Start presentation
+                currentRacePhase = RacePhase.Presentation;
+                OnTrackPresentationStart();
+                break;
+            case RacePhaseEvent.PresentationEnd:
+                // Start countdown
+                currentRacePhase = RacePhase.CountDown;
+                OnCountDownStart();
+                break;
+            case RacePhaseEvent.RaceStart:
+                // Start Race
+                currentRacePhase = RacePhase.Race;
+                break;
+            case RacePhaseEvent.RaceEnd:
+                currentRacePhase = RacePhase.Results;
+                break;
+        }
+    }
+
+    public void OnSkip()
+    {
+        if (currentRacePhase == RacePhase.Presentation) {
+            Debug.Log("[RaceManager] : Skip Presentation");
+            TriggerRaceEvent(RacePhaseEvent.PresentationEnd);
+        }
     }
 }

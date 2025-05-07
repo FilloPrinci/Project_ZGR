@@ -1115,6 +1115,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Global",
+            "id": "e48963f2-6aa1-404e-980a-5c64baccf45f",
+            "actions": [
+                {
+                    "name": "Skip",
+                    "type": "Button",
+                    "id": "238619f0-857f-4e6e-bebc-d26c90c8704c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "78c57f79-1478-4cf9-81a0-109331017888",
+                    "path": "*/<Button>",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Skip",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [
