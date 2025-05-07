@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEditor.SearchService;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -13,9 +14,11 @@ public class MainMenuManager : MonoBehaviour
     public GameObject firstOptionSelected;
     public GameObject firstMainMenuSelected;
 
+    public string playScene;
+
     public void OnPlayPressed()
     {
-        SceneManager.LoadScene("GameScene");
+        SceneManager.LoadScene(playScene);
     }
 
     public void OnOptionsPressed()
