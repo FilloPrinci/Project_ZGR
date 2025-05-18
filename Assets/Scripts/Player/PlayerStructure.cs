@@ -38,6 +38,8 @@ public class PlayerStructure : MonoBehaviour
         Camera cam = cameraObject.AddComponent<Camera>();
         cam.AddComponent<CameraController>();
         cam.GetComponent<CameraController>().cameraDesiredPosition = anchor;
+        cameraObject.transform.position = anchor.position;
+        cameraObject.transform.rotation = anchor.rotation;
         cameraObject.SetActive(false);
 
         return cameraObject;

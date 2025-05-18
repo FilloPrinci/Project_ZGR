@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using UnityEditor.SearchService;
 
 public class MainMenuManager : MonoBehaviour
 {

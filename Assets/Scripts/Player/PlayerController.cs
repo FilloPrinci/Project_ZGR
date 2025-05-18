@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
 
     public Transform veichlePivot;
 
-    //private InputManager inputManager;
+    private GlobalInputManager globalInputManager;
     private PlayerInputHandler playerInputHandler;
     private RaceManager raceManager;
     private FeedBackManager feedBackManager;
@@ -46,28 +46,32 @@ public class PlayerController : MonoBehaviour
     {
         veichleModelInstance = Instantiate(playerData.veichlePrefab, veichlePivot);
         feedBackManager = GetComponent<FeedBackManager>();
-        //inputManager = InputManager.Instance;
+        globalInputManager = GlobalInputManager.Instance;
         raceManager = RaceManager.Instance;
-        /*
-        if (inputManager == null)
+        
+        if (globalInputManager == null)
         {
-            Debug.LogError("InputManager is not available in the scene. Make sure an InputManager exists.");
+            Debug.LogError("GlobalInputManager is not available in the scene. Make sure an GlobalInputManager exists.");
             enabled = false;
             return;
-        }*/
+        }
+        else
+        {
+            playerInputHandler = globalInputManager.GetPlayerInput((int)playerData.playerInputIndex).GetComponent<PlayerInputHandler>();
 
-        playerInputHandler = GetComponent<PlayerInputHandler>();
+            // Initialize visual interpolation positions
+            currentPosition = transform.position;
+            previousPosition = currentPosition;
+            currentRotation = transform.rotation;
+            previousRotation = currentRotation;
 
-        // Initialize visual interpolation positions
-        currentPosition = transform.position;
-        previousPosition = currentPosition;
-        currentRotation = transform.rotation;
-        previousRotation = currentRotation;
 
-        
 
-        veichlePivot.position = transform.position;
-        veichlePivot.rotation = transform.rotation;
+            veichlePivot.position = transform.position;
+            veichlePivot.rotation = transform.rotation;
+        }
+
+            
     }
 
     private void Update()
