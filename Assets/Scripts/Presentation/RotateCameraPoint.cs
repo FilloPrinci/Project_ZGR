@@ -4,12 +4,14 @@ public class RotateCameraPoint : MonoBehaviour
 {
     public float rotationSpeed;
     public float distanceFromCenter;
+    public float cameraAngle;
     public Transform cameraPoint;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        cameraPoint.localPosition = new Vector3(0, 0, distanceFromCenter);        
+        cameraPoint.localPosition = new Vector3(0, 0, -distanceFromCenter);   
+        cameraPoint.localEulerAngles = new Vector3(cameraAngle, 0, 0);
     }
 
     // Update is called once per frame
