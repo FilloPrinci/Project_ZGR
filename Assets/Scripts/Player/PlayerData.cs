@@ -11,7 +11,6 @@ public enum InputIndex
 [System.Serializable]
 public class PlayerData
 {
-    private string id;
     public string name;
     public GameObject veichlePrefab;
     public InputIndex playerInputIndex;
@@ -21,11 +20,5 @@ public class PlayerData
         this.name = name;
         this.veichlePrefab = playerVeichle;
         this.playerInputIndex = playerInputIndex;
-        this.id = Guid.NewGuid().ToString();
-    }
-
-    public string getID()
-    {
-        return this.id;
     }
 }

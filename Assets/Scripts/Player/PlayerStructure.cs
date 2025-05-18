@@ -31,6 +31,9 @@ public class PlayerStructure : MonoBehaviour
 
         playerCamera = SpawnCamera(pivotInstance.GetComponent<VeichleAnchors>().cameraPivot);
         feedBack.playerCamera = playerCamera;
+        canvasInstance.GetComponent<Canvas>().worldCamera = playerCamera.GetComponent<Camera>();
+        canvasInstance.GetComponent<Canvas>().planeDistance = 0.5f;
+        canvasInstance.SetActive(false);
     }
 
     GameObject SpawnCamera(Transform anchor) {
@@ -47,29 +50,63 @@ public class PlayerStructure : MonoBehaviour
 
     public void ActivatePlayerCamera(CameraMode mode)
     {
-        switch (mode) {
+        Camera cam = playerCamera.GetComponent<Camera>();
+
+        int playerIndex = (int)data.playerInputIndex;
+
+        switch (mode)
+        {
             case CameraMode.SinglePlayer:
-                // camera is full screen 
+                cam.rect = new Rect(0f, 0f, 1f, 1f); // fullscreen
                 break;
+
             case CameraMode.MultiPlayer2:
-                // resize to half screen
-
-                // position depends from playerData.InputIndex
+                if (playerIndex == 0)
+                {
+                    cam.rect = new Rect(0f, 0.5f, 1f, 0.5f); // top half
+                }
+                else if (playerIndex == 1)
+                {
+                    cam.rect = new Rect(0f, 0f, 1f, 0.5f); // bottom half
+                }
                 break;
+
             case CameraMode.MultiPlayer3:
-                // resize to half screen
-
-                // position depends from playerData.InputIndex
+                if (playerIndex == 0)
+                {
+                    cam.rect = new Rect(0f, 0.5f, 0.5f, 0.5f); // top-left
+                }
+                else if (playerIndex == 1)
+                {
+                    cam.rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f); // top-right
+                }
+                else if (playerIndex == 2)
+                {
+                    cam.rect = new Rect(0.25f, 0f, 0.5f, 0.5f); // centered bottom
+                }
                 break;
+
             case CameraMode.MultiPlayer4:
-                // resize to quarter screen
-
-                // position depends from playerData.InputIndex
+                switch (playerIndex)
+                {
+                    case 0:
+                        cam.rect = new Rect(0f, 0.5f, 0.5f, 0.5f); // top-left
+                        break;
+                    case 1:
+                        cam.rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f); // top-right
+                        break;
+                    case 2:
+                        cam.rect = new Rect(0f, 0f, 0.5f, 0.5f); // bottom-left
+                        break;
+                    case 3:
+                        cam.rect = new Rect(0.5f, 0f, 0.5f, 0.5f); // bottom-right
+                        break;
+                }
                 break;
-
         }
 
         playerCamera.SetActive(true);
+        canvasInstance.SetActive(true);
     }
 
     // Update is called once per frame
