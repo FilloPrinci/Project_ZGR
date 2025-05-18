@@ -29,7 +29,7 @@ public class RaceGUI : MonoBehaviour
 
     void ShowRaceDataLines()
     {
-        PlayerRaceData currentPlayerRaceData = raceManager.GetRaceData().GetPlayerRaceDataByID(currentPlayerData.getID());
+        PlayerRaceData currentPlayerRaceData = raceManager.GetRaceData().GetPlayerRaceDataByID(currentPlayerData.name);
         string positionLine = "Position: " + currentPlayerRaceData.position;
         string currentLap = "Lap" + currentPlayerRaceData.currentLap + "/" + raceManager.maxLaps;
         string raceStatus = "RaceStatus: " + raceManager.GetCurrentRacePhase().ToString();

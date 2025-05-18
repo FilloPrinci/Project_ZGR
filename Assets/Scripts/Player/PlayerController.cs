@@ -248,7 +248,7 @@ public class PlayerController : MonoBehaviour
         }else if (other.tag.Equals("Checkpoint"))
         {
             // Checkpoint reached
-            raceManager.OnCheckpoint(playerData.getID(), other.gameObject);
+            raceManager.OnCheckpoint(playerData.name, other.gameObject);
         }
         
     }

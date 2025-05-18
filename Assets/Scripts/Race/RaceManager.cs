@@ -111,9 +111,9 @@ public class RaceManager : MonoBehaviour
 
                         playerInstanceList = new List<GameObject>();
 
-                        GameObject newPlayer = InstantiatePlayer(playerDataList[0], spawnPointList[0]);
+                        GameObject newTestPlayer = InstantiatePlayer(playerDataList[0], spawnPointList[0]);
 
-                        playerInstanceList.Add(newPlayer);
+                        playerInstanceList.Add(newTestPlayer);
                         lastRacePhaseEvent = RacePhaseEvent.Start;
                         break;
                     case RaceMode.TimeTrial:
@@ -121,6 +121,17 @@ public class RaceManager : MonoBehaviour
                     case RaceMode.RaceSingleplayer:
                         break;
                     case RaceMode.RaceMultiplayer:
+                        playerInstanceList = new List<GameObject>();
+
+                        for (int i = 0; i < playerDataList.Count; i++)
+                        {
+                            GameObject newPlayer = InstantiatePlayer(playerDataList[i], spawnPointList[i]);
+
+                            playerInstanceList.Add(newPlayer);
+                        }
+
+                        
+                        lastRacePhaseEvent = RacePhaseEvent.Start;
                         break;
                 }
             }
@@ -186,10 +197,17 @@ public class RaceManager : MonoBehaviour
                 else
                 {
                     Debug.Log("Multiplayer camera not implemented yet");
+                    if (playerInstanceList.Count == 2)
+                    {
+                        instanceStructure.ActivatePlayerCamera(CameraMode.MultiPlayer2);
+                    }
                 }
                 
             }
         }
+
+        // Skipping the countdown 
+        TriggerRaceEvent(RacePhaseEvent.RaceStart);
 
         // start count down
     }
@@ -215,7 +233,17 @@ public class RaceManager : MonoBehaviour
 
     public GameObject GetPlayerInstanceFromID(string id)
     {
-        GameObject playerInstance = playerInstanceList.Find(p => p.GetComponent<PlayerController>().playerData.getID() == id);
+        GameObject playerInstance = playerInstanceList[0];
+
+        for (int i = 0; i< playerInstanceList.Count; i++)
+        {
+            string playerId = playerInstanceList[i].GetComponent<PlayerStructure>().data.name;
+            if (playerId == id)
+            {
+                playerInstance = playerInstanceList[i];
+            }
+        }
+
         return playerInstance;
     }
 
@@ -223,7 +251,7 @@ public class RaceManager : MonoBehaviour
     {
         foreach(PlayerRaceData playerRaceData in raceData.playerRaceDataList)
         {
-            GameObject playerInstance = GetPlayerInstanceFromID(playerRaceData.playerData.getID());
+            GameObject playerInstance = GetPlayerInstanceFromID(playerRaceData.playerData.name);
 
             // calculate new checkpoint distance
             Vector3 newDistanceVector = playerInstance.transform.position - checkPointList[playerRaceData.nextCheckpointIndex].transform.position;
@@ -235,7 +263,7 @@ public class RaceManager : MonoBehaviour
 
     public void OnCheckpoint(string playerID, GameObject checkPointGameObject)
     {
-        int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.getID() == playerID);
+        int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.name == playerID);
         if (checkPointGameObject.transform.parent?.gameObject == checkPointList[raceData.playerRaceDataList[playerDataToUpdateIndex].nextCheckpointIndex])
         {
             Debug.Log($"[RaceManager] [OnCheckpoint({playerID})]: Checkpoint valid");

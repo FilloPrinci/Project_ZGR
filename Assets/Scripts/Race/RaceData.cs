@@ -77,7 +77,7 @@ public class RaceData
 
     public PlayerRaceData GetPlayerRaceDataByID(string id)
     {
-        PlayerRaceData playerRaceData = playerRaceDataList.Find(p => p.playerData.getID() == id);
+        PlayerRaceData playerRaceData = playerRaceDataList.Find(p => p.playerData.name == id);
         return playerRaceData;
     }
     public List<string> GetRaceDataAsLines()
