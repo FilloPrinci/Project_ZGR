@@ -1,3 +1,4 @@
+using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -6,8 +7,16 @@ public class RaceGUI : MonoBehaviour
 {
     public TextMeshProUGUI raceDataText;
     public GameObject currentPlayer;
+    public GameObject resultsPanel;
+    public TextMeshProUGUI resultsDataText;
+    public GameObject finishLabel;
     private RaceManager raceManager;
     private PlayerData currentPlayerData;
+
+    private bool canShowResults = false;
+
+    private string resultString;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -25,6 +34,7 @@ public class RaceGUI : MonoBehaviour
     private void FixedUpdate()
     {
         ShowRaceDataLines();
+        ShowRaceResults();
     }
 
     void ShowRaceDataLines()
@@ -49,5 +59,59 @@ public class RaceGUI : MonoBehaviour
         finalString += raceStatus;
 
         raceDataText.text = finalString;
+    }
+
+    void ShowRaceResults()
+    {
+        if (canShowResults) {
+            if (!resultsPanel.activeInHierarchy)
+            {
+                resultsPanel.SetActive(true);
+            }
+
+            resultsDataText.text = resultString;
+
+        }
+
+    }
+
+    public void Finish()
+    {
+        finishLabel.SetActive(true);
+    }
+
+    public void SetCanShowResults(bool canShowResults) 
+    {
+        this.canShowResults = canShowResults;
+
+        if (this.canShowResults) { 
+            resultString = GetRaceResultLines();
+        }
+    }
+
+    string GetRaceResultLines()
+    {
+        List<string> playerLineList = new List<string>();
+
+        RaceData raceData = raceManager.GetRaceData();
+
+        raceData.playerRaceDataList.Sort((a, b) => a.position.CompareTo(b.position));
+        for (int i = 0; i < raceData.playerRaceDataList.Count; i++)
+        {
+            int position = raceData.playerRaceDataList[i].position;
+            string name = raceData.playerRaceDataList[i].playerData.name;
+
+            string playerLine = $"{position}\t{name}";
+            playerLineList.Add(playerLine);
+        }
+
+        string resultLinesString = "";
+
+        for (int i = 0; i < playerLineList.Count; i++)
+        {
+            resultLinesString += playerLineList[i] + "\n";
+        }
+
+        return resultLinesString;
     }
 }
