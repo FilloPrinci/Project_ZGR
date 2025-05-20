@@ -200,6 +200,12 @@ public class RaceManager : MonoBehaviour
                     if (playerInstanceList.Count == 2)
                     {
                         instanceStructure.ActivatePlayerCamera(CameraMode.MultiPlayer2);
+                    }else if (playerInstanceList.Count == 3)
+                    {
+                        instanceStructure.ActivatePlayerCamera(CameraMode.MultiPlayer3);
+                    }else if(playerInstanceList.Count == 4)
+                    {
+                        instanceStructure.ActivatePlayerCamera(CameraMode.MultiPlayer4);
                     }
                 }
                 
@@ -275,10 +281,17 @@ public class RaceManager : MonoBehaviour
                 raceData.playerRaceDataList[playerDataToUpdateIndex].currentLap++;
                 if (raceData.playerRaceDataList[playerDataToUpdateIndex].currentLap > maxLaps)
                 {
+                    // player has finished the race
+
+                    GameObject playerInstance = GetPlayerInstanceFromPlayerRaceData(raceData.playerRaceDataList[playerDataToUpdateIndex]);
+                    RaceGUI playerRaceGUI = GetRaceGUIFromPlayerInstance(playerInstance);
+                    playerRaceGUI.Finish();
+
                     // finish race
                     if (isRaceEnded())
                     {
                         TriggerRaceEvent(RacePhaseEvent.RaceEnd);
+                        ShowResultsForAllPlayers();
                     }
                 }
             }
@@ -335,4 +348,35 @@ public class RaceManager : MonoBehaviour
             TriggerRaceEvent(RacePhaseEvent.PresentationEnd);
         }
     }
+
+    public void ShowResultsForAllPlayers()
+    {
+        for (int i = 0; i < playerInstanceList.Count; i++)
+        {
+            RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(playerInstanceList[i]);
+            playerRaceGui.SetCanShowResults(true);
+        }
+    }
+
+    public int GetPlayersAmount()
+    {
+        return playerInstanceList.Count;
+    }
+
+    public GameObject GetPlayerInstanceFromPlayerRaceData(PlayerRaceData playerRaceData)
+    {
+        string playerNae = playerRaceData.playerData.name;
+
+        GameObject playerInstance = GetPlayerInstanceFromID(playerNae);
+
+        return playerInstance;
+    }
+    
+    public RaceGUI GetRaceGUIFromPlayerInstance(GameObject playerInstance)
+    {
+        PlayerStructure playerStructure = playerInstance.GetComponent<PlayerStructure>();
+        GameObject playerRaceGUI = playerStructure.GetCanvasInstance();
+        return playerRaceGUI.GetComponent<RaceGUI>();
+    }
+
 }

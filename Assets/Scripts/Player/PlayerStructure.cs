@@ -20,6 +20,11 @@ public class PlayerStructure : MonoBehaviour
     private GameObject canvasInstance;
     private GameObject pivotInstance;
 
+    public GameObject GetCanvasInstance()
+    {
+        return canvasInstance;
+    }
+
     void Awake()
     {
         canvasInstance = Instantiate(canvasPrefab);
