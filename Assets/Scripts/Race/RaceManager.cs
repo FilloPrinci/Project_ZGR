@@ -193,6 +193,7 @@ public class RaceManager : MonoBehaviour
         if (presentationManager != null)
         {
             presentationManager.GetComponent<PresentationManager>().SetCamera(mainCamera);
+            presentationManager.GetComponent<PresentationManager>().OnStartPresentation();
         }
         else
         {
@@ -347,6 +348,7 @@ public class RaceManager : MonoBehaviour
                 break;
             case RacePhaseEvent.PresentationEnd:
                 // Start countdown
+                presentationManager.GetComponent<PresentationManager>().OnEndPresentation();
                 currentRacePhase = RacePhase.CountDown;
                 OnCountDownStart();
                 break;

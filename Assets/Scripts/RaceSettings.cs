@@ -14,6 +14,7 @@ public class RaceSettings : MonoBehaviour
     public List<PlayerData> cpuPlayerDataList;
     public List<GameObject> veichlePrefabList;
     public int defaultVeichleIndex = 0;
+    public int defaultRaceTrackIndex = 0;
 
     private SceneReferences sceneReferences;
     private List<PlayerData> inputPlayerDataList;
@@ -40,8 +41,9 @@ public class RaceSettings : MonoBehaviour
     {
         sceneReferences = SceneReferences.Instance;
         inputPlayerDataList = new List<PlayerData>();
+        selectedRaceTrack = sceneReferences.raceTrackSceneList[defaultRaceTrackIndex];
 
-        if(veichlePrefabList.Count == 0)
+        if (veichlePrefabList.Count == 0)
         {
             Debug.LogError("[RaceSettings] ERROR: veichlePrefabList is empty");
             return;
