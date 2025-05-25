@@ -1,5 +1,4 @@
 using TMPro;
-using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.UI;
 public class OptionsManager : MonoBehaviour

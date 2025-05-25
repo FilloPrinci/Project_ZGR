@@ -104,6 +104,19 @@ public class MainMenuManager : MonoBehaviour
 
     public void OnStart()
     {
-        SceneManager.LoadScene(sceneReferences.raceScene);
+        string raceTracSceneName = sceneReferences.raceScene;
+
+        RaceSettings currentRaceSettings = RaceSettings.Instance;
+        if (currentRaceSettings == null)
+        {
+            Debug.Log($"[MainMenuManager] : No RaceSettings Instance found, using editor settings");
+        }
+        else
+        {
+            Debug.Log($"[MainMenuManager] : RaceSettings Instance found, using player configured settings");
+
+            raceTracSceneName = currentRaceSettings.GetSelectedRaceTrack();
+        }
+        SceneManager.LoadScene(raceTracSceneName);
     }
 }

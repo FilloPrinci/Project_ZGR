@@ -9,11 +9,13 @@ public class RaceGUI : MonoBehaviour
     public GameObject currentPlayer;
     public GameObject resultsPanel;
     public TextMeshProUGUI resultsDataText;
+    public TextMeshProUGUI countdownText;
     public GameObject finishLabel;
     private RaceManager raceManager;
     private PlayerData currentPlayerData;
 
     private bool canShowResults = false;
+    private bool canShowCountdown = false;
 
     private string resultString;
 
@@ -73,6 +75,18 @@ public class RaceGUI : MonoBehaviour
 
         }
 
+    }
+
+    void ShowCountDown()
+    {
+        if (canShowCountdown) {
+
+
+        }
+        else
+        {
+            countdownText.text = "";
+        }
     }
 
     public void Finish()

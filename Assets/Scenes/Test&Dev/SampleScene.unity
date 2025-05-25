@@ -6499,6 +6499,14 @@ PrefabInstance:
       value: PresentationManger
       objectReference: {fileID: 0}
     - target: {fileID: 4816903088483754356, guid: 2a203aaf07b06584c8b59b9c4d75bced, type: 3}
+      propertyPath: globalRaceCanvas
+      value: 
+      objectReference: {fileID: 4009467445910232386, guid: b9693a04b09693943a7659ebd9a98124, type: 3}
+    - target: {fileID: 4816903088483754356, guid: 2a203aaf07b06584c8b59b9c4d75bced, type: 3}
+      propertyPath: globalRaceCanvasPrefab
+      value: 
+      objectReference: {fileID: 4009467445910232386, guid: b9693a04b09693943a7659ebd9a98124, type: 3}
+    - target: {fileID: 4816903088483754356, guid: 2a203aaf07b06584c8b59b9c4d75bced, type: 3}
       propertyPath: presentationPointList.Array.size
       value: 1
       objectReference: {fileID: 0}
