@@ -78,6 +78,8 @@ public class RaceManager : MonoBehaviour
     {
         currentLap = 0;
 
+        LoadRaceSettings();
+
         if (playerDataList.Count != 0)
         {
             if (checkPointList == null || checkPointList.Count == 0 )
@@ -139,6 +141,23 @@ public class RaceManager : MonoBehaviour
         }
     }
     
+    public void LoadRaceSettings()
+    {
+        RaceSettings currentRaceSettings = RaceSettings.Instance;
+        if (currentRaceSettings == null) {
+            Debug.Log($"[RaceManager] : No RaceSettings Instance found, using editor settings");
+        }
+        else
+        {
+            Debug.Log($"[RaceManager] : RaceSettings Instance found, using player configured settings");
+            maxLaps = currentRaceSettings.laps;
+            playerDataList = currentRaceSettings.GetAllPlayerDataList();
+            mode = currentRaceSettings.GetSelectedRaceMode();
+
+        }
+
+    }
+
     public GameObject InstantiatePlayer(PlayerData playerData, Transform spawnPoint) {
 
         playerPrefab.GetComponent<PlayerStructure>().data = playerData;

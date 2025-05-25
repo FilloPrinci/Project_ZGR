@@ -10,6 +10,7 @@ public class MainMenuManager : MonoBehaviour
     public GameObject playOptionsPanel;
     public GameObject singleplayerOptionsPanel;
     public GameObject multiplayerOptionsPanel;
+    public GameObject readyPanel;
 
     [Header("Selectable UI Elements")]
     public GameObject firstMainMenuSelected;
@@ -17,15 +18,17 @@ public class MainMenuManager : MonoBehaviour
     public GameObject firstPlayOptionSelected;
     public GameObject firstSingleplayerOptionSelected;
     public GameObject firstMultiplayerOptionSelected;
-    
-
-    public string playScene;
+    public GameObject firstReadySelected;
 
     private GameObject currentlyActivePanel;
+    private GameObject lastSelectedObject;
+
+    private SceneReferences sceneReferences;
 
     private void Start()
     {
         currentlyActivePanel = mainMenuPanel;
+        sceneReferences = SceneReferences.Instance;
     }
 
     void SwitchPanel(GameObject newPanel, GameObject newSelectedObject)
@@ -36,6 +39,11 @@ public class MainMenuManager : MonoBehaviour
 
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(newSelectedObject);
+    }
+
+    public void StartRace()
+    {
+        SceneManager.LoadScene(sceneReferences.raceScene);
     }
 
     public void OnPlayPressed()
@@ -77,5 +85,25 @@ public class MainMenuManager : MonoBehaviour
     public void OnBackFromPlayOptions()
     {
         SwitchPanel(mainMenuPanel, firstMainMenuSelected);
+    }
+
+    public void ShowGetReadyPanel()
+    {
+        lastSelectedObject = EventSystem.current.currentSelectedGameObject;
+        readyPanel.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(firstReadySelected);
+    }
+
+    public void HideGetReadyPanel()
+    {
+        readyPanel.SetActive(false);
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(lastSelectedObject);
+    }
+
+    public void OnStart()
+    {
+        SceneManager.LoadScene(sceneReferences.raceScene);
     }
 }
