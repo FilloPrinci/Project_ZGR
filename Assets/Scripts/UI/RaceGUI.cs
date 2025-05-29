@@ -12,6 +12,7 @@ public class RaceGUI : MonoBehaviour
     public TextMeshProUGUI countdownText;
     public GameObject finishLabel;
     private RaceManager raceManager;
+    private CountdownManager countdownManager;
     private PlayerData currentPlayerData;
 
     private bool canShowResults = false;
@@ -23,6 +24,7 @@ public class RaceGUI : MonoBehaviour
     void Start()
     {
         raceManager = RaceManager.Instance;
+        countdownManager = CountdownManager.Instance;
         currentPlayerData = currentPlayer.GetComponent<PlayerController>().playerData;
     }
 
@@ -37,6 +39,7 @@ public class RaceGUI : MonoBehaviour
     {
         ShowRaceDataLines();
         ShowRaceResults();
+        ShowCountDown();
     }
 
     void ShowRaceDataLines()
@@ -80,8 +83,22 @@ public class RaceGUI : MonoBehaviour
     void ShowCountDown()
     {
         if (canShowCountdown) {
-
-
+            if(countdownManager != null)
+            {
+                int count = countdownManager.count;
+                if (count > 0) {
+                    countdownText.text = count.ToString();
+                }
+                else
+                {
+                    countdownText.text = "GO";
+                }
+            }
+            else
+            {
+                countdownText.text = "CountdownManager not found";
+            }
+            
         }
         else
         {
@@ -101,6 +118,12 @@ public class RaceGUI : MonoBehaviour
         if (this.canShowResults) { 
             resultString = GetRaceResultLines();
         }
+    }
+
+    public void SetCanShowCountdown(bool canShowCountdown)
+    {
+        this.canShowCountdown = canShowCountdown;
+        countdownText.gameObject.SetActive(canShowCountdown);
     }
 
     string GetRaceResultLines()
