@@ -10,6 +10,7 @@ public class RaceGUI : MonoBehaviour
     public GameObject resultsPanel;
     public TextMeshProUGUI resultsDataText;
     public TextMeshProUGUI countdownText;
+    public TextMeshProUGUI speedometerText;
     public GameObject finishLabel;
     private RaceManager raceManager;
     private CountdownManager countdownManager;
@@ -40,6 +41,18 @@ public class RaceGUI : MonoBehaviour
         ShowRaceDataLines();
         ShowRaceResults();
         ShowCountDown();
+        UpdateSpeedometer();
+    }
+
+    void UpdateSpeedometer()
+    {
+        int speed = 0;
+        float? realSpeed = currentPlayer.GetComponent<Speedometer>().speedKmh;
+        if (realSpeed != null) {
+            speed = (int)realSpeed;
+        }
+        
+        speedometerText.text = speed.ToString();
     }
 
     void ShowRaceDataLines()
