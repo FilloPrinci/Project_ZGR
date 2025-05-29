@@ -10,11 +10,13 @@ GameObject:
   m_Component:
   - component: {fileID: 9079194581572045196}
   - component: {fileID: 8549143994444794164}
+  - component: {fileID: 7834776545252078584}
   - component: {fileID: 7242950170658541357}
   - component: {fileID: 3221191640071817225}
   - component: {fileID: 2753818033003460965}
   - component: {fileID: 1331134543065289110}
   - component: {fileID: 1649203415823695494}
+  - component: {fileID: 3130506183759778273}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -58,6 +60,31 @@ MonoBehaviour:
     veichlePrefab: {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
     playerInputIndex: 1
   playerCamera: {fileID: 0}
+--- !u!114 &7834776545252078584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4423116904176109930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 869ec3e6f72eb8f4fa007b29c7db7e6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSpeedMultiplier: 1
+  maxRotationSpeedMultiplier: 1
+  accelerationMultiplier: 1
+  rotationAccelerationMultiplier: 1
+  speedItemMultiplier: 0.25
+  accelerationItemMultiplier: 0.5
+  rotationSpeedItemMultiplier: 0.25
+  rotationAccelerationItemMultiplier: 0.5
+  turboMaxSpeedMultiplier: 0.5
+  turboAccelerationMultiplier: 1
+  bufferSize: 5
+  onTurbo: 0
+  turboDuration: 2
 --- !u!114 &7242950170658541357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75,9 +102,9 @@ MonoBehaviour:
     veichlePrefab: {fileID: 0}
     playerInputIndex: 0
   maxSpeed: 100
-  rotationMaxSpeed: 200
-  rotationAccelleration: 5
-  accelleration: 3
+  rotationMaxSpeed: 150
+  rotationAccelleration: 3
+  accelleration: 1
   bounceForce: 10
   autoBrakeDecelleration: 1
   brakeDecelleration: 2.5
@@ -163,3 +190,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc628e7541ef645428be1777acd47e97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3130506183759778273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4423116904176109930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d46cb4f9c0b6984ea2b4c93d5127353, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speedKmh: 0
