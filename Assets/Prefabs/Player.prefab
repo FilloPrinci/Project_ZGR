@@ -54,9 +54,9 @@ MonoBehaviour:
   feedBack: {fileID: 2753818033003460965}
   canvasPrefab: {fileID: 8332201281868801339, guid: 210cef8cc7b01664f8ebf5becf555cf9, type: 3}
   data:
-    name: 
-    veichlePrefab: {fileID: 0}
-    playerInputIndex: 0
+    name: Player2
+    veichlePrefab: {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
+    playerInputIndex: 1
   playerCamera: {fileID: 0}
 --- !u!114 &7242950170658541357
 MonoBehaviour:

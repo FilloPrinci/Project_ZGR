@@ -232,11 +232,26 @@ public class RaceManager : MonoBehaviour
             }
         }
 
-        // Skipping the countdown 
-        TriggerRaceEvent(RacePhaseEvent.RaceStart);
+        CountdownManager countdownManager = CountdownManager.Instance;
 
-        // start count down
+        if (countdownManager != null) {
+            // start count down
+            ShowCountdownForAllPlayers();
+            countdownManager.StartCountdown();
+        }
+        else
+        {
+            // Skipping the countdown 
+            TriggerRaceEvent(RacePhaseEvent.RaceStart);
+        }
+
     }
+
+    private void OnRaceStart()
+    {
+        HideCountdownForAllPlayers();
+    }
+
     private void ManageRace(RaceMode raceMode)
     {
         switch (raceMode)
@@ -355,6 +370,7 @@ public class RaceManager : MonoBehaviour
             case RacePhaseEvent.RaceStart:
                 // Start Race
                 currentRacePhase = RacePhase.Race;
+                OnRaceStart();
                 break;
             case RacePhaseEvent.RaceEnd:
                 currentRacePhase = RacePhase.Results;
@@ -374,8 +390,35 @@ public class RaceManager : MonoBehaviour
     {
         for (int i = 0; i < playerInstanceList.Count; i++)
         {
-            RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(playerInstanceList[i]);
-            playerRaceGui.SetCanShowResults(true);
+            if (playerInstanceList[i].GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
+            {
+                RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(playerInstanceList[i]);
+                playerRaceGui.SetCanShowResults(true);
+            }
+        }
+    }
+
+    public void ShowCountdownForAllPlayers()
+    {
+        for (int i = 0; i < playerInstanceList.Count; i++)
+        {
+            if (playerInstanceList[i].GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
+            {
+                RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(playerInstanceList[i]);
+                playerRaceGui.SetCanShowCountdown(true);
+            }
+        }
+    }
+
+    public void HideCountdownForAllPlayers()
+    {
+        for (int i = 0; i < playerInstanceList.Count; i++)
+        {
+            if (playerInstanceList[i].GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
+            {
+                RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(playerInstanceList[i]);
+                playerRaceGui.SetCanShowCountdown(false);
+            }
         }
     }
 

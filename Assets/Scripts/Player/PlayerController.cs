@@ -41,6 +41,9 @@ public class PlayerController : MonoBehaviour
     private Quaternion previousRotation;
     private Quaternion currentRotation;
 
+    private float steerInput = 0f;
+    private bool accelerateInput = false;
+
 
     private void Start()
     {
@@ -76,7 +79,18 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        feedBackManager.SetSteeringFeedBackAmount(playerInputHandler.SteerInput);
+        if(raceManager.GetCurrentRacePhase() == RacePhase.Race)
+        {
+            steerInput = playerInputHandler.SteerInput;
+            accelerateInput = playerInputHandler.AccelerateInput;
+        }
+        else
+        {
+            steerInput = 0;
+            accelerateInput = false;
+        }
+
+            feedBackManager.SetSteeringFeedBackAmount(steerInput);
     }
 
     private void LateUpdate()
@@ -147,7 +161,6 @@ public class PlayerController : MonoBehaviour
 
     void HandleSteering()
     {
-        float steerInput = playerInputHandler.SteerInput;
 
         if (steerInput != 0)
         {
@@ -165,7 +178,7 @@ public class PlayerController : MonoBehaviour
     {
         float currentSpeed = Speed(normalMovementVelocity);
 
-        if (playerInputHandler.AccelerateInput)
+        if (accelerateInput)
         {
             normalMovementVelocity = transform.forward * AccellerateSpeed(maxSpeed, accelleration, currentSpeed) * deltaTime;
         }
