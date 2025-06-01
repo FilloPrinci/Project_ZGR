@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
+    public float maxSpeedKmH = 300f;
+    public float maxRotationSpeed = 10f;
+    public float acceleration = 5f;
+    public float rotationAcceleration = 5f;
+
     public float maxSpeedMultiplier = 1;
     public float maxRotationSpeedMultiplier = 1;
     public float accelerationMultiplier = 1;
@@ -24,6 +29,16 @@ public class PlayerStats : MonoBehaviour
     public bool onTurbo = false;
     public int turboDuration = 2;
 
+    private float currentMaxSpeed;
+    private float currentRotationSpeed;
+    private float currentAcceleration;
+    private float currentRotationAcceleration;
+
+    public float CurrentMaxSpeed { get => currentMaxSpeed; set => currentMaxSpeed = value; }
+    public float CurrentRotationSpeed { get => currentRotationSpeed; set => currentRotationSpeed = value; }
+    public float CurrentAcceleration { get => currentAcceleration; set => currentAcceleration = value; }
+    public float CurrentRotationAcceleration { get => currentRotationAcceleration; set => currentRotationAcceleration = value; }
+
     void AddItemToBuffer(ItemType item)
     {
         itemBuffer.Enqueue(item);
@@ -39,6 +54,20 @@ public class PlayerStats : MonoBehaviour
         maxRotationSpeedMultiplier = 1;
         accelerationMultiplier = 1;
         rotationAccelerationMultiplier = 1;
+    }
+
+    void ApplyStats()
+    {
+        currentMaxSpeed = maxSpeedKmH / 3.6f * maxSpeedMultiplier;
+        currentAcceleration = acceleration * accelerationMultiplier;
+        currentRotationSpeed = maxRotationSpeed * maxRotationSpeedMultiplier;
+        currentRotationAcceleration = rotationAcceleration * rotationAccelerationMultiplier;
+    }
+
+    private void Start()
+    {
+        UpdateStats();
+        ApplyStats();
     }
 
     void UpdateStats()
@@ -83,6 +112,8 @@ public class PlayerStats : MonoBehaviour
         accelerationMultiplier += accelerationTotalMultiplier;
         maxRotationSpeedMultiplier += rotationSpeedTotalMultiplier;
         rotationAccelerationMultiplier += rotationAccelerationTotalMultiplier;
+
+        ApplyStats();
     }
 
     public void OnItemAcquired(ItemType type)
@@ -101,8 +132,8 @@ public class PlayerStats : MonoBehaviour
 
     private IEnumerator TurboCoroutine()
     {
-        UpdateStats();
         onTurbo = true;
+        UpdateStats();
         yield return new WaitForSeconds(turboDuration);
         onTurbo = false;
         UpdateStats();

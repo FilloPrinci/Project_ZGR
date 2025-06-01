@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour
 {
     public PlayerData playerData;
     private GameObject veichleModelInstance;
+    public PlayerStats playerStats;
+
 
     public float maxSpeed = 300f;
     public float rotationMaxSpeed = 10;
@@ -105,6 +107,14 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (playerStats != null)
+        {
+            maxSpeed = playerStats.CurrentMaxSpeed;
+            accelleration = playerStats.CurrentAcceleration;
+            rotationMaxSpeed = playerStats.CurrentRotationSpeed;
+            rotationAccelleration = playerStats.CurrentRotationAcceleration;
+        }
+
         deltaTime = Time.fixedDeltaTime;
 
         HandleSteering();
@@ -244,7 +254,7 @@ public class PlayerController : MonoBehaviour
     {
         bool handleCollision = true;
 
-        if (other.tag.Equals("Checkpoint"))
+        if (other.tag.Equals("Checkpoint") || other.tag.Equals("Item"))
         {
             handleCollision = false;
         }
@@ -262,6 +272,18 @@ public class PlayerController : MonoBehaviour
         {
             // Checkpoint reached
             raceManager.OnCheckpoint(playerData.name, other.gameObject);
+        }else if (other.tag.Equals("Item"))
+        {
+            ItemData itemData = other.GetComponent<ItemData>();
+            if (playerStats != null && itemData != null) {
+                if (itemData.Type == ItemType.Turbo) {
+                    playerStats.StartTurbo();
+                }
+                else
+                {
+                    playerStats.OnItemAcquired(itemData.Type);
+                }
+            }
         }
         
     }
