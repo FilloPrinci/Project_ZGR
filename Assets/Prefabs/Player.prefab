@@ -72,6 +72,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 869ec3e6f72eb8f4fa007b29c7db7e6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitDamage: 15
+  energyRecharge: 10
   maxSpeedKmH: 300
   maxRotationSpeed: 150
   acceleration: 3
@@ -106,6 +108,7 @@ MonoBehaviour:
     veichlePrefab: {fileID: 0}
     playerInputIndex: 0
   playerStats: {fileID: 7834776545252078584}
+  hoverHeight: 0.5
   maxSpeed: 100
   rotationMaxSpeed: 150
   rotationAccelleration: 3

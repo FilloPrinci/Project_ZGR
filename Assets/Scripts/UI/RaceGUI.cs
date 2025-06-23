@@ -12,9 +12,12 @@ public class RaceGUI : MonoBehaviour
     public TextMeshProUGUI countdownText;
     public TextMeshProUGUI speedometerText;
     public GameObject finishLabel;
+    public RectTransform energyBar;
+
     private RaceManager raceManager;
     private CountdownManager countdownManager;
     private PlayerData currentPlayerData;
+    private PlayerStats currentPlayerStats;
 
     private bool canShowResults = false;
     private bool canShowCountdown = false;
@@ -27,6 +30,7 @@ public class RaceGUI : MonoBehaviour
         raceManager = RaceManager.Instance;
         countdownManager = CountdownManager.Instance;
         currentPlayerData = currentPlayer.GetComponent<PlayerController>().playerData;
+        currentPlayerStats = currentPlayer.GetComponent<PlayerController>().playerStats;
     }
 
     // Update is called once per frame
@@ -42,6 +46,7 @@ public class RaceGUI : MonoBehaviour
         ShowRaceResults();
         ShowCountDown();
         UpdateSpeedometer();
+        ShowEnergy();
     }
 
     void UpdateSpeedometer()
@@ -53,6 +58,21 @@ public class RaceGUI : MonoBehaviour
         }
         
         speedometerText.text = speed.ToString();
+    }
+
+    public void ShowEnergy()
+    {
+        if (currentPlayerStats != null) {
+            int currentEnergyValue = currentPlayerStats.Energy;
+            float clampedEnergyValue = (float)currentEnergyValue / 100f;
+            Vector2 anchorMax = energyBar.anchorMax;
+            anchorMax.x = clampedEnergyValue;
+            energyBar.anchorMax = anchorMax;
+        }
+        else
+        {
+            Debug.LogError("currentPlayerStats is null!");
+        }
     }
 
     void ShowRaceDataLines()
