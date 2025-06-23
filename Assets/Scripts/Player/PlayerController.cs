@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     private GameObject veichleModelInstance;
     public PlayerStats playerStats;
 
+    public float hoverHeight = 0.5f;
 
     public float maxSpeed = 300f;
     public float rotationMaxSpeed = 10;
@@ -231,7 +232,6 @@ public class PlayerController : MonoBehaviour
 
     void ApplyGravityAndHover()
     {
-        float hoverHeight = 0.75f;
         float gravityFallbackSpeed = 50f;
 
         RaycastHit hit;
@@ -268,7 +268,13 @@ public class PlayerController : MonoBehaviour
         {
             collisionDetected = true;
             lastCollisionDirection = calculateCollisionDirection(other);
-        }else if (other.tag.Equals("Checkpoint"))
+            // recive damage
+            if (playerStats != null)
+            {
+                playerStats.OnDamage();
+            }
+        }
+        else if (other.tag.Equals("Checkpoint"))
         {
             // Checkpoint reached
             raceManager.OnCheckpoint(playerData.name, other.gameObject);

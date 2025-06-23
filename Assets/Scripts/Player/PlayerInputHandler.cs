@@ -25,7 +25,6 @@ public class PlayerInputHandler : MonoBehaviour
         if (context.performed || context.canceled)
         {
             float value = context.ReadValue<float>();
-            Debug.Log("Steer: " + value);
             moveInput.x = value;
         }
     }

@@ -6,7 +6,8 @@ public enum ItemType
     Turbo,
     UpgradeSpeed,
     UpgradeAcceleration,
-    UpgradeManeuverability
+    UpgradeManeuverability,
+    EnergyRecharge
 }
 
 public class ItemData : MonoBehaviour

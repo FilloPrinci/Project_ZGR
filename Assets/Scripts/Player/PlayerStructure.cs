@@ -1,5 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public enum CameraMode { 
     SinglePlayer,
@@ -44,12 +45,21 @@ public class PlayerStructure : MonoBehaviour
     GameObject SpawnCamera(Transform anchor) {
         GameObject cameraObject = new GameObject(data.name + "Camera");
         Camera cam = cameraObject.AddComponent<Camera>();
-        cam.AddComponent<CameraController>();
-        cam.GetComponent<CameraController>().cameraDesiredPosition = anchor;
+
+        // URP settings
+        var cameraData = cameraObject.AddComponent<UniversalAdditionalCameraData>();
+        cameraData.renderPostProcessing = true;
+        cameraData.antialiasing = AntialiasingMode.FastApproximateAntialiasing;
+
+        // Posizionamento
         cameraObject.transform.position = anchor.position;
         cameraObject.transform.rotation = anchor.rotation;
-        cameraObject.SetActive(false);
 
+        // Controller
+        var controller = cameraObject.AddComponent<CameraController>();
+        controller.cameraDesiredPosition = anchor;
+
+        cameraObject.SetActive(false);
         return cameraObject;
     }
 

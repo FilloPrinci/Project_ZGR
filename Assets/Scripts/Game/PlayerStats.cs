@@ -2,9 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class PlayerStats : MonoBehaviour
 {
+    public int hitDamage = 20;
+    public int energyRecharge = 5;
+
     public float maxSpeedKmH = 300f;
     public float maxRotationSpeed = 10f;
     public float acceleration = 5f;
@@ -34,10 +38,13 @@ public class PlayerStats : MonoBehaviour
     private float currentAcceleration;
     private float currentRotationAcceleration;
 
+    private int energy = 0;
+
     public float CurrentMaxSpeed { get => currentMaxSpeed; set => currentMaxSpeed = value; }
     public float CurrentRotationSpeed { get => currentRotationSpeed; set => currentRotationSpeed = value; }
     public float CurrentAcceleration { get => currentAcceleration; set => currentAcceleration = value; }
     public float CurrentRotationAcceleration { get => currentRotationAcceleration; set => currentRotationAcceleration = value; }
+    public int Energy { get => energy; set => energy = value; }
 
     void AddItemToBuffer(ItemType item)
     {
@@ -54,6 +61,26 @@ public class PlayerStats : MonoBehaviour
         maxRotationSpeedMultiplier = 1;
         accelerationMultiplier = 1;
         rotationAccelerationMultiplier = 1;
+    }
+
+    void UpdateEnergy(int value)
+    {
+        Debug.Log("Updating energy by " + value);
+
+        int energyResult = energy + value;
+
+        if (energyResult < 0)
+        {
+            energy = 0;
+        }else if (energyResult > 100)
+        {
+            energy = 100;
+        }
+        else{
+            energy = energyResult;
+        }
+
+        Debug.Log("Current energy: " + energy);
     }
 
     void ApplyStats()
@@ -122,12 +149,23 @@ public class PlayerStats : MonoBehaviour
         {
             AddItemToBuffer(type);
             UpdateStats();
+        }else if (type == ItemType.EnergyRecharge)
+        {
+            Debug.Log("Energy acquired");
+            UpdateEnergy(energyRecharge);
+            UpdateStats();
         }
     }
 
     public void StartTurbo()
     {
         StartCoroutine(TurboCoroutine());
+    }
+
+    public void OnDamage()
+    {
+        UpdateEnergy(-hitDamage);
+        UpdateStats();
     }
 
     private IEnumerator TurboCoroutine()
