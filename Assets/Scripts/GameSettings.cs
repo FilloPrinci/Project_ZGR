@@ -13,6 +13,7 @@ public enum FPSLimit
     Limit_30,
     Limit_40,
     Limit_60,
+    Limit_90,
     Limit_120
 }
 
@@ -98,17 +99,26 @@ public class GameSettings : MonoBehaviour
             {
                 case FPSLimit.None:
                     Application.targetFrameRate = -1; // No Limit
+                    Time.maximumDeltaTime = 1f / 120;
                     break;
                 case FPSLimit.Limit_30:
+                    Time.maximumDeltaTime =  1f / 30;
                     Application.targetFrameRate = 30;
                     break;
                 case FPSLimit.Limit_40:
+                    Time.maximumDeltaTime = 1f / 40;
                     Application.targetFrameRate = 40;
                     break;
                 case FPSLimit.Limit_60:
+                    Time.maximumDeltaTime = 1f / 60;
                     Application.targetFrameRate = 60;
                     break;
+                case FPSLimit.Limit_90:
+                    Time.maximumDeltaTime = 1f / 90;
+                    Application.targetFrameRate = 90;
+                    break;
                 case FPSLimit.Limit_120:
+                    Time.maximumDeltaTime = 1f / 120;
                     Application.targetFrameRate = 120;
                     break;
             }
