@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Checkpoint
   - Item
+  - Zone
   layers:
   - Default
   - TransparentFX
