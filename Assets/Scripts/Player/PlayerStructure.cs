@@ -34,6 +34,7 @@ public class PlayerStructure : MonoBehaviour
         canvasInstance.GetComponent<RaceGUI>().currentPlayer = gameObject;
         controller.veichlePivot = pivotInstance.transform;
         controller.playerData = data;
+        controller.playerStructure = this;
 
         playerCamera = SpawnCamera(pivotInstance.GetComponent<VeichleAnchors>().cameraPivot);
         feedBack.playerCamera = playerCamera;
@@ -122,6 +123,42 @@ public class PlayerStructure : MonoBehaviour
 
         playerCamera.SetActive(true);
         canvasInstance.SetActive(true);
+    }
+
+    public void UpdatePlayerGUI(PlayerStats playerStats)
+    {
+        ItemType[] items = playerStats.itemBuffer.ToArray();
+
+        for (int i = 0; i< items.Length; i++)
+        {
+            ItemType item = items[i];
+
+            int energyRequired = (i + 1) * 20;
+
+            if (playerStats.Energy >= energyRequired)
+            {
+                canvasInstance.GetComponent<RaceGUI>().SetItemPanelActive(i, true);
+            }
+            else
+            {
+                canvasInstance.GetComponent<RaceGUI>().SetItemPanelActive(i, false);
+            }
+
+            if (item == ItemType.UpgradeSpeed)
+            {
+                canvasInstance.GetComponent<RaceGUI>().SetItemPanelImage(i, 0);
+            }
+            else if (item == ItemType.UpgradeAcceleration)
+            {
+                canvasInstance.GetComponent<RaceGUI>().SetItemPanelImage(i, 1);
+            }
+            else if (item == ItemType.UpgradeManeuverability)
+            {
+                canvasInstance.GetComponent<RaceGUI>().SetItemPanelImage(i, 2);
+            }
+        }
+
+        
     }
 
     // Update is called once per frame

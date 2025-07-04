@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using System.Collections.Specialized;
 using System.Security.Cryptography;
 using Unity.VisualScripting;
@@ -8,6 +9,7 @@ public class PlayerController : MonoBehaviour
     public PlayerData playerData;
     private GameObject veichleModelInstance;
     public PlayerStats playerStats;
+    public PlayerStructure playerStructure;
 
     public float hoverHeight = 0.5f;
 
@@ -254,7 +256,7 @@ public class PlayerController : MonoBehaviour
     {
         bool handleCollision = true;
 
-        if (other.tag.Equals("Checkpoint") || other.tag.Equals("Item"))
+        if (other.tag.Equals("Checkpoint") || other.tag.Equals("Item") || other.tag.Equals("Zone"))
         {
             handleCollision = false;
         }
@@ -272,6 +274,10 @@ public class PlayerController : MonoBehaviour
             if (playerStats != null)
             {
                 playerStats.OnDamage();
+                if (playerStructure != null)
+                {
+                    playerStructure.UpdatePlayerGUI(playerStats);
+                }
             }
         }
         else if (other.tag.Equals("Checkpoint"))
@@ -288,7 +294,15 @@ public class PlayerController : MonoBehaviour
                 else
                 {
                     playerStats.OnItemAcquired(itemData.Type);
+                    if (playerStructure != null) {
+                        playerStructure.UpdatePlayerGUI(playerStats);
+                    }
+
                 }
+            }
+            else
+            {
+                Debug.LogError("access to item data failed");
             }
         }
         
@@ -300,6 +314,27 @@ public class PlayerController : MonoBehaviour
         {
             collisionDetected = true;
             lastCollisionDirection = calculateCollisionDirection(other);
+        }
+        else if (other.tag.Equals("Zone"))
+        {
+            ZoneData zoneData = other.GetComponent<ZoneData>();
+
+            if (playerStats != null && zoneData != null)
+            {
+                if(zoneData.Type == ZoneType.Recharge)
+                {
+                    float currentSpeed = Speed(normalMovementVelocity);
+                    playerStats.OnEnergyRechargeBySpeed(deltaTime, currentSpeed);
+                    if (playerStructure != null)
+                    {
+                        playerStructure.UpdatePlayerGUI(playerStats);
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogError("access to zoneData failed");
+            }
         }
     }
 

@@ -11,6 +11,7 @@ public enum FPSLimit
 {
     None,
     Limit_30,
+    Limit_40,
     Limit_60,
     Limit_120
 }
@@ -30,8 +31,8 @@ public class GameSettings : MonoBehaviour
 
     public bool showFPS = false;
     public FPSLimit fPSLimit;
-    // TODO: to be implemented
     public bool useV_Sync = false;
+
     // TODO: to be implemented
     //public Resolution resolution = Resolution.1920_1080;
     // TODO: to be implemented
@@ -56,7 +57,7 @@ public class GameSettings : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        ApplySettings();
     }
 
     // Update is called once per frame
@@ -83,5 +84,40 @@ public class GameSettings : MonoBehaviour
         showFPS = PlayerPrefs.GetInt("ShowFPS", 0) == 1;
         fPSLimit = (FPSLimit)PlayerPrefs.GetInt("FPSLimit", 0);
         useV_Sync = PlayerPrefs.GetInt("UseVSync", 0) == 1;
+    }
+
+    public void ApplySettings()
+    {
+        // Apply V-Sync
+        QualitySettings.vSyncCount = useV_Sync ? 1 : 0;
+
+        // Apply FPS limit only if V-Sync is disabled
+        if (!useV_Sync)
+        {
+            switch (fPSLimit)
+            {
+                case FPSLimit.None:
+                    Application.targetFrameRate = -1; // No Limit
+                    break;
+                case FPSLimit.Limit_30:
+                    Application.targetFrameRate = 30;
+                    break;
+                case FPSLimit.Limit_40:
+                    Application.targetFrameRate = 40;
+                    break;
+                case FPSLimit.Limit_60:
+                    Application.targetFrameRate = 60;
+                    break;
+                case FPSLimit.Limit_120:
+                    Application.targetFrameRate = 120;
+                    break;
+            }
+        }
+        else
+        {
+            Application.targetFrameRate = -1;
+        }
+
+        Debug.Log($"Settings Applied: VSync = {QualitySettings.vSyncCount}, Target FPS = {Application.targetFrameRate}");
     }
 }

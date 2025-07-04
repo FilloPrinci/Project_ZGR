@@ -8,6 +8,7 @@ public class PlayerStats : MonoBehaviour
 {
     public int hitDamage = 20;
     public int energyRecharge = 5;
+    public float energyZoneRecharge = 0.01f;
 
     public float maxSpeedKmH = 300f;
     public float maxRotationSpeed = 10f;
@@ -38,13 +39,13 @@ public class PlayerStats : MonoBehaviour
     private float currentAcceleration;
     private float currentRotationAcceleration;
 
-    private int energy = 0;
+    private float energy = 0;
 
     public float CurrentMaxSpeed { get => currentMaxSpeed; set => currentMaxSpeed = value; }
     public float CurrentRotationSpeed { get => currentRotationSpeed; set => currentRotationSpeed = value; }
     public float CurrentAcceleration { get => currentAcceleration; set => currentAcceleration = value; }
     public float CurrentRotationAcceleration { get => currentRotationAcceleration; set => currentRotationAcceleration = value; }
-    public int Energy { get => energy; set => energy = value; }
+    public float Energy { get => energy; set => energy = value; }
 
     void AddItemToBuffer(ItemType item)
     {
@@ -63,11 +64,11 @@ public class PlayerStats : MonoBehaviour
         rotationAccelerationMultiplier = 1;
     }
 
-    void UpdateEnergy(int value)
+    void UpdateEnergy(float value)
     {
         Debug.Log("Updating energy by " + value);
 
-        int energyResult = energy + value;
+        float energyResult = energy + value;
 
         if (energyResult < 0)
         {
@@ -114,17 +115,23 @@ public class PlayerStats : MonoBehaviour
         int accUpgradeAmount = 0;
         int spdUpgradeAmount = 0;
 
-        foreach (ItemType item in itemBuffer)
+        ItemType[] items = itemBuffer.ToArray();
+
+        for (int i = 0; i < items.Length; i++)
         {
-            if (item == ItemType.UpgradeSpeed)
+            ItemType item = items[i];
+
+            int energyRequired = (i + 1) * 20;
+
+            if (item == ItemType.UpgradeSpeed && energy >= energyRequired)
             {
                 spdUpgradeAmount++;
             }
-            else if (item == ItemType.UpgradeAcceleration)
+            else if (item == ItemType.UpgradeAcceleration && energy >= energyRequired)
             {
                 accUpgradeAmount++;
             }
-            else if (item == ItemType.UpgradeManeuverability)
+            else if (item == ItemType.UpgradeManeuverability && energy >= energyRequired)
             {
                 manUpgradeAmount++;
             }
@@ -155,6 +162,14 @@ public class PlayerStats : MonoBehaviour
             UpdateEnergy(energyRecharge);
             UpdateStats();
         }
+    }
+
+    public void OnEnergyRechargeBySpeed(float deltaTime, float currentSpeed)
+    {
+        Debug.Log("Recharging energy...");
+        float energyToCharge = energyZoneRecharge * currentSpeed * deltaTime;
+        UpdateEnergy(energyToCharge);
+        UpdateStats();
     }
 
     public void StartTurbo()

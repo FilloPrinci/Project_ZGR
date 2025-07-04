@@ -5,6 +5,7 @@ public class OptionsManager : MonoBehaviour
 {
     public TMP_Dropdown inputSourceDropdown;
     public Toggle showFPSToggle;
+    public Toggle useVsyncToggle;
 
     private GameSettings gameSettings;
     
@@ -23,6 +24,7 @@ public class OptionsManager : MonoBehaviour
             inputSourceDropdown.value = (int)gameSettings.inputMode;
             inputSourceDropdown.RefreshShownValue();
             showFPSToggle.isOn = gameSettings.showFPS;
+            useVsyncToggle.isOn = gameSettings.useV_Sync;
         }
     }
 
@@ -42,13 +44,25 @@ public class OptionsManager : MonoBehaviour
         gameSettings.showFPS = show;
     }
 
+    public void UseVSync(bool vSync)
+    {
+        gameSettings.useV_Sync = vSync;
+    }
+
+    public void SetFPSCap(int fpsCap)
+    {
+        gameSettings.fPSLimit = (FPSLimit)fpsCap;
+    }
+
     public void OnApply()
     {
         gameSettings.SaveSettings();
+        gameSettings.ApplySettings();
     }
 
     public void OnCancel()
     {
         gameSettings.LoadSettings();
+        gameSettings.ApplySettings();
     }
 }

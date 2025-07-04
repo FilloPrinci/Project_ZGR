@@ -2,6 +2,7 @@ using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RaceGUI : MonoBehaviour
 {
@@ -13,6 +14,10 @@ public class RaceGUI : MonoBehaviour
     public TextMeshProUGUI speedometerText;
     public GameObject finishLabel;
     public RectTransform energyBar;
+
+    public GameObject[] itemPanelList;
+    public GameObject[] itemPanelImageList;
+    public List<Sprite> availableSprites;
 
     private RaceManager raceManager;
     private CountdownManager countdownManager;
@@ -63,8 +68,8 @@ public class RaceGUI : MonoBehaviour
     public void ShowEnergy()
     {
         if (currentPlayerStats != null) {
-            int currentEnergyValue = currentPlayerStats.Energy;
-            float clampedEnergyValue = (float)currentEnergyValue / 100f;
+            float currentEnergyValue = currentPlayerStats.Energy;
+            float clampedEnergyValue = currentEnergyValue / 100f;
             Vector2 anchorMax = energyBar.anchorMax;
             anchorMax.x = clampedEnergyValue;
             energyBar.anchorMax = anchorMax;
@@ -183,5 +188,55 @@ public class RaceGUI : MonoBehaviour
         }
 
         return resultLinesString;
+    }
+
+    public void SetItemPanelActive(int panelIndex, bool active)
+    {
+        if (panelIndex < 0 || panelIndex >= itemPanelList.Length)
+        {
+            Debug.LogWarning("ItemPanel index not found");
+            return;
+        }
+
+        Image imageComponent = itemPanelList[panelIndex].GetComponent<Image>();
+        if (imageComponent != null)
+        {
+            if (active) {
+                imageComponent.color = Color.white;
+            }
+            else
+            {
+                imageComponent.color = Color.gray;
+            }            
+        }
+        else
+        {
+            Debug.LogWarning("No Image Component found for panel");
+        }
+    }
+
+    public void SetItemPanelImage(int panelIndex, int spriteIndex)
+    {
+        if (panelIndex < 0 || panelIndex >= itemPanelImageList.Length)
+        {
+            Debug.LogWarning("PanelImage index not found");
+            return;
+        }
+
+        if (spriteIndex < 0 || spriteIndex >= availableSprites.Count)
+        {
+            Debug.LogWarning("sprite index not valid");
+            return;
+        }
+
+        Image imageComponent = itemPanelImageList[panelIndex].GetComponent<Image>();
+        if (imageComponent != null)
+        {
+            imageComponent.sprite = availableSprites[spriteIndex];
+        }
+        else
+        {
+            Debug.LogWarning("Nessun componente Image trovato nel pannello.");
+        }
     }
 }

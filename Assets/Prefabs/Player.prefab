@@ -74,18 +74,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitDamage: 15
   energyRecharge: 10
-  maxSpeedKmH: 300
-  maxRotationSpeed: 150
-  acceleration: 3
+  energyZoneRecharge: 0.2
+  maxSpeedKmH: 320
+  maxRotationSpeed: 160
+  acceleration: 0.5
   rotationAcceleration: 4
   maxSpeedMultiplier: 1
   maxRotationSpeedMultiplier: 1
   accelerationMultiplier: 1
   rotationAccelerationMultiplier: 1
-  speedItemMultiplier: 0.25
+  speedItemMultiplier: 0.1
   accelerationItemMultiplier: 0.5
-  rotationSpeedItemMultiplier: 0.25
-  rotationAccelerationItemMultiplier: 0.5
+  rotationSpeedItemMultiplier: 0.1
+  rotationAccelerationItemMultiplier: 0.25
   turboMaxSpeedMultiplier: 0.5
   turboAccelerationMultiplier: 1
   bufferSize: 5
@@ -108,6 +109,7 @@ MonoBehaviour:
     veichlePrefab: {fileID: 0}
     playerInputIndex: 0
   playerStats: {fileID: 7834776545252078584}
+  playerStructure: {fileID: 0}
   hoverHeight: 0.5
   maxSpeed: 100
   rotationMaxSpeed: 150
@@ -116,7 +118,7 @@ MonoBehaviour:
   bounceForce: 10
   autoBrakeDecelleration: 1
   brakeDecelleration: 2.5
-  collisionBounceDecelleration: 5
+  collisionBounceDecelleration: 7.5
   hoverRaycastMask:
     serializedVersion: 2
     m_Bits: 3
