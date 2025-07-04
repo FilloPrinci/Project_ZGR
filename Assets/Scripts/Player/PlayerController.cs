@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour
 
     private float steerInput = 0f;
     private bool accelerateInput = false;
-
+    private float currentSpeed = 0f;
 
     private void Start()
     {
@@ -73,8 +73,6 @@ public class PlayerController : MonoBehaviour
             currentRotation = transform.rotation;
             previousRotation = currentRotation;
 
-
-
             veichlePivot.position = transform.position;
             veichlePivot.rotation = transform.rotation;
         }
@@ -84,7 +82,10 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if(raceManager.GetCurrentRacePhase() == RacePhase.Race)
+
+        deltaTime = Time.deltaTime;
+
+        if (raceManager.GetCurrentRacePhase() == RacePhase.Race)
         {
             steerInput = playerInputHandler.SteerInput;
             accelerateInput = playerInputHandler.AccelerateInput;
@@ -95,21 +96,8 @@ public class PlayerController : MonoBehaviour
             accelerateInput = false;
         }
 
-            feedBackManager.SetSteeringFeedBackAmount(steerInput);
-    }
+        feedBackManager.SetSteeringFeedBackAmount(steerInput);
 
-    private void LateUpdate()
-    {
-        // Calculate interpolation factor based on physics update lag
-        float interpolationFactor = (Time.time - Time.fixedTime) / Time.fixedDeltaTime;
-
-        // Smoothly interpolate the visual model between last and current position/rotation
-        veichlePivot.position = Vector3.Lerp(previousPosition, currentPosition, interpolationFactor);
-        veichlePivot.rotation = Quaternion.Slerp(previousRotation, currentRotation, interpolationFactor);
-    }
-
-    private void FixedUpdate()
-    {
         if (playerStats != null)
         {
             maxSpeed = playerStats.CurrentMaxSpeed;
@@ -118,24 +106,35 @@ public class PlayerController : MonoBehaviour
             rotationAccelleration = playerStats.CurrentRotationAcceleration;
         }
 
-        deltaTime = Time.fixedDeltaTime;
+        
 
+    }
+
+    private void LateUpdate()
+    {
+        //Calculate interpolation factor based on physics update lag
+        float interpolationFactor = (Time.time - deltaTime) / deltaTime;
+        //
+        //// Smoothly interpolate the visual model between last and current position/rotation
+        //veichlePivot.position = Vector3.Lerp(previousPosition, currentPosition, interpolationFactor);
+        //veichlePivot.rotation = Quaternion.Slerp(previousRotation, currentRotation, interpolationFactor);
         HandleSteering();
 
-        if (!collisionDetected)
+        if (collisionDetected)
         {
+            Collide();
+        }
+        else
+        {
+
             if (collisionVelocity != Vector3.zero)
             {
                 Bounce();
             }
             HandleMovement();
         }
-        else
-        {
-            Collide();
-        }
 
-        transform.position += (normalMovementVelocity + collisionVelocity);
+        transform.position += ((normalMovementVelocity + collisionVelocity) * deltaTime);
 
         ApplyGravityAndHover();
 
@@ -149,12 +148,16 @@ public class PlayerController : MonoBehaviour
         {
             Debug.DrawRay(transform.position, lastCollisionDirection * 3f, Color.red, 0, false);
         }
+
+        veichlePivot.position = currentPosition;
+        veichlePivot.rotation = Quaternion.Slerp(previousRotation, currentRotation, interpolationFactor);
+
     }
 
     void Bounce()
     {
         float currentCollisionSpeed = Speed(collisionVelocity);
-        collisionVelocity = collisionVelocity.normalized * AccellerateSpeed(0, collisionBounceDecelleration, currentCollisionSpeed) * deltaTime;
+        collisionVelocity = collisionVelocity.normalized * AccellerateSpeed(0, collisionBounceDecelleration, currentCollisionSpeed);
     }
 
     void Collide()
@@ -166,7 +169,7 @@ public class PlayerController : MonoBehaviour
             float currentSpeed = Speed(normalMovementVelocity);
             float finalBounceForce = Mathf.Max(currentSpeed, bounceForce);
 
-            collisionVelocity = lastCollisionDirection.normalized * finalBounceForce * deltaTime;
+            collisionVelocity = lastCollisionDirection.normalized * finalBounceForce;
         }
 
         feedBackManager.TriggerCameraShake();
@@ -189,16 +192,18 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
-        float currentSpeed = Speed(normalMovementVelocity);
+        currentSpeed = normalMovementVelocity.magnitude;
 
         if (accelerateInput)
         {
-            normalMovementVelocity = transform.forward * AccellerateSpeed(maxSpeed, accelleration, currentSpeed) * deltaTime;
+            currentSpeed = AccellerateSpeed(maxSpeed, accelleration, currentSpeed);
         }
         else
         {
-            normalMovementVelocity = transform.forward * AccellerateSpeed(0, autoBrakeDecelleration, currentSpeed) * deltaTime;
+            currentSpeed = AccellerateSpeed(0, autoBrakeDecelleration, currentSpeed);
         }
+
+        normalMovementVelocity = transform.forward * currentSpeed;
     }
 
     float AccellerateRotationSpeed(float targetSpeed, float accelleration)
@@ -343,7 +348,6 @@ public class PlayerController : MonoBehaviour
         if (ShouldHandleCollision(other))
         {
             collisionDetected = false;
-            lastCollisionDirection = Vector3.zero;
         }
     }
 
@@ -381,11 +385,16 @@ public class PlayerController : MonoBehaviour
 
     float Speed(Vector3 vector)
     {
-        return vector.magnitude / deltaTime;
+        return vector.magnitude;
     }
 
     public GameObject GetVeichleModel()
     {
         return veichleModelInstance;
+    }
+    
+    public float GetCurrentSpeedKMH()
+    {
+        return currentSpeed * 3.6f; // Convert m/s to km/h
     }
 }

@@ -47,6 +47,11 @@ public class PlayerStats : MonoBehaviour
     public float CurrentRotationAcceleration { get => currentRotationAcceleration; set => currentRotationAcceleration = value; }
     public float Energy { get => energy; set => energy = value; }
 
+    private void Start()
+    {
+        UpdateStats();
+    }
+
     void AddItemToBuffer(ItemType item)
     {
         itemBuffer.Enqueue(item);
@@ -92,11 +97,7 @@ public class PlayerStats : MonoBehaviour
         currentRotationAcceleration = rotationAcceleration * rotationAccelerationMultiplier;
     }
 
-    private void Start()
-    {
-        UpdateStats();
-        ApplyStats();
-    }
+    
 
     void UpdateStats()
     {

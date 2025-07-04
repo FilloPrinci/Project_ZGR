@@ -57,7 +57,7 @@ public class RaceGUI : MonoBehaviour
     void UpdateSpeedometer()
     {
         int speed = 0;
-        float? realSpeed = currentPlayer.GetComponent<Speedometer>().speedKmh;
+        float? realSpeed = currentPlayer.GetComponent<PlayerController>().GetCurrentSpeedKMH();
         if (realSpeed != null) {
             speed = (int)realSpeed;
         }

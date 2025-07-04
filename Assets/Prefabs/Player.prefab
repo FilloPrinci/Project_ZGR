@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 2753818033003460965}
   - component: {fileID: 1331134543065289110}
   - component: {fileID: 1649203415823695494}
-  - component: {fileID: 3130506183759778273}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -75,7 +74,7 @@ MonoBehaviour:
   hitDamage: 15
   energyRecharge: 10
   energyZoneRecharge: 0.2
-  maxSpeedKmH: 320
+  maxSpeedKmH: 600
   maxRotationSpeed: 160
   acceleration: 0.5
   rotationAcceleration: 4
@@ -115,7 +114,7 @@ MonoBehaviour:
   rotationMaxSpeed: 150
   rotationAccelleration: 3
   accelleration: 1
-  bounceForce: 10
+  bounceForce: 50
   autoBrakeDecelleration: 1
   brakeDecelleration: 2.5
   collisionBounceDecelleration: 7.5
@@ -200,16 +199,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc628e7541ef645428be1777acd47e97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3130506183759778273
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4423116904176109930}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d46cb4f9c0b6984ea2b4c93d5127353, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speedKmh: 0
