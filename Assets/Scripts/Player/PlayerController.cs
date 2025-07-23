@@ -25,6 +25,11 @@ public class PlayerController : MonoBehaviour
 
     public Transform veichlePivot;
 
+    [SerializeField]
+    public float pivotRotationDecay = 10f;
+    [SerializeField]
+    public  float pivotPositionDecay = 10f;
+
     private GlobalInputManager globalInputManager;
     private PlayerInputHandler playerInputHandler;
     private RaceManager raceManager;
@@ -100,12 +105,7 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
-        // Calculate interpolation factor based on physics update lag
-        float interpolationFactor = (Time.time - Time.fixedTime) / Time.fixedDeltaTime;
-
-        // Smoothly interpolate the visual model between last and current position/rotation
-        veichlePivot.position = Vector3.Lerp(previousPosition, currentPosition, interpolationFactor);
-        veichlePivot.rotation = Quaternion.Slerp(previousRotation, currentRotation, interpolationFactor);
+        InterpolateVeichlePivot();
     }
 
     private void FixedUpdate()
@@ -149,6 +149,23 @@ public class PlayerController : MonoBehaviour
         {
             Debug.DrawRay(transform.position, lastCollisionDirection * 3f, Color.red, 0, false);
         }
+    }
+
+    void InterpolateVeichlePivot()
+    {
+
+        // Smooth rotation using exponential decay on Quaternions
+        Quaternion currentRotationQuat = veichlePivot.rotation;
+        Quaternion targetRotationQuat = currentRotation;
+
+        float t = 1f - Mathf.Exp(-pivotRotationDecay * deltaTime);
+        Quaternion smoothedRotation = Quaternion.Slerp(currentRotationQuat, targetRotationQuat, t);
+
+        veichlePivot.rotation = smoothedRotation;
+
+        // Smooth position using exponential decay
+        //veichlePivot.position = ExpDecay(veichlePivot.position, currentPosition, pivotPositionDecay, deltaTime);
+        veichlePivot.position = currentPosition;
     }
 
     void Bounce()
@@ -230,6 +247,15 @@ public class PlayerController : MonoBehaviour
     float ExpDecay(float a, float b, float decay, float deltaTime)
     {
         return Mathf.Lerp(a, b, 1 - Mathf.Exp(-decay * deltaTime));
+    }
+
+    Vector3 ExpDecay(Vector3 a, Vector3 b, float decay, float deltaTime)
+    {
+        return new Vector3(
+            ExpDecay(a.x, b.x, decay, deltaTime),
+            ExpDecay(a.y, b.y, decay, deltaTime),
+            ExpDecay(a.z, b.z, decay, deltaTime)
+        );
     }
 
     void ApplyGravityAndHover()
