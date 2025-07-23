@@ -6,7 +6,8 @@ public class FeedBackManager : MonoBehaviour
 {
     private GameObject playerVeichle;
     [Header("playerVeichle Settings")]
-    public float maxTiltAngle = 15f;
+    public float maxTiltAngleZ = 15f;
+    public float maxTiltAngleY = 45f;
     public float tiltSmoothSpeed = 5f;
     public GameObject playerCamera;
 
@@ -18,7 +19,9 @@ public class FeedBackManager : MonoBehaviour
     private Vector3 originalCamPos;
 
     private float steeringAmount;
-    private float currentTiltAngle = 0f;
+
+    private float currentTiltAngleZ = 0f;
+    private float currentTiltAngleY = 0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -51,16 +54,17 @@ public class FeedBackManager : MonoBehaviour
 
     private void SteerFeedBack(float amount)
     {
-        // Calculate the desired Z tilt angle based on input
-        float targetTiltAngle = -amount * maxTiltAngle;
+        float targetTiltAngleZ = -amount * maxTiltAngleZ;
+        float targetTiltAngleY = amount * maxTiltAngleY;
 
-        // Smoothly interpolate the current tilt angle using exponential decay
-        currentTiltAngle = Mathf.Lerp(currentTiltAngle, targetTiltAngle, 1 - Mathf.Exp(-tiltSmoothSpeed * Time.deltaTime));
+        float dt = Time.deltaTime;
 
-        // Apply the tilt to the player's vehicle (Z rotation), preserving X and Y
-        Quaternion originalRotation = playerVeichle.transform.parent.rotation;
+        currentTiltAngleZ = Mathf.Lerp(currentTiltAngleZ, targetTiltAngleZ, 1 - Mathf.Exp(-tiltSmoothSpeed * dt));
+        currentTiltAngleY = Mathf.Lerp(currentTiltAngleY, targetTiltAngleY, 1 - Mathf.Exp(-tiltSmoothSpeed * dt));
+
         Vector3 euler = Vector3.zero;
-        euler.z = currentTiltAngle;
+        euler.z = currentTiltAngleZ;
+        euler.y = currentTiltAngleY;
 
         playerVeichle.transform.localRotation = Quaternion.Euler(euler);
     }

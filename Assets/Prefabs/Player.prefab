@@ -123,6 +123,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 3
   veichlePivot: {fileID: 0}
+  pivotRotationDecay: 10
+  pivotPositionDecay: 30
 --- !u!54 &3221191640071817225
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -162,8 +164,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca157a2409538904eaac1c5f8e3632dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxTiltAngle: 15
-  tiltSmoothSpeed: 5
+  maxTiltAngleZ: 25
+  maxTiltAngleY: 7
+  tiltSmoothSpeed: 7.5
   playerCamera: {fileID: 0}
   shakeDuration: 0.1
   shakeMagnitude: 0.5
