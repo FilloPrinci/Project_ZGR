@@ -20,6 +20,8 @@ public class MainMenuManager : MonoBehaviour
     public GameObject firstMultiplayerOptionSelected;
     public GameObject firstReadySelected;
 
+    public GameObject selector;
+
     private GameObject currentlyActivePanel;
     private GameObject lastSelectedObject;
 
@@ -100,6 +102,19 @@ public class MainMenuManager : MonoBehaviour
         readyPanel.SetActive(false);
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(lastSelectedObject);
+    }
+
+    public void SwitchToSelection()
+    {
+        if(selector != null)
+        {
+            currentlyActivePanel.SetActive(false);
+            selector.GetComponent<SelectionManager>().StartSelection();
+        }
+        else
+        {
+            Debug.LogError("[MainMenuManager] : Selector GameObject is not assigned.");
+        }
     }
 
     public void OnStart()

@@ -672,6 +672,109 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Selection",
+            "id": "14bd0b3e-7541-4214-a18f-d4ff60c53c2e",
+            "actions": [
+                {
+                    "name": "ChangeSelection",
+                    "type": "Button",
+                    "id": "88879735-1042-4b6f-a788-e3f93c72b230",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press(behavior=1)",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "ConfirmSelection",
+                    "type": "Button",
+                    "id": "9b1afddc-d3af-43a3-a69c-c6d9269bf42b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press(behavior=1)",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "1D Axis",
+                    "id": "b94807f1-f008-4949-96b0-b07fc6041a9b",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChangeSelection",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "48b9fb72-f809-44db-a07c-f01d24cfd0f9",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChangeSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "681868fa-83c3-41ad-b26d-d6d559162b52",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChangeSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "705d88b9-62af-41e6-91d4-7b6757a4c457",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChangeSelection",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "positive",
+                    "id": "96f63069-ef64-4264-88ff-f9c0423df1a4",
+                    "path": "<Gamepad>/leftStick/right",
+                    "interactions": "",
+                    "processors": "AxisDeadzone(min=0.4,max=1)",
+                    "groups": "",
+                    "action": "ChangeSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "c0b307d4-21f6-4b53-b42c-e02b4d620a4c",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ConfirmSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "19e0c44b-391a-4368-94fd-4379281c21df",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ConfirmSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

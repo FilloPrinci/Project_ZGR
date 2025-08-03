@@ -186,7 +186,6 @@ public class RaceManager : MonoBehaviour
                 // Show race results
                 break;
         }
-        Debug.Log($"[RaceManager] [FixedUpdate]: currentRacePhase : {currentRacePhase}");
     }
 
     private void OnTrackPresentationStart() {
@@ -307,8 +306,6 @@ public class RaceManager : MonoBehaviour
         int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.name == playerID);
         if (checkPointGameObject.transform.parent?.gameObject == checkPointList[raceData.playerRaceDataList[playerDataToUpdateIndex].nextCheckpointIndex])
         {
-            Debug.Log($"[RaceManager] [OnCheckpoint({playerID})]: Checkpoint valid");
-
             raceData.playerRaceDataList[playerDataToUpdateIndex].currentSectorIndex++;
             if (raceData.playerRaceDataList[playerDataToUpdateIndex].currentSectorIndex > checkPointList.Count - 1)
             {
@@ -332,10 +329,6 @@ public class RaceManager : MonoBehaviour
             }
 
             raceData.playerRaceDataList[playerDataToUpdateIndex].nextCheckpointIndex = raceData.playerRaceDataList[playerDataToUpdateIndex].currentSectorIndex;
-        }
-        else
-        {
-            Debug.Log($"[RaceManager] [OnCheckpoint({playerID})]: Checkpoint is NOT valid");
         }
 
     }
