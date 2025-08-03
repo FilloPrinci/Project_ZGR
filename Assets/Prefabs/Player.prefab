@@ -57,7 +57,7 @@ MonoBehaviour:
   canvasPrefab: {fileID: 8332201281868801339, guid: 210cef8cc7b01664f8ebf5becf555cf9, type: 3}
   data:
     name: Player2
-    veichlePrefab: {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
+    veichlePrefab: {fileID: 3416946221655606573, guid: 1d78c1a18cc5e964da0b851a9e8983b2, type: 3}
     playerInputIndex: 1
   playerCamera: {fileID: 0}
 --- !u!114 &7834776545252078584
@@ -164,9 +164,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca157a2409538904eaac1c5f8e3632dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxTiltAngleZ: 25
+  maxTiltAngleZ: 15
   maxTiltAngleY: 7
-  tiltSmoothSpeed: 7.5
+  tiltSmoothSpeed: 10
   playerCamera: {fileID: 0}
   shakeDuration: 0.1
   shakeMagnitude: 0.5

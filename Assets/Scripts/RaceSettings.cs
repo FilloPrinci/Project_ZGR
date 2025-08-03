@@ -122,4 +122,10 @@ public class RaceSettings : MonoBehaviour
     {
         selectedRaceTrack = sceneReferences.raceTrackSceneList[trackIndex];
     }
+
+    public void SetSelectedVeichleForPlayer(int playerIndex, GameObject veichlePrefab)
+    {
+        inputPlayerDataList[playerIndex].veichlePrefab = veichlePrefab;
+        Debug.Log("[RaceSettings] INFO: player " + inputPlayerDataList[playerIndex].name + " has selected veichle " + veichlePrefab.name);
+    }
 }
