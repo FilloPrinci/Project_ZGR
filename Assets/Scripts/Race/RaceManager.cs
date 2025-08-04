@@ -50,6 +50,8 @@ public class RaceManager : MonoBehaviour
     private List<int> sectorList;
     private RaceData raceData;
 
+    private bool isPaused = false;
+
     public RaceData GetRaceData()
     {
         return raceData;
@@ -323,7 +325,6 @@ public class RaceManager : MonoBehaviour
                     if (isRaceEnded())
                     {
                         TriggerRaceEvent(RacePhaseEvent.RaceEnd);
-                        ShowResultsForAllPlayers();
                     }
                 }
             }
@@ -367,18 +368,71 @@ public class RaceManager : MonoBehaviour
                 break;
             case RacePhaseEvent.RaceEnd:
                 currentRacePhase = RacePhase.Results;
+                ShowResultsForAllPlayers();
                 break;
         }
     }
 
-    public void OnSkip()
+    public void OnPauseEnter(int playerIndex)
     {
-        if (currentRacePhase == RacePhase.Presentation) {
+        ShowPauseMenuForInputPlayer(playerIndex);
+        Time.timeScale = 0f;
+    }
+
+    public void OnPauseExit()
+    {
+        Time.timeScale = 1f;
+        HidePauseMenuForAllPlayers();
+    }
+
+    public void OnSkip(int playerIndex)
+    {
+        Debug.Log("[RaceManager] : Player" + (playerIndex + 1) + " pressed SKIP button");
+
+        if (currentRacePhase == RacePhase.Presentation)
+        {
             Debug.Log("[RaceManager] : Skip Presentation");
             TriggerRaceEvent(RacePhaseEvent.PresentationEnd);
         }
+        else if (currentRacePhase == RacePhase.Race)
+        {
+            Debug.Log("[RaceManager] : Pause race");
+            isPaused = !isPaused;
+
+            if (isPaused) {
+                OnPauseEnter(playerIndex);
+            }
+            else
+            {
+                OnPauseExit();
+            }
+        }
+        else if (currentRacePhase == RacePhase.Results)
+        {
+            Debug.Log("[RaceManager] : Exit from race");
+        }
     }
 
+    public void ShowPauseMenuForInputPlayer(int playerIndex)
+    {
+        if (playerInstanceList[playerIndex].GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
+        {
+            RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(playerInstanceList[playerIndex]);
+            playerRaceGui.SetCanShowPauseMenu(true);
+        }
+    }
+
+    public void HidePauseMenuForAllPlayers()
+    {
+        for (int i = 0; i < playerInstanceList.Count; i++)
+        {
+            if (playerInstanceList[i].GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
+            {
+                RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(playerInstanceList[i]);
+                playerRaceGui.SetCanShowPauseMenu(false);
+            }
+        }
+    }
     public void ShowResultsForAllPlayers()
     {
         for (int i = 0; i < playerInstanceList.Count; i++)
@@ -387,6 +441,7 @@ public class RaceManager : MonoBehaviour
             {
                 RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(playerInstanceList[i]);
                 playerRaceGui.SetCanShowResults(true);
+                playerInstanceList[i].GetComponent<PlayerStructure>().OnRaceEndPhase();
             }
         }
     }

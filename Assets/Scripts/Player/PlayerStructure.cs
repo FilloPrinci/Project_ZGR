@@ -125,6 +125,26 @@ public class PlayerStructure : MonoBehaviour
         canvasInstance.SetActive(true);
     }
 
+    public void OnRaceEndPhase()
+    {
+        Camera cam = playerCamera.GetComponent<Camera>();
+
+        int playerIndex = (int)data.playerInputIndex;
+
+        if(playerIndex == 0)
+        {
+            cam.rect = new Rect(0f, 0f, 1f, 1f); // fullscreen
+            canvasInstance.SetActive(true);
+        }
+        else
+        {
+            playerCamera.SetActive(false); // hide camera for other players
+            canvasInstance.SetActive(false);
+        }
+
+        
+    }
+
     public void UpdatePlayerGUI(PlayerStats playerStats)
     {
         ItemType[] items = playerStats.itemBuffer.ToArray();
