@@ -9531,7 +9531,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputPlayersAmount: 1
   totalPlayersAmount: 10
-  laps: 5
+  laps: 1
   cpuPlayerDataList: []
   veichlePrefabList:
   - {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}

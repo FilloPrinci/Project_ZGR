@@ -11,6 +11,8 @@ public class GlobalInputManager : MonoBehaviour
 
     private List<GameObject> playerInputList;
 
+    private RaceManager raceManager;
+
     void Awake()
     {
         if (Instance == null)
@@ -21,6 +23,18 @@ public class GlobalInputManager : MonoBehaviour
         {
             Debug.LogError("Duplicate GlobalInputManager detected. Destroying extra instance.");
             Destroy(gameObject); // Assicura che ci sia solo un GlobalInputManager
+        }
+
+        
+    }
+
+    private void Start()
+    {
+        raceManager = RaceManager.Instance;
+
+        if (raceManager != null)
+        {
+            playerAmount = raceManager.playerDataList.Count;
         }
 
         InstantiatePlayerInputs(playerAmount);
@@ -35,6 +49,7 @@ public class GlobalInputManager : MonoBehaviour
         {
             GameObject newPlayerInput = Instantiate(playerInputPrefab);
             playerInputList.Add(newPlayerInput);
+            newPlayerInput.GetComponent<PlayerInputHandler>().SetPlauerIndex(i); // Set player index
         }
     }
 

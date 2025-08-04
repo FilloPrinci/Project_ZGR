@@ -2,13 +2,18 @@ using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+
 
 public class RaceGUI : MonoBehaviour
 {
     public TextMeshProUGUI raceDataText;
     public GameObject currentPlayer;
     public GameObject resultsPanel;
+    public GameObject pauseMenuPanel;
+    public GameObject pauseMenuSelectionStart;
     public TextMeshProUGUI resultsDataText;
     public TextMeshProUGUI countdownText;
     public TextMeshProUGUI speedometerText;
@@ -23,9 +28,11 @@ public class RaceGUI : MonoBehaviour
     private CountdownManager countdownManager;
     private PlayerData currentPlayerData;
     private PlayerStats currentPlayerStats;
+    private SceneReferences sceneReferences;
 
     private bool canShowResults = false;
     private bool canShowCountdown = false;
+    private bool canShowPauseMenu = false;
 
     private string resultString;
 
@@ -36,6 +43,7 @@ public class RaceGUI : MonoBehaviour
         countdownManager = CountdownManager.Instance;
         currentPlayerData = currentPlayer.GetComponent<PlayerController>().playerData;
         currentPlayerStats = currentPlayer.GetComponent<PlayerController>().playerStats;
+        sceneReferences = SceneReferences.Instance;
     }
 
     // Update is called once per frame
@@ -50,6 +58,7 @@ public class RaceGUI : MonoBehaviour
         ShowRaceDataLines();
         ShowRaceResults();
         ShowCountDown();
+        ShowPauseMenu();
         UpdateSpeedometer();
         ShowEnergy();
     }
@@ -63,6 +72,21 @@ public class RaceGUI : MonoBehaviour
         }
         
         speedometerText.text = speed.ToString();
+    }
+
+    public void ShowPauseMenu()
+    {
+        if(canShowPauseMenu)
+        {
+            if (!pauseMenuPanel.activeInHierarchy)
+            {
+                pauseMenuPanel.SetActive(true);
+            }
+        }
+        else
+        {
+            pauseMenuPanel.SetActive(false);
+        }
     }
 
     public void ShowEnergy()
@@ -164,6 +188,17 @@ public class RaceGUI : MonoBehaviour
         countdownText.gameObject.SetActive(canShowCountdown);
     }
 
+    public void SetCanShowPauseMenu(bool canShowPauseMenu)
+    {
+        this.canShowPauseMenu = canShowPauseMenu;
+        pauseMenuPanel.SetActive(canShowPauseMenu);
+        if(canShowPauseMenu)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(pauseMenuSelectionStart);
+        }
+    }
+
     string GetRaceResultLines()
     {
         List<string> playerLineList = new List<string>();
@@ -238,5 +273,17 @@ public class RaceGUI : MonoBehaviour
         {
             Debug.LogWarning("Nessun componente Image trovato nel pannello.");
         }
+    }
+
+    public void OnPauseContinue()
+    {
+        if (raceManager != null) {
+            raceManager.OnPauseExit();
+        }
+    }
+
+    public void OnRaceExit()
+    {
+        SceneManager.LoadScene(sceneReferences.startScene);
     }
 }
