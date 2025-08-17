@@ -121,6 +121,11 @@ public class RaceManager : MonoBehaviour
                         lastRacePhaseEvent = RacePhaseEvent.Start;
                         break;
                     case RaceMode.TimeTrial:
+                        playerInstanceList = new List<GameObject>();
+
+                        GameObject newTimeTrialPlayer = InstantiatePlayer(playerDataList[0], spawnPointList[0]);
+                        playerInstanceList.Add(newTimeTrialPlayer);
+                        lastRacePhaseEvent = RacePhaseEvent.Start;
                         break;
                     case RaceMode.RaceSingleplayer:
                         break;
@@ -367,7 +372,22 @@ public class RaceManager : MonoBehaviour
                 break;
             case RacePhaseEvent.RaceEnd:
                 currentRacePhase = RacePhase.Results;
-                ShowResultsForAllPlayers();
+
+                raceData.playerRaceDataList.Sort((a, b) => a.position.CompareTo(b.position));
+
+                Debug.Log("the winner is : " + raceData.playerRaceDataList[0].playerData.name + " (player index : " + (int)raceData.playerRaceDataList[0].playerData.playerInputIndex  + " )");
+
+                ShowResultForPlayer((int)raceData.playerRaceDataList[0].playerData.playerInputIndex);
+
+                // finish race for all playuers
+                foreach (GameObject playerInstance in playerInstanceList)
+                {
+                    if(playerInstance.GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
+                    {
+                        PlayerStructure playerStructure = playerInstance.GetComponent<PlayerStructure>();
+                        playerStructure.OnRaceEndPhase((int)raceData.playerRaceDataList[0].playerData.playerInputIndex);
+                    }
+                }
                 break;
         }
     }
@@ -432,16 +452,14 @@ public class RaceManager : MonoBehaviour
             }
         }
     }
-    public void ShowResultsForAllPlayers()
+    public void ShowResultForPlayer(int playerIndex)
     {
-        for (int i = 0; i < playerInstanceList.Count; i++)
+        if (playerInstanceList[playerIndex].GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
         {
-            if (playerInstanceList[i].GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
-            {
-                RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(playerInstanceList[i]);
-                playerRaceGui.SetCanShowResults(true);
-                playerInstanceList[i].GetComponent<PlayerStructure>().OnRaceEndPhase();
-            }
+            GameObject winnerPlayer = playerInstanceList[playerIndex];
+
+            RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(winnerPlayer);
+            playerRaceGui.SetCanShowResults(true);
         }
     }
 

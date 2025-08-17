@@ -9,14 +9,24 @@ using UnityEngine.EventSystems;
 
 public class RaceGUI : MonoBehaviour
 {
-    public TextMeshProUGUI raceDataText;
-    public GameObject currentPlayer;
+    [Header("Panels")]
     public GameObject resultsPanel;
     public GameObject pauseMenuPanel;
-    public GameObject pauseMenuSelectionStart;
+    public GameObject raceDataPanel;
+    public GameObject speedometerPanel;
+    public GameObject statsPanel;
+
+    [Header("Texts")]
+    public TextMeshProUGUI raceDataText;
     public TextMeshProUGUI resultsDataText;
     public TextMeshProUGUI countdownText;
     public TextMeshProUGUI speedometerText;
+
+    [Header("GameObjects")]
+    public GameObject currentPlayer;
+    public GameObject pauseMenuSelectionStart;
+    public GameObject resultMenuSelectionStart;
+
     public GameObject finishLabel;
     public RectTransform energyBar;
 
@@ -30,6 +40,9 @@ public class RaceGUI : MonoBehaviour
     private PlayerStats currentPlayerStats;
     private SceneReferences sceneReferences;
 
+    private bool canShowRaceDataLines = true;
+    private bool canShowSpeedometer = true;
+    private bool canShowStats = true;
     private bool canShowResults = false;
     private bool canShowCountdown = false;
     private bool canShowPauseMenu = false;
@@ -65,13 +78,27 @@ public class RaceGUI : MonoBehaviour
 
     void UpdateSpeedometer()
     {
-        int speed = 0;
-        float? realSpeed = currentPlayer.GetComponent<Speedometer>().speedKmh;
-        if (realSpeed != null) {
-            speed = (int)realSpeed;
+        if (canShowSpeedometer)
+        {
+            if (!speedometerPanel.activeInHierarchy)
+            {
+                speedometerPanel.SetActive(true);
+            }
+
+            int speed = 0;
+            float? realSpeed = currentPlayer.GetComponent<Speedometer>().speedKmh;
+            if (realSpeed != null)
+            {
+                speed = (int)realSpeed;
+            }
+
+            speedometerText.text = speed.ToString();
         }
-        
-        speedometerText.text = speed.ToString();
+        else
+        {
+            speedometerPanel.SetActive(false);
+            return;
+        }
     }
 
     public void ShowPauseMenu()
@@ -91,41 +118,70 @@ public class RaceGUI : MonoBehaviour
 
     public void ShowEnergy()
     {
-        if (currentPlayerStats != null) {
-            float currentEnergyValue = currentPlayerStats.Energy;
-            float clampedEnergyValue = currentEnergyValue / 100f;
-            Vector2 anchorMax = energyBar.anchorMax;
-            anchorMax.x = clampedEnergyValue;
-            energyBar.anchorMax = anchorMax;
+        if (canShowStats)
+        {
+            if(!statsPanel.activeInHierarchy)
+            {
+                statsPanel.SetActive(true);
+            }
+
+            if (currentPlayerStats != null)
+            {
+                float currentEnergyValue = currentPlayerStats.Energy;
+                float clampedEnergyValue = currentEnergyValue / 100f;
+                Vector2 anchorMax = energyBar.anchorMax;
+                anchorMax.x = clampedEnergyValue;
+                energyBar.anchorMax = anchorMax;
+            }
+            else
+            {
+                Debug.LogError("currentPlayerStats is null!");
+            }
         }
         else
         {
-            Debug.LogError("currentPlayerStats is null!");
+            statsPanel.SetActive(false);
         }
+
+        
     }
 
     void ShowRaceDataLines()
     {
-        PlayerRaceData currentPlayerRaceData = raceManager.GetRaceData().GetPlayerRaceDataByID(currentPlayerData.name);
-        string positionLine = "Position: " + currentPlayerRaceData.position;
-        string currentLap = "Lap" + currentPlayerRaceData.currentLap + "/" + raceManager.maxLaps;
-        string raceStatus = "RaceStatus: " + raceManager.GetCurrentRacePhase().ToString();
+        if (canShowRaceDataLines) {
 
-        string finalString = "";
-        /*
-        List<string> lines = raceManager.GetRaceData().GetRaceDataAsLines();
-        foreach (string line in lines) { 
-            finalString += line;
+            if (!raceDataPanel.activeInHierarchy)
+            {
+                raceDataPanel.SetActive(true);
+            }
+
+            PlayerRaceData currentPlayerRaceData = raceManager.GetRaceData().GetPlayerRaceDataByID(currentPlayerData.name);
+            string positionLine = "Position: " + currentPlayerRaceData.position;
+            string currentLap = "Lap" + currentPlayerRaceData.currentLap + "/" + raceManager.maxLaps;
+            string raceStatus = "RaceStatus: " + raceManager.GetCurrentRacePhase().ToString();
+
+            string finalString = "";
+            /*
+            List<string> lines = raceManager.GetRaceData().GetRaceDataAsLines();
+            foreach (string line in lines) { 
+                finalString += line;
+                finalString += "\n";
+            }*/
+
+            finalString += positionLine;
             finalString += "\n";
-        }*/
+            finalString += currentLap;
+            finalString += "\n";
+            finalString += raceStatus;
 
-        finalString += positionLine;
-        finalString += "\n";
-        finalString += currentLap;
-        finalString += "\n";
-        finalString += raceStatus;
+            raceDataText.text = finalString;
+        }
+        else
+        {
+            raceDataPanel.SetActive(false);
+        }
 
-        raceDataText.text = finalString;
+        
     }
 
     void ShowRaceResults()
@@ -179,6 +235,12 @@ public class RaceGUI : MonoBehaviour
 
         if (this.canShowResults) { 
             resultString = GetRaceResultLines();
+            canShowSpeedometer = false;
+            canShowRaceDataLines = false;
+            canShowStats = false;
+
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(resultMenuSelectionStart);
         }
     }
 
