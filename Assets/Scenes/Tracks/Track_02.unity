@@ -607,7 +607,7 @@ MonoBehaviour:
   mode: 3
   playerDataList:
   - name: Player1
-    veichlePrefab: {fileID: 3416946221655606573, guid: 1d78c1a18cc5e964da0b851a9e8983b2, type: 3}
+    veichlePrefab: {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
     playerInputIndex: 0
   - name: Player2
     veichlePrefab: {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
@@ -627,7 +627,7 @@ MonoBehaviour:
   - {fileID: 825667876}
   - {fileID: 970211705}
   - {fileID: 855886990}
-  maxLaps: 5
+  maxLaps: 1
   presentationManager: {fileID: 941342185}
 --- !u!4 &219254184
 Transform:
@@ -731,7 +731,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &285259374
 MonoBehaviour:
   m_ObjectHideFlags: 0

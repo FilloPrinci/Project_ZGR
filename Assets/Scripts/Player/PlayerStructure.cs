@@ -125,13 +125,13 @@ public class PlayerStructure : MonoBehaviour
         canvasInstance.SetActive(true);
     }
 
-    public void OnRaceEndPhase()
+    public void OnRaceEndPhase(int winnerIndex)
     {
         Camera cam = playerCamera.GetComponent<Camera>();
 
         int playerIndex = (int)data.playerInputIndex;
 
-        if(playerIndex == 0)
+        if(playerIndex == winnerIndex)
         {
             cam.rect = new Rect(0f, 0f, 1f, 1f); // fullscreen
             canvasInstance.SetActive(true);
