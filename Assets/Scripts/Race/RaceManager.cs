@@ -217,7 +217,6 @@ public class RaceManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("Multiplayer camera not implemented yet");
                     if (playerInstanceList.Count == 2)
                     {
                         instanceStructure.ActivatePlayerCamera(CameraMode.MultiPlayer2);
