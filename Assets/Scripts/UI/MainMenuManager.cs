@@ -27,10 +27,30 @@ public class MainMenuManager : MonoBehaviour
 
     private SceneReferences sceneReferences;
 
+    private RaceSettings raceSettings;
+
     private void Start()
     {
         currentlyActivePanel = mainMenuPanel;
         sceneReferences = SceneReferences.Instance;
+        raceSettings = RaceSettings.Instance;
+
+        if (sceneReferences == null)
+        {
+            Debug.LogError("[MainMenuManager] : SceneReferences Instance is not set.");
+            return;
+        }
+
+        if (raceSettings == null)
+        {
+            Debug.LogError("[MainMenuManager] : RaceSettings Instance is not set.");
+            return;
+        }
+
+        if (Time.timeScale != 1f)
+        {
+            Time.timeScale = 1f; // Ensure time scale is reset to normal
+        }
     }
 
     void SwitchPanel(GameObject newPanel, GameObject newSelectedObject)
@@ -55,11 +75,13 @@ public class MainMenuManager : MonoBehaviour
 
     public void OnSingleplayerPressed()
     {
+        raceSettings.OnSinglePlayerSelect();
         SwitchPanel(singleplayerOptionsPanel, firstSingleplayerOptionSelected);
     }
 
     public void OnMultiplayerPressed()
     {
+        raceSettings.OnMultiplayerRaceModeSelect();
         SwitchPanel(multiplayerOptionsPanel, firstMultiplayerOptionSelected);
     }
 
@@ -104,17 +126,30 @@ public class MainMenuManager : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(lastSelectedObject);
     }
 
+    public void OnTimeTrialSelect()
+    {
+        raceSettings.OnTimeTrialModeSelect();
+        SwitchToSelection();
+    }
+
     public void SwitchToSelection()
     {
         if(selector != null)
         {
             currentlyActivePanel.SetActive(false);
             selector.GetComponent<SelectionManager>().StartSelection();
+            selector.GetComponent<SelectionManager>().ResetSelectionPhase();
         }
         else
         {
             Debug.LogError("[MainMenuManager] : Selector GameObject is not assigned.");
         }
+    }
+
+    public void OnMultiplayerAmountSet(int amount)
+    {
+        raceSettings.OnMultiplayerAmountSelect(amount);
+        SwitchToSelection();
     }
 
     public void OnStart()

@@ -41,7 +41,6 @@ public class SelectionManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -76,6 +75,26 @@ public class SelectionManager : MonoBehaviour
         
     }
 
+    public void ResetSelectionPhase()
+    {
+        Debug.Log("[SelectionManager] INFO: Resetting selection phase");
+        currentSelectionPhaseIndex = 0;
+        currentSelectionPhase = selectionPhases[currentSelectionPhaseIndex];
+
+        foreach (GameObject selector in selectorList)
+        {
+            if (selector != null)
+            {
+                selector.GetComponent<SingleSelector>().ResetSelecton(); // Reset each selector
+            }
+            else
+            {
+                Debug.LogError("[SelectionManager] ERROR: One of the selectors in selectorList is null");
+            }
+        }
+
+        StartSelection();
+    }
 
     void MoveToNextSelectionPhase()
     {

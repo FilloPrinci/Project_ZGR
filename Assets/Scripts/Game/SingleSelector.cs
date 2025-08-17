@@ -17,17 +17,27 @@ public class SingleSelector : MonoBehaviour
     void Start()
     {
         shownVeichlePosition.localScale = Vector3.one * scaleFactor; // Set the scale of the shown veichle position
-        
-        raceSettings = RaceSettings.Instance;
-        selectionManager = SelectionManager.Instance;
-        veichlePrefabList = raceSettings.veichlePrefabList;
-        instantiatedSelectedVeichle = Instantiate(GetSelectedVeichlePrefab(), shownVeichlePosition);
+
+        RefreshReferences();
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    private void RefreshReferences()
+    {
+        raceSettings = RaceSettings.Instance;
+        selectionManager = SelectionManager.Instance;
+        veichlePrefabList = raceSettings.veichlePrefabList;
+        if (instantiatedSelectedVeichle != null)
+        {
+            Destroy(instantiatedSelectedVeichle);
+            
+        }
+        instantiatedSelectedVeichle = Instantiate(GetSelectedVeichlePrefab(), shownVeichlePosition);
     }
 
     void UpdateSelectedVeichle()
@@ -43,6 +53,12 @@ public class SingleSelector : MonoBehaviour
             Destroy(instantiatedSelectedVeichle);
             instantiatedSelectedVeichle = Instantiate(GetSelectedVeichlePrefab(), shownVeichlePosition);
         }
+    }
+
+    public void ResetSelecton()
+    {
+        RefreshReferences();
+        selectionConfirmed = false;
     }
 
     public void SelectNext()
