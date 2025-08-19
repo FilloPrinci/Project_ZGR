@@ -207,7 +207,6 @@ public class RaceManager : MonoBehaviour
         }
     }
 
-
     private void OnCountDownStart() { 
 
         mainCamera.gameObject.SetActive(false);
@@ -255,6 +254,7 @@ public class RaceManager : MonoBehaviour
     private void OnRaceStart()
     {
         HideCountdownForAllPlayers();
+        raceData.StartRace();
     }
 
     private void ManageRace(RaceMode raceMode)
@@ -275,6 +275,7 @@ public class RaceManager : MonoBehaviour
 
         RefreshPlayerRaceDataDistances();
         raceData.RefreshPositions();
+        raceData.UpdatePlayerRaceDataTimings();
     }
 
     public GameObject GetPlayerInstanceFromID(string id)
@@ -313,8 +314,15 @@ public class RaceManager : MonoBehaviour
         if (checkPointGameObject.transform.parent?.gameObject == checkPointList[raceData.playerRaceDataList[playerDataToUpdateIndex].nextCheckpointIndex])
         {
             raceData.playerRaceDataList[playerDataToUpdateIndex].currentSectorIndex++;
+
+            // check if player has completed the lap
             if (raceData.playerRaceDataList[playerDataToUpdateIndex].currentSectorIndex > checkPointList.Count - 1)
             {
+                // player has completed the lap
+
+                raceData.SetLapTimeForPlayer(playerDataToUpdateIndex);
+
+
                 raceData.playerRaceDataList[playerDataToUpdateIndex].currentSectorIndex = 0;
                 raceData.playerRaceDataList[playerDataToUpdateIndex].currentLap++;
                 if (raceData.playerRaceDataList[playerDataToUpdateIndex].currentLap > maxLaps)
