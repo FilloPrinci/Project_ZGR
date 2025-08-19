@@ -58,7 +58,8 @@ MonoBehaviour:
   data:
     name: Player2
     veichlePrefab: {fileID: 3416946221655606573, guid: 1d78c1a18cc5e964da0b851a9e8983b2, type: 3}
-    playerInputIndex: 1
+    playerInputIndex: 0
+    cpuIndex: 0
   playerCamera: {fileID: 0}
 --- !u!114 &7834776545252078584
 MonoBehaviour:
@@ -108,6 +109,7 @@ MonoBehaviour:
     name: 
     veichlePrefab: {fileID: 0}
     playerInputIndex: 0
+    cpuIndex: 0
   playerStats: {fileID: 7834776545252078584}
   playerStructure: {fileID: 0}
   hoverHeight: 0.5

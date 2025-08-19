@@ -70,7 +70,17 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            playerInputHandler = globalInputManager.GetPlayerInput((int)playerData.playerInputIndex).GetComponent<PlayerInputHandler>();
+            if(playerData.playerInputIndex != InputIndex.CPU)
+            {
+                playerInputHandler = globalInputManager.GetPlayerInput((int)playerData.playerInputIndex).GetComponent<PlayerInputHandler>();
+            }
+            else
+            {
+                Debug.Log($"PlayerController Start for CPU player: {playerData.name} with index {playerData.cpuIndex}");
+                playerInputHandler = CPUInputHandlerManager.Instance.GetCPUInput(playerData.cpuIndex);
+            }
+
+
 
             // Initialize visual interpolation positions
             currentPosition = transform.position;

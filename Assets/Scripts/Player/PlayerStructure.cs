@@ -28,19 +28,25 @@ public class PlayerStructure : MonoBehaviour
 
     void Awake()
     {
-        canvasInstance = Instantiate(canvasPrefab);
-        pivotInstance = Instantiate(pivotPrefab);
+        Debug.Log("PlayerStructure Awake called for " + gameObject.name);
 
-        canvasInstance.GetComponent<RaceGUI>().currentPlayer = gameObject;
+        pivotInstance = Instantiate(pivotPrefab);
         controller.veichlePivot = pivotInstance.transform;
         controller.playerData = data;
         controller.playerStructure = this;
 
-        playerCamera = SpawnCamera(pivotInstance.GetComponent<VeichleAnchors>().cameraPivot);
-        feedBack.playerCamera = playerCamera;
-        canvasInstance.GetComponent<Canvas>().worldCamera = playerCamera.GetComponent<Camera>();
-        canvasInstance.GetComponent<Canvas>().planeDistance = 0.5f;
-        canvasInstance.SetActive(false);
+        if (data.playerInputIndex != InputIndex.CPU)
+        {
+            canvasInstance = Instantiate(canvasPrefab);
+            canvasInstance.GetComponent<RaceGUI>().currentPlayer = gameObject;
+            playerCamera = SpawnCamera(pivotInstance.GetComponent<VeichleAnchors>().cameraPivot);
+            feedBack.playerCamera = playerCamera;
+            canvasInstance.GetComponent<Canvas>().worldCamera = playerCamera.GetComponent<Camera>();
+            canvasInstance.GetComponent<Canvas>().planeDistance = 0.5f;
+            canvasInstance.SetActive(false);
+        }
+
+        
     }
 
     GameObject SpawnCamera(Transform anchor) {

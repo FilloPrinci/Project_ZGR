@@ -35,13 +35,20 @@ public class RaceManager : MonoBehaviour
     public static RaceManager Instance { get; private set; }
 
     public Camera mainCamera;
-    public RaceMode mode;
-    public List<PlayerData> playerDataList;
+   
+    public bool generateCPUPlayers = true;
+    public int cpuPlayersAmount = 0; // Number of CPU players to generate if generateCPUPlayers is true
     public GameObject playerPrefab;
     public List<GameObject> checkPointList;
     public List<Transform> spawnPointList;
-    public int maxLaps;
+    
     public GameObject presentationManager;
+
+    [Header("Default parameters")]
+    public RaceMode mode;
+    public List<PlayerData> playerDataList;
+    public int maxLaps;
+    public  List<GameObject> avaiableVeichleList;
 
     private int currentLap;
     private RacePhase currentRacePhase;
@@ -49,6 +56,7 @@ public class RaceManager : MonoBehaviour
     private List<GameObject> playerInstanceList;
     private List<int> sectorList;
     private RaceData raceData;
+    
 
     private bool isPaused = false;
 
@@ -73,6 +81,15 @@ public class RaceManager : MonoBehaviour
             Debug.LogError("Duplicate RaceManager detected. Destroying extra instance.");
             Destroy(gameObject); // Assicura che ci sia solo un RaceManager
         }
+
+        if (generateCPUPlayers) { 
+            Debug.Log($"[RaceManager] : Generating {cpuPlayersAmount} CPU Players");
+            if (cpuPlayersAmount == 0)
+            {
+                cpuPlayersAmount = spawnPointList.Count - playerDataList.Count;
+                Debug.Log($"[RaceManager] : CPU Players amount set to {cpuPlayersAmount} based on spawnPointList");
+            }
+        }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -81,6 +98,20 @@ public class RaceManager : MonoBehaviour
         currentLap = 0;
 
         LoadRaceSettings();
+
+        // Generating CPU Players if needed
+        if (generateCPUPlayers)
+        {
+            for (int i = 0; i < cpuPlayersAmount; i++)
+            {
+                if(CPUInputHandlerManager.Instance.cpuPlayerAmount > i)
+                {
+                    PlayerData cpuPlayerData = new PlayerData("CPU" + (i + 1), avaiableVeichleList[0], InputIndex.CPU);
+                    cpuPlayerData.SetPlayerIndex(i);
+                    playerDataList.Add(cpuPlayerData);
+                }
+            }
+        }
 
         if (playerDataList.Count != 0)
         {
@@ -108,12 +139,12 @@ public class RaceManager : MonoBehaviour
                 }
 
                 raceData = new RaceData(playerRaceDataList);
+                playerInstanceList = new List<GameObject>();
 
                 switch (mode)
                 {
                     case RaceMode.Test:
 
-                        playerInstanceList = new List<GameObject>();
 
                         GameObject newTestPlayer = InstantiatePlayer(playerDataList[0], spawnPointList[0]);
 
@@ -121,16 +152,26 @@ public class RaceManager : MonoBehaviour
                         lastRacePhaseEvent = RacePhaseEvent.Start;
                         break;
                     case RaceMode.TimeTrial:
-                        playerInstanceList = new List<GameObject>();
 
                         GameObject newTimeTrialPlayer = InstantiatePlayer(playerDataList[0], spawnPointList[0]);
+
                         playerInstanceList.Add(newTimeTrialPlayer);
+
                         lastRacePhaseEvent = RacePhaseEvent.Start;
                         break;
                     case RaceMode.RaceSingleplayer:
+
+                        for (int i = 0; i < playerDataList.Count; i++)
+                        {
+                            GameObject newPlayer = InstantiatePlayer(playerDataList[i], spawnPointList[i]);
+
+                            playerInstanceList.Add(newPlayer);
+                        }
+
+                        lastRacePhaseEvent = RacePhaseEvent.Start;
+
                         break;
                     case RaceMode.RaceMultiplayer:
-                        playerInstanceList = new List<GameObject>();
 
                         for (int i = 0; i < playerDataList.Count; i++)
                         {
@@ -160,12 +201,14 @@ public class RaceManager : MonoBehaviour
             maxLaps = currentRaceSettings.laps;
             playerDataList = currentRaceSettings.GetAllPlayerDataList();
             mode = currentRaceSettings.GetSelectedRaceMode();
-
+            avaiableVeichleList = currentRaceSettings.veichlePrefabList;
         }
 
     }
 
     public GameObject InstantiatePlayer(PlayerData playerData, Transform spawnPoint) {
+
+        Debug.Log($"[RaceManager] : Instantiating player {playerData.name} at position {spawnPoint.position}");
 
         playerPrefab.GetComponent<PlayerStructure>().data = playerData;
         GameObject newPlayer = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
@@ -232,7 +275,6 @@ public class RaceManager : MonoBehaviour
                         instanceStructure.ActivatePlayerCamera(CameraMode.MultiPlayer4);
                     }
                 }
-                
             }
         }
 

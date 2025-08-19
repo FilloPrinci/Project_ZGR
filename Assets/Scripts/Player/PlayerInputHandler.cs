@@ -36,6 +36,17 @@ public class PlayerInputHandler : MonoBehaviour
         }
     }
 
+    public void OnCPUSteer(float value)
+    {
+        moveInput.x = value;
+    }
+
+
+    public void OnCPUAccelerate(float accellerate)
+    {
+        isAccelerating = accellerate > 0.1f;
+    }
+
     public void OnAccelerate(InputAction.CallbackContext context)
     {
         isAccelerating = context.ReadValue<float>() > 0.1f;
