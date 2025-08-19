@@ -158,7 +158,9 @@ public class RaceGUI : MonoBehaviour
             PlayerRaceData currentPlayerRaceData = raceManager.GetRaceData().GetPlayerRaceDataByID(currentPlayerData.name);
             string positionLine = "Position: " + currentPlayerRaceData.position;
             string currentLap = "Lap" + currentPlayerRaceData.currentLap + "/" + raceManager.maxLaps;
-            string raceStatus = "RaceStatus: " + raceManager.GetCurrentRacePhase().ToString();
+            string currentTime = "Current Lap Time: " + currentPlayerRaceData.GetCurrentLapTime();
+            string bestLapTime = "Best: " + currentPlayerRaceData.GetBestLapTime();
+
 
             string finalString = "";
             /*
@@ -172,7 +174,9 @@ public class RaceGUI : MonoBehaviour
             finalString += "\n";
             finalString += currentLap;
             finalString += "\n";
-            finalString += raceStatus;
+            finalString += currentTime;
+            finalString += "\n";
+            finalString += bestLapTime;
 
             raceDataText.text = finalString;
         }
@@ -267,13 +271,18 @@ public class RaceGUI : MonoBehaviour
 
         RaceData raceData = raceManager.GetRaceData();
 
+        string playerLine = $"P \t Name \t Time \t Best Time";
+        playerLineList.Add(playerLine);
+
         raceData.playerRaceDataList.Sort((a, b) => a.position.CompareTo(b.position));
         for (int i = 0; i < raceData.playerRaceDataList.Count; i++)
         {
             int position = raceData.playerRaceDataList[i].position;
             string name = raceData.playerRaceDataList[i].playerData.name;
+            string totalTime = raceData.playerRaceDataList[i].GetTotalTime();
+            string bestTime = raceData.playerRaceDataList[i].GetBestLapTime();
 
-            string playerLine = $"{position}\t{name}";
+            playerLine = $"{position}\t{name}\t{totalTime}\t{bestTime}";
             playerLineList.Add(playerLine);
         }
 
