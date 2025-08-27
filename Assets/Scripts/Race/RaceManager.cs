@@ -553,9 +553,14 @@ public class RaceManager : MonoBehaviour
     
     public RaceGUI GetRaceGUIFromPlayerInstance(GameObject playerInstance)
     {
-        PlayerStructure playerStructure = playerInstance.GetComponent<PlayerStructure>();
-        GameObject playerRaceGUI = playerStructure.GetCanvasInstance();
-        return playerRaceGUI.GetComponent<RaceGUI>();
+            PlayerStructure playerStructure = playerInstance.GetComponent<PlayerStructure>();
+            GameObject playerRaceGUI = playerStructure.GetCanvasInstance();
+            return playerRaceGUI.GetComponent<RaceGUI>();
+    }
+
+    public List<GameObject> GetAllPlayerInstances()
+    {
+        return playerInstanceList;
     }
 
 }
