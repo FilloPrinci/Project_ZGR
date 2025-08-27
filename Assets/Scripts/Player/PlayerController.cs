@@ -355,22 +355,26 @@ public class PlayerController : MonoBehaviour
         {
             ZoneData zoneData = other.GetComponent<ZoneData>();
 
-            if (playerStats != null && zoneData != null)
-            {
-                if(zoneData.Type == ZoneType.Recharge)
+            if (zoneData != null) {
+                if (playerStats != null && zoneData != null)
                 {
-                    float currentSpeed = Speed(normalMovementVelocity);
-                    playerStats.OnEnergyRechargeBySpeed(deltaTime, currentSpeed);
-                    if (playerStructure != null)
+                    if (zoneData.Type == ZoneType.Recharge)
                     {
-                        playerStructure.UpdatePlayerGUI(playerStats);
+                        float currentSpeed = Speed(normalMovementVelocity);
+                        playerStats.OnEnergyRechargeBySpeed(deltaTime, currentSpeed);
+                        if (playerStructure != null)
+                        {
+                            playerStructure.UpdatePlayerGUI(playerStats);
+                        }
                     }
                 }
+                else
+                {
+                    Debug.LogError("access to zoneData failed");
+                }
             }
-            else
-            {
-                Debug.LogError("access to zoneData failed");
-            }
+
+            
         }
     }
 
