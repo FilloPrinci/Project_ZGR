@@ -28,8 +28,6 @@ public class PlayerStructure : MonoBehaviour
 
     void Awake()
     {
-        Debug.Log("PlayerStructure Awake called for " + gameObject.name);
-
         pivotInstance = Instantiate(pivotPrefab);
         controller.veichlePivot = pivotInstance.transform;
         controller.playerData = data;
