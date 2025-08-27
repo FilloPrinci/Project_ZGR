@@ -2998,6 +2998,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Track_ColliderSimpleRight
       objectReference: {fileID: 0}
+    - target: {fileID: 656347296255091526, guid: d4e8a6628e00a35488c672dd7a1eebfe, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 656347296255091526, guid: d4e8a6628e00a35488c672dd7a1eebfe, type: 3}
+      propertyPath: m_TagString
+      value: Zone
+      objectReference: {fileID: 0}
     - target: {fileID: 673688781617255934, guid: d4e8a6628e00a35488c672dd7a1eebfe, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -3049,6 +3057,14 @@ PrefabInstance:
     - target: {fileID: 7454405977782594459, guid: d4e8a6628e00a35488c672dd7a1eebfe, type: 3}
       propertyPath: m_Name
       value: Track_ColliderSimpleLeft
+      objectReference: {fileID: 0}
+    - target: {fileID: 7454405977782594459, guid: d4e8a6628e00a35488c672dd7a1eebfe, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7454405977782594459, guid: d4e8a6628e00a35488c672dd7a1eebfe, type: 3}
+      propertyPath: m_TagString
+      value: Zone
       objectReference: {fileID: 0}
     - target: {fileID: 7512340324567417084, guid: d4e8a6628e00a35488c672dd7a1eebfe, type: 3}
       propertyPath: m_LocalScale.x
@@ -3477,7 +3493,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653553429851347639, guid: 3c37009c015ee844c833d6ca91281026, type: 3}
       propertyPath: cpuPlayerAmount
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4320255521794542767, guid: 3c37009c015ee844c833d6ca91281026, type: 3}
       propertyPath: m_Name
@@ -3550,8 +3566,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftCollider: {fileID: 1890541143}
   rightCollider: {fileID: 1890541144}
-  borderLimitDistance: 1
-  borderSafeDistance: 7
+  borderLimitDistance: 2
+  borderSafeDistance: 10
   cpuCount: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
