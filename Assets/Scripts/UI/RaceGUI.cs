@@ -86,7 +86,8 @@ public class RaceGUI : MonoBehaviour
             }
 
             int speed = 0;
-            float? realSpeed = currentPlayer.GetComponent<Speedometer>().speedKmh;
+            float? realSpeed = currentPlayer.GetComponent<PlayerController>().GetCurrentSpeed();
+            realSpeed *= 3.6f; // Convert m/s to km/h
             if (realSpeed != null)
             {
                 speed = (int)realSpeed;

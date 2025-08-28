@@ -423,6 +423,11 @@ public class PlayerController : MonoBehaviour
     {
         return vector.magnitude / deltaTime;
     }
+    public float GetCurrentSpeed()
+    {
+        Vector3 currentRealSpeed = normalMovementVelocity + collisionVelocity;
+        return Speed(currentRealSpeed);
+    }
 
     public GameObject GetVeichleModel()
     {
