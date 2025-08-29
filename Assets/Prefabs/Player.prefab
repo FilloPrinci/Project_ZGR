@@ -84,11 +84,11 @@ MonoBehaviour:
   maxRotationSpeedMultiplier: 1
   accelerationMultiplier: 1
   rotationAccelerationMultiplier: 1
-  speedItemMultiplier: 0.1
+  speedItemMultiplier: 0.05
   accelerationItemMultiplier: 0.5
   rotationSpeedItemMultiplier: 0.1
   rotationAccelerationItemMultiplier: 0.25
-  turboMaxSpeedMultiplier: 0.5
+  turboMaxSpeedMultiplier: 0.25
   turboAccelerationMultiplier: 1
   bufferSize: 5
   onTurbo: 0
