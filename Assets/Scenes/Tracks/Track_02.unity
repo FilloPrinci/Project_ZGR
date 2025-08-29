@@ -629,7 +629,7 @@ MonoBehaviour:
     veichlePrefab: {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
     playerInputIndex: 0
     cpuIndex: -1
-  maxLaps: 1
+  maxLaps: 3
   avaiableVeichleList:
   - {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
 --- !u!4 &219254184
@@ -3493,7 +3493,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653553429851347639, guid: 3c37009c015ee844c833d6ca91281026, type: 3}
       propertyPath: cpuPlayerAmount
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4320255521794542767, guid: 3c37009c015ee844c833d6ca91281026, type: 3}
       propertyPath: m_Name
@@ -3566,11 +3566,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftCollider: {fileID: 1890541143}
   rightCollider: {fileID: 1890541144}
-  forwardLookAheadMultiplier: 20
-  forwardLookSteerMultiplier: 10
-  borderLimitDistance: 1
-  borderSafeDistance: 7.5
-  raceTrackPointList:
+  RaceLinePositionList:
   - {fileID: 112412639}
   - {fileID: 256714999}
   - {fileID: 534158473}
@@ -3579,6 +3575,10 @@ MonoBehaviour:
   - {fileID: 1521533795}
   - {fileID: 45298809}
   - {fileID: 1127827913}
+  forwardLookAheadMultiplier: 40
+  forwardLookSteerMultiplier: 10
+  borderLimitDistance: 1
+  borderSafeDistance: 10
   cpuCount: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

@@ -11,15 +11,16 @@ public struct CPUJob : IJobParallelFor
     // =========================
     // Input/Output arrays
     // =========================
-    [ReadOnly] public NativeArray<int> accelerate;
+    public NativeArray<int> accelerate;
+    public NativeArray<float> steer;
     [ReadOnly] public NativeArray<float> currentSpeed;
     [ReadOnly] public float maxSpeed;
     [ReadOnly] public float lookAheadForwardMultiplier;
     [ReadOnly] public float lookAheadRightMultiplier;
-    public NativeArray<float> steer;
     [ReadOnly] public NativeArray<Vector3> positions;
     [ReadOnly] public NativeArray<Vector3> forwardDirections;
     [ReadOnly] public NativeArray<Vector3> rightDirections;
+    [ReadOnly] public NativeArray<Vector3> raceLinePoints;
 
     // Track boundaries
     [ReadOnly] public NativeArray<Vector3> leftVertices;
@@ -33,6 +34,7 @@ public struct CPUJob : IJobParallelFor
     // Results for debug gizmos
     public NativeArray<Vector3> nearestLeft;
     public NativeArray<Vector3> nearestRight;
+    public NativeArray<Vector3> nearestRaceLinePoint;
 
     // Distances thresholds
     public float limitDistance;
@@ -88,6 +90,7 @@ public struct CPUJob : IJobParallelFor
         // === Decide steering con parametri scalati ===
         steer[index] = DecideSteering(leftZone, rightZone, leftDist, rightDist, scaledLimit, scaledSafe, steerIntensity);
         accelerate[index] = 1; // always accelerate
+        nearestRaceLinePoint[index] = NearestPointFromList(positions[index], raceLinePoints);
     }
 
     // =========================
@@ -318,5 +321,22 @@ public struct CPUJob : IJobParallelFor
         Vector3 n = Vector3.Cross(ab, ac).normalized;
         closestPoint = point - Vector3.Dot(point - a, n) * n;
         return (point - closestPoint).sqrMagnitude;
+    }
+
+    private Vector3 NearestPointFromList(Vector3 position, NativeArray<Vector3> positionList)
+    {
+        Vector3 closestPoint = position;
+        float minDist = float.MaxValue;
+        for (int i = 0; i < positionList.Length; i++)
+        {
+            float dist = (position - positionList[i]).magnitude;
+            if (dist < minDist)
+            {
+                minDist = dist;
+                closestPoint = positionList[i];
+            }
+        }
+
+        return closestPoint;
     }
 }
