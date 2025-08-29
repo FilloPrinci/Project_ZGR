@@ -8,13 +8,18 @@ public class CPUManager : MonoBehaviour
 {
     private NativeArray<int> cpuAccelerate;
     private NativeArray<float> cpuSteer;
+    private NativeArray<float> cpuCurrentSpeed;
     private Transform[] cpuTransforms;
 
     public MeshCollider leftCollider;
     public MeshCollider rightCollider;
 
+    public float forwardLookAheadMultiplier = 10f;
+    public float forwardLookSteerMultiplier = 2f;
+
     public float borderLimitDistance = 2f;
     public float borderSafeDistance = 6f;
+
 
     private RaceManager raceManager;
     private CPUInputHandlerManager cpuInputHandlerManager;
@@ -27,6 +32,8 @@ public class CPUManager : MonoBehaviour
     // Debug storage: nearest points found for gizmos
     private Vector3[] nearestLeftPoints;
     private Vector3[] nearestRightPoints;
+
+    private float maxSpeed;
 
     void Start()
     {
@@ -66,35 +73,45 @@ public class CPUManager : MonoBehaviour
         if (timeSinceLastUpdate < updateInterval) return;
         timeSinceLastUpdate = 0f;
 
-        UpdateCPUTransforms();
+        UpdateCPUData();
         RunCPUJob();
         
     }
 
-    private void UpdateCPUTransforms()
+    private void UpdateCPUData()
     {
+        // Update CPU transforms
         List<GameObject> players = raceManager.GetAllPlayerInstances();
 
         Debug.LogWarning($"CPUManager: got {players.Count} players");
 
         List<Transform> cpuTransformList = new List<Transform>();
+        List<float> cpuSpeedList = new List<float>();
 
         foreach (GameObject player in players)
         {
             if (player.GetComponent<PlayerStructure>().data.playerInputIndex == InputIndex.CPU)
             {
+                // collect CPU transforms
                 cpuTransformList.Add(player.transform);
+                // collect CPU current speed
+                cpuSpeedList.Add(player.GetComponent<PlayerController>().GetCurrentSpeed());
             }
         }
 
-        if(cpuTransformList.Count != cpuCount)
+        if(cpuTransformList.Count != cpuCount && cpuSpeedList.Count != cpuCount)
         {
-            Debug.LogWarning($"CPUManager: Expected {cpuCount} CPU players, but found {cpuTransformList.Count}.");
+            Debug.LogWarning($"CPUManager: Expected {cpuCount} CPU players, but found {cpuTransformList.Count} and {cpuSpeedList.Count}.");
         }
         else
         {
             cpuTransforms = cpuTransformList.ToArray();
+            cpuCurrentSpeed = new NativeArray<float>(cpuSpeedList.ToArray(), Allocator.Persistent);
         }
+
+        // TODO : get maxSpeed
+        maxSpeed = players[0].GetComponent<PlayerController>().maxSpeed;
+
     }
 
     private void RunCPUJob()
@@ -115,10 +132,12 @@ public class CPUManager : MonoBehaviour
         NativeArray<Vector3> rightDirections = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
         for (int i = 0; i < cpuCount; i++)
         {
-            if (cpuTransforms[i] != null)
+            if (cpuTransforms[i] != null) {
                 positions[i] = cpuTransforms[i].position;
                 forwardDirections[i] = cpuTransforms[i].forward;
                 rightDirections[i] = cpuTransforms[i].right;
+            }
+                
         }
 
         // Arrays to receive nearest points
@@ -128,10 +147,15 @@ public class CPUManager : MonoBehaviour
         CPUJob job = new CPUJob
         {
             accelerate = cpuAccelerate,
+            currentSpeed = cpuCurrentSpeed,
             steer = cpuSteer,
             positions = positions,
+            lookAheadForwardMultiplier = forwardLookAheadMultiplier,
+            lookAheadRightMultiplier = forwardLookSteerMultiplier,
             forwardDirections = forwardDirections,
             rightDirections = rightDirections,
+
+            maxSpeed = maxSpeed,
 
             leftVertices = leftVertices,
             leftTriangles = leftTriangles,
@@ -187,21 +211,51 @@ public class CPUManager : MonoBehaviour
     {
         if (cpuTransforms == null) return;
 
+        Gizmos.color = Color.white;
+
         for (int i = 0; i < cpuTransforms.Length; i++)
         {
             if (cpuTransforms[i] == null) continue;
 
             Vector3 carPos = cpuTransforms[i].position;
 
-            // Red → left boundary
+            // Disegno direzioni principali della macchina
+            Vector3 forward = cpuTransforms[i].forward;
+            Vector3 right = cpuTransforms[i].right;
+
+            float speed = 0f;
+            if (i < cpuCurrentSpeed.Length) speed = cpuCurrentSpeed[i]; // se hai l'array delle velocità
+
+            float speedFactor = Mathf.Clamp01(speed / maxSpeed );
+
+            carPos += (forward * (1 + (speedFactor * forwardLookAheadMultiplier))) + (right * cpuSteer[i] * forwardLookSteerMultiplier * speedFactor);
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(carPos, carPos + forward * 5f); // forward
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(carPos, carPos + right * 5f);   // right
+
+            // Disegno nearest points (calcolati dal Job)
             Gizmos.color = Color.red;
             Gizmos.DrawLine(carPos, nearestLeftPoints[i]);
             Gizmos.DrawSphere(nearestLeftPoints[i], 0.2f);
 
-            // Blue → right boundary
             Gizmos.color = Color.blue;
             Gizmos.DrawLine(carPos, nearestRightPoints[i]);
             Gizmos.DrawSphere(nearestRightPoints[i], 0.2f);
+
+            // === Disegno le zone Safe e Limit ===
+            
+            float scaledLimit = borderLimitDistance * (1f + speedFactor);
+            float scaledSafe = borderSafeDistance * (1f + speedFactor * 1.5f);
+
+            // Limit zone (arancione)
+            Gizmos.color = new Color(1f, 0.5f, 0f, 0.25f);
+            Gizmos.DrawWireSphere(carPos, scaledLimit);
+
+            // Safe zone (verde chiaro)
+            Gizmos.color = new Color(0f, 1f, 0f, 0.25f);
+            Gizmos.DrawWireSphere(carPos, scaledSafe);
         }
     }
 
@@ -214,6 +268,10 @@ public class CPUManager : MonoBehaviour
         // Input/Output arrays
         // =========================
         [ReadOnly] public NativeArray<int> accelerate;
+        [ReadOnly] public NativeArray<float> currentSpeed;
+        [ReadOnly] public float maxSpeed;
+        [ReadOnly] public float lookAheadForwardMultiplier;
+        [ReadOnly] public float lookAheadRightMultiplier;
         public NativeArray<float> steer;
         [ReadOnly] public NativeArray<Vector3> positions;
         [ReadOnly] public NativeArray<Vector3> forwardDirections;
@@ -249,6 +307,20 @@ public class CPUManager : MonoBehaviour
         {
             Vector3 pos = positions[index];
 
+            // === Define car orientation
+            Vector3 forward = forwardDirections[index];
+            Vector3 right = rightDirections[index];
+
+            // === Scale steering thresholds and intensity with speed ===
+            float speed = currentSpeed[index];
+            float speedFactor = Mathf.Clamp01(speed / maxSpeed);
+
+            float currentSteer = steer[index];
+            
+
+            // Use a position slightly ahead of the car for better zone classification
+            pos += (forward * (1 + (speedFactor * lookAheadForwardMultiplier))) + (right * currentSteer * lookAheadRightMultiplier * speedFactor);
+
             // === Compute closest points & squared distances ===
             float leftDist = ComputeClosestDistance(pos, leftVertices, leftTriangles, leftLocalToWorld, out Vector3 closestLeft);
             float rightDist = ComputeClosestDistance(pos, rightVertices, rightTriangles, rightLocalToWorld, out Vector3 closestRight);
@@ -256,16 +328,22 @@ public class CPUManager : MonoBehaviour
             nearestLeft[index] = closestLeft;
             nearestRight[index] = closestRight;
 
-            // === Define car orientation
-            Vector3 forward = forwardDirections[index];
-            Vector3 right = rightDirections[index];
-
             // === Classify boundaries ===
             var leftZone = ClassifyZone(pos, forward, right, closestLeft);
             var rightZone = ClassifyZone(pos, forward, right, closestRight);
 
-            // === Decide steering ===
-            steer[index] = DecideSteering(leftZone, rightZone, leftDist, rightDist);
+            
+            // supponiamo 50 = velocità "alta" (da tarare in base al tuo gioco)
+
+            float scaledLimit = limitDistance * (1f + speedFactor); // aumenta la distanza limite
+            float scaledSafe = safeDistance * (1f + speedFactor * 1.5f); // aumenta la distanza sicura
+
+            float steerIntensity = Mathf.Lerp(0.5f, 1f, speedFactor);
+            // a bassa velocità sterza forte, ad alta velocità sterza più morbido
+
+            // === Decide steering con parametri scalati ===
+            steer[index] = DecideSteering(leftZone, rightZone, leftDist, rightDist, scaledLimit, scaledSafe, steerIntensity);
+            accelerate[index] = 1; // always accelerate
         }
 
         // =========================
@@ -274,12 +352,20 @@ public class CPUManager : MonoBehaviour
         private float DecideSteering(
             (VerticalZone v, HorizontalZone h) leftZone,
             (VerticalZone v, HorizontalZone h) rightZone,
-            float leftDist, float rightDist)
+            float leftDist, float rightDist,
+            float limit, float safe, float steerIntensity)
         {
-            float steerLeft = ComputeSteeringFromLeft(leftZone.v, leftZone.h, leftDist);
-            float steerRight = ComputeSteeringFromRight(rightZone.v, rightZone.h, rightDist);
+            float steer = 0f;
 
-            return Mathf.Clamp(steerLeft + steerRight, -1f, 1f);
+            if (leftDist < rightDist) { 
+                steer = ComputeSteeringFromLesftEasy(leftZone, rightZone, leftDist, limit, safe, steerIntensity);
+            }
+            else
+            {
+                steer = ComputeSteeringFromRightEasy(leftZone, rightZone, rightDist, limit, safe, steerIntensity);
+            }
+
+            return steer;
         }
 
         // =========================
@@ -287,74 +373,147 @@ public class CPUManager : MonoBehaviour
         // =========================
         private (VerticalZone, HorizontalZone) ClassifyZone(Vector3 carPos, Vector3 forward, Vector3 right, Vector3 point)
         {
+            float verticalCenterDepth = 2f; // Depth of the central vertical zone
+            float verticalOffset = 0.5f; // Offset to shift the center zone forward
+            float horizontalCenterWidth = 2f; // Width of the central horizontal zone
+
             // Transform into car-local space
             Vector3 local = Quaternion.Inverse(Quaternion.LookRotation(forward, Vector3.up)) * (point - carPos);
 
             VerticalZone vZone;
-            if (local.z < -1f) vZone = VerticalZone.Behind;
-            else if (local.z > 1f) vZone = VerticalZone.Ahead;
+            if (local.z < -(verticalCenterDepth/2f) + verticalOffset) vZone = VerticalZone.Behind;
+            else if (local.z > verticalCenterDepth/2f + verticalOffset) vZone = VerticalZone.Ahead;
             else vZone = VerticalZone.Center;
 
             HorizontalZone hZone;
-            if (local.x < -1f) hZone = HorizontalZone.Left;
-            else if (local.x > 1f) hZone = HorizontalZone.Right;
+            if (local.x < -(horizontalCenterWidth/2f)) hZone = HorizontalZone.Left;
+            else if (local.x > horizontalCenterWidth / 2f) hZone = HorizontalZone.Right;
             else hZone = HorizontalZone.Center;
 
             return (vZone, hZone);
         }
 
         // =========================
-        // STEERING LOGIC
+        // STEERING LOGIC (UPDATED WITH CLAMP)
         // =========================
-        private float ComputeSteeringFromLeft(VerticalZone vZone, HorizontalZone hZone, float dist)
+
+        private float ComputeSteeringFromLesftEasy((VerticalZone v, HorizontalZone h) leftZone,
+            (VerticalZone v, HorizontalZone h) rightZone, float dist, float limit, float safe, float intensity)
         {
             float steer = 0f;
-            if (vZone == VerticalZone.Behind) return 0f; // Ignore if behind
 
-            if (vZone == VerticalZone.Center)
+            if(leftZone.v != VerticalZone.Behind)
             {
-                if (hZone == HorizontalZone.Left || hZone == HorizontalZone.Center)
+                // --- Compute distance-based factor ---
+                float distanceFactor = ComputeDistanceFactorEasy(dist, limit, safe);
+
+
+                if (dist < safe * safe)
                 {
-                    if (dist < limitDistance * limitDistance) steer = +1f;   // Hard steer right
-                    else if (dist < safeDistance * safeDistance) steer = +0.25f; // Soft steer right
+                    steer = 1 * distanceFactor;
                 }
-                else if (hZone == HorizontalZone.Right)
-                {
-                    steer = +1f; // Always steer away from left border
-                }
+
             }
-            else if (vZone == VerticalZone.Ahead)
-            {
-                if (dist < limitDistance * limitDistance) steer = +1f;
-                else steer = +0.25f;
-            }
+
             return steer;
         }
 
-        private float ComputeSteeringFromRight(VerticalZone vZone, HorizontalZone hZone, float dist)
+        private float ComputeSteeringFromRightEasy((VerticalZone v, HorizontalZone h) leftZone,
+            (VerticalZone v, HorizontalZone h) rightZone, float dist, float limit, float safe, float intensity)
         {
             float steer = 0f;
-            if (vZone == VerticalZone.Behind) return 0f; // Ignore if behind
 
-            if (vZone == VerticalZone.Center)
+            if (rightZone.v != VerticalZone.Behind)
             {
-                if (hZone == HorizontalZone.Right || hZone == HorizontalZone.Center)
+                // --- Compute distance-based factor ---
+                float distanceFactor = ComputeDistanceFactorEasy(dist, limit, safe);
+                if (dist < safe * safe)
                 {
-                    if (dist < limitDistance * limitDistance) steer = -1f;   // Hard steer left
-                    else if (dist < safeDistance * safeDistance) steer = -0.25f; // Soft steer left
-                }
-                else if (hZone == HorizontalZone.Left)
-                {
-                    steer = -1f; // Always steer away from right border
+                    steer = -1f * distanceFactor;
                 }
             }
-            else if (vZone == VerticalZone.Ahead)
-            {
-                if (dist < limitDistance * limitDistance) steer = -1f;
-                else steer = -0.25f;
-            }
+
             return steer;
         }
+
+        private float ComputeSteeringFromLeft(VerticalZone vZone, HorizontalZone hZone, float dist, float limit, float safe, float intensity)
+        {
+            float steer = 0f;
+            if (vZone == VerticalZone.Behind && hZone == HorizontalZone.Center) return 0f;
+
+            if (vZone == VerticalZone.Center || vZone == VerticalZone.Ahead)
+            {
+                if (hZone == HorizontalZone.Center)
+                {
+                    steer = +0.25f * intensity;
+                }
+                else
+                {
+                    // --- Compute distance-based factor ---
+                    float distanceFactor = ComputeDistanceFactor(dist, limit, safe);
+
+                    if (dist < limit * limit) steer = +1f * intensity * distanceFactor;
+                    else if (dist < safe * safe) steer = +0.5f * intensity * distanceFactor;
+                }
+            }
+
+            return Mathf.Clamp(steer, -1f, 1f);
+        }        
+
+        private float ComputeSteeringFromRight(VerticalZone vZone, HorizontalZone hZone, float dist, float limit, float safe, float intensity)
+        {
+            float steer = 0f;
+            if (vZone == VerticalZone.Behind && hZone == HorizontalZone.Center) return 0f;
+
+            if (vZone == VerticalZone.Center || vZone == VerticalZone.Ahead)
+            {
+                if (hZone == HorizontalZone.Center)
+                {
+                    steer = -0.25f * intensity;
+                }
+                else
+                {
+                    // --- Compute distance-based factor ---
+                    float distanceFactor = ComputeDistanceFactor(dist, limit, safe);
+
+                    if (dist < limit * limit) steer = -1f * intensity * distanceFactor;
+                    else if (dist < safe * safe) steer = -0.25f * intensity * distanceFactor;
+                }
+            }
+
+            return Mathf.Clamp(steer, -1f, 1f);
+        }
+
+        // =========================
+        // NEW: Distance factor helper
+        // =========================
+        private float ComputeDistanceFactor(float sqrDist, float limit, float safe)
+        {
+            float dist = Mathf.Sqrt(sqrDist);
+
+            if (dist >= safe) return 1f;   // far enough → normal steer
+            if (dist <= limit) return 2f;  // too close → double steer
+
+            // Between safe and limit → smooth interpolation
+            float t = Mathf.InverseLerp(safe, limit, dist);
+            return Mathf.Lerp(1f, 2f, 1f - t);
+        }
+
+        private float ComputeDistanceFactorEasy(float quadDist, float limit, float safe)
+        {
+            float distanceFactor = 0.1f;
+
+            float dist = Mathf.Sqrt(quadDist);
+            if (dist > safe)
+            {
+                dist = safe;
+            }
+
+            distanceFactor = 1f - (dist / safe);
+
+            return distanceFactor;
+        }
+
 
         // =========================
         // GEOMETRY HELPERS
