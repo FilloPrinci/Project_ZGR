@@ -3493,7 +3493,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653553429851347639, guid: 3c37009c015ee844c833d6ca91281026, type: 3}
       propertyPath: cpuPlayerAmount
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4320255521794542767, guid: 3c37009c015ee844c833d6ca91281026, type: 3}
       propertyPath: m_Name
@@ -3566,7 +3566,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftCollider: {fileID: 1890541143}
   rightCollider: {fileID: 1890541144}
-  forwardLookAheadMultiplier: 15
+  forwardLookAheadMultiplier: 20
   forwardLookSteerMultiplier: 10
   borderLimitDistance: 1
   borderSafeDistance: 7.5
