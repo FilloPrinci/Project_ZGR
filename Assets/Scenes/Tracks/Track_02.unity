@@ -3570,6 +3570,15 @@ MonoBehaviour:
   forwardLookSteerMultiplier: 10
   borderLimitDistance: 1
   borderSafeDistance: 7.5
+  raceTrackPointList:
+  - {fileID: 112412639}
+  - {fileID: 256714999}
+  - {fileID: 534158473}
+  - {fileID: 2051513046}
+  - {fileID: 1906062909}
+  - {fileID: 1521533795}
+  - {fileID: 45298809}
+  - {fileID: 1127827913}
   cpuCount: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
