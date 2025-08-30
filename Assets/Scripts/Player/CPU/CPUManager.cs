@@ -20,6 +20,7 @@ public class CPUManager : MonoBehaviour
     public float borderLimitDistance = 2f;
     public float borderSafeDistance = 6f;
 
+    public List<Transform> raceTrackPointList;
 
     private RaceManager raceManager;
     private CPUInputHandlerManager cpuInputHandlerManager;
@@ -518,6 +519,23 @@ public class CPUManager : MonoBehaviour
         // =========================
         // GEOMETRY HELPERS
         // =========================
+        private Vector3 FindNearestPoint(Vector3 pos, NativeArray<Vector3> vertices)
+        {
+            float minDist = float.MaxValue;
+            Vector3 closestPoint = pos;
+
+            for (int i = 0; i < vertices.Length; i++) { 
+                float dist = (pos - vertices[i]).magnitude;
+
+                if (dist < minDist) { 
+                    minDist = dist; 
+                    closestPoint = vertices[i];
+                }
+            }
+
+            return closestPoint;
+        }
+
         private float ComputeClosestDistance(Vector3 pos, NativeArray<Vector3> vertices, NativeArray<int> triangles, Matrix4x4 localToWorld, out Vector3 closestPoint)
         {
             float minDist = float.MaxValue;
