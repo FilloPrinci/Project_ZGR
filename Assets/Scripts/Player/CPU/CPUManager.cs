@@ -34,6 +34,8 @@ public class CPUManager : MonoBehaviour
     private Vector3[] nearestLeftPoints;
     private Vector3[] nearestRightPoints;
 
+    private NativeArray<Vector3> nearestRsceLinePositions;
+
     private float maxSpeed;
 
     void Start()
@@ -60,6 +62,7 @@ public class CPUManager : MonoBehaviour
 
         nearestLeftPoints = new Vector3[cpuCount];
         nearestRightPoints = new Vector3[cpuCount];
+        nearestRsceLinePositions = new NativeArray<Vector3>(cpuCount, Allocator.Persistent);
 
         for (int i = 0; i < cpuCount; i++)
         {
@@ -144,6 +147,15 @@ public class CPUManager : MonoBehaviour
         // Arrays to receive nearest points
         NativeArray<Vector3> nearestLeft = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
         NativeArray<Vector3> nearestRight = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
+        NativeArray<Vector3> raceLinePointsPositions = new NativeArray<Vector3>(raceTrackPointList.Count, Allocator.TempJob);
+        NativeArray<Vector3> nearestRaceLinePoints  = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
+
+        for (int i = 0; i < raceTrackPointList.Count; i++)
+        {
+            raceLinePointsPositions[i] = raceTrackPointList[i].position;
+        }
+
+
 
         CPUJob job = new CPUJob
         {
@@ -155,6 +167,8 @@ public class CPUManager : MonoBehaviour
             lookAheadRightMultiplier = forwardLookSteerMultiplier,
             forwardDirections = forwardDirections,
             rightDirections = rightDirections,
+            raceLinePoints = raceLinePointsPositions,
+            nearestRaceLinePoints = nearestRaceLinePoints,
 
             maxSpeed = maxSpeed,
 
@@ -184,6 +198,7 @@ public class CPUManager : MonoBehaviour
             // Save nearest points for gizmos
             nearestLeftPoints[i] = nearestLeft[i];
             nearestRightPoints[i] = nearestRight[i];
+            nearestRsceLinePositions[i] = nearestRsceLinePositions[i];
         }
 
         leftVertices.Dispose();
@@ -245,8 +260,15 @@ public class CPUManager : MonoBehaviour
             Gizmos.DrawLine(carPos, nearestRightPoints[i]);
             Gizmos.DrawSphere(nearestRightPoints[i], 0.2f);
 
-            // === Disegno le zone Safe e Limit ===
+            // Disegno nearest race line
             
+
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(carPos, nearestRsceLinePositions[i]);
+            Gizmos.DrawSphere(nearestRightPoints[i], 0.2f);
+
+            // === Disegno le zone Safe e Limit ===
+
             float scaledLimit = borderLimitDistance * (1f + speedFactor);
             float scaledSafe = borderSafeDistance * (1f + speedFactor * 1.5f);
 
@@ -274,9 +296,11 @@ public class CPUManager : MonoBehaviour
         [ReadOnly] public float lookAheadForwardMultiplier;
         [ReadOnly] public float lookAheadRightMultiplier;
         public NativeArray<float> steer;
+        [ReadOnly] public NativeArray<Vector3> nearestRaceLinePoints;
         [ReadOnly] public NativeArray<Vector3> positions;
         [ReadOnly] public NativeArray<Vector3> forwardDirections;
         [ReadOnly] public NativeArray<Vector3> rightDirections;
+         public NativeArray<Vector3> raceLinePoints;
 
         // Track boundaries
         [ReadOnly] public NativeArray<Vector3> leftVertices;
@@ -341,6 +365,8 @@ public class CPUManager : MonoBehaviour
 
             float steerIntensity = Mathf.Lerp(0.5f, 1f, speedFactor);
             // a bassa velocità sterza forte, ad alta velocità sterza più morbido
+
+            nearestRaceLinePoints[index] = FindNearestPoint(pos, raceLinePoints);
 
             // === Decide steering con parametri scalati ===
             steer[index] = DecideSteering(leftZone, rightZone, leftDist, rightDist, scaledLimit, scaledSafe, steerIntensity);
