@@ -24,6 +24,7 @@ public class CPUManager : MonoBehaviour
     private NativeArray<int> JOB_IO_cpuAccelerate;
     private NativeArray<float> JOB_IO_cpuSteer;
     private NativeArray<float> JOB_I_cpuCurrentSpeed;
+    private NativeArray<bool> JOB_I_cpuInCorner;
     private Transform[] JOB_I_cpuTransforms;
     private Transform[] JOB_I_nextRaceLineTransforms;
     private float JOB_I_maxSpeed;
@@ -70,6 +71,7 @@ public class CPUManager : MonoBehaviour
         JOB_IO_cpuSteer = new NativeArray<float>(cpuCount, Allocator.Persistent);
         JOB_I_cpuTransforms = new Transform[cpuCount];
         JOB_I_nextRaceLineTransforms = new Transform[cpuCount];
+        JOB_I_cpuInCorner = new NativeArray<bool>(cpuCount, Allocator.Persistent);
 
         JOB_O_nearestLeftPoints = new Vector3[cpuCount];
         JOB_O_nearestRightPoints = new Vector3[cpuCount];
@@ -164,11 +166,10 @@ public class CPUManager : MonoBehaviour
         // Update CPU transforms
         List<GameObject> players = raceManager.GetAllPlayerInstances();
 
-        Debug.LogWarning($"CPUManager: got {players.Count} players");
-
         List<Transform> cpuTransformList = new List<Transform>();
         List<float> cpuSpeedList = new List<float>();
         List<Transform> nextRaceLinePositionList = new List<Transform>();
+        List<bool> cpuInCornerList = new List<bool>();
 
         foreach (GameObject player in players)
         {
@@ -181,7 +182,22 @@ public class CPUManager : MonoBehaviour
                 // collect CPU next checkpoint transform
                 int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.name == player.GetComponent<PlayerStructure>().data.name);
                 int nextCheckpointIndex = raceData.playerRaceDataList[playerDataToUpdateIndex].nextCheckpointIndex;
-                nextRaceLinePositionList.Add(checkPointList[nextCheckpointIndex].transform);
+
+                GameObject nextCheckpoint = checkPointList[nextCheckpointIndex];
+
+                if (nextCheckpoint != null) {
+                    nextRaceLinePositionList.Add(nextCheckpoint.transform);
+                    CheckpointType checkpointType = nextCheckpoint.GetComponent<CheckpointType>();
+                    if(checkpointType != null)
+                    {
+                        if(checkpointType.checkpointType == CheckpointTypeEnum.CornerMid || checkpointType.checkpointType == CheckpointTypeEnum.CornerEnd)
+                            cpuInCornerList.Add(true);
+                        else
+                            cpuInCornerList.Add(false);
+                    }
+                }
+
+                
             }
         }
 
@@ -194,6 +210,7 @@ public class CPUManager : MonoBehaviour
             JOB_I_cpuTransforms = cpuTransformList.ToArray();
             JOB_I_cpuCurrentSpeed = new NativeArray<float>(cpuSpeedList.ToArray(), Allocator.Persistent);
             JOB_I_nextRaceLineTransforms = nextRaceLinePositionList.ToArray();
+            JOB_I_cpuInCorner = new NativeArray<bool>(cpuInCornerList.ToArray(), Allocator.Persistent);
         }
 
         // TODO : get maxSpeed
@@ -222,7 +239,9 @@ public class CPUManager : MonoBehaviour
 
         for (int i = 0; i < cpuCount; i++)
         {
+
             raceLinePoints[i] = JOB_I_nextRaceLineTransforms[i].transform.position;
+
 
             if (JOB_I_cpuTransforms[i] != null) {
                 positions[i] = JOB_I_cpuTransforms[i].position;
@@ -248,6 +267,7 @@ public class CPUManager : MonoBehaviour
             forwardDirections = forwardDirections,
             rightDirections = rightDirections,
             raceLinePoints = raceLinePoints,
+            inCorner = JOB_I_cpuInCorner,
 
             maxSpeed = JOB_I_maxSpeed,
 
