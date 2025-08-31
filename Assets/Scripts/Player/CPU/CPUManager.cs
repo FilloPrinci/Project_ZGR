@@ -10,7 +10,6 @@ public class CPUManager : MonoBehaviour
     [Header("Input Data")]
     public MeshCollider leftCollider;
     public MeshCollider rightCollider;
-    public List<Transform> RaceLinePositionList;
 
     [Header("Configuration")]
     public float forwardLookAheadMultiplier = 10f;
@@ -21,11 +20,12 @@ public class CPUManager : MonoBehaviour
     #endregion
 
     #region PRIVATE VARIABLES
+    
     private NativeArray<int> JOB_IO_cpuAccelerate;
     private NativeArray<float> JOB_IO_cpuSteer;
     private NativeArray<float> JOB_I_cpuCurrentSpeed;
     private Transform[] JOB_I_cpuTransforms;
-    private Transform[] JOB_I_raceLineTransforms;
+    private Transform[] JOB_I_nextRaceLineTransforms;
     private float JOB_I_maxSpeed;
 
     // Debug storage: nearest points found for gizmos
@@ -34,6 +34,8 @@ public class CPUManager : MonoBehaviour
     private Vector3[] JOB_O_nearestRaceLinePoints;
 
     private RaceManager raceManager;
+    private RaceData raceData;
+    List<GameObject> checkPointList;
     private CPUInputHandlerManager cpuInputHandlerManager;
 
     [SerializeField] private int cpuCount = 1;
@@ -51,6 +53,8 @@ public class CPUManager : MonoBehaviour
             Debug.LogError("RaceManager instance not found.");
             return;
         }
+        raceData = raceManager.GetRaceData();
+        checkPointList = raceManager.checkPointList;
 
         cpuInputHandlerManager = CPUInputHandlerManager.Instance;
         if (cpuInputHandlerManager == null)
@@ -61,10 +65,11 @@ public class CPUManager : MonoBehaviour
 
         cpuCount = cpuInputHandlerManager.cpuPlayerAmount;
 
+
         JOB_IO_cpuAccelerate = new NativeArray<int>(cpuCount, Allocator.Persistent);
         JOB_IO_cpuSteer = new NativeArray<float>(cpuCount, Allocator.Persistent);
         JOB_I_cpuTransforms = new Transform[cpuCount];
-        JOB_I_raceLineTransforms = new Transform[RaceLinePositionList.Count];
+        JOB_I_nextRaceLineTransforms = new Transform[cpuCount];
 
         JOB_O_nearestLeftPoints = new Vector3[cpuCount];
         JOB_O_nearestRightPoints = new Vector3[cpuCount];
@@ -116,21 +121,26 @@ public class CPUManager : MonoBehaviour
 
             float speedFactor = Mathf.Clamp01(speed / JOB_I_maxSpeed);
 
-            carPos += (forward * (1 + (speedFactor * forwardLookAheadMultiplier))) + (right * JOB_IO_cpuSteer[i] * forwardLookSteerMultiplier * speedFactor);
+            Vector3 forwardSensorPoistion = carPos + (forward * (1 + (speedFactor * forwardLookAheadMultiplier))) + (right * JOB_IO_cpuSteer[i] * forwardLookSteerMultiplier * speedFactor);
 
             Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(carPos, carPos + forward * 5f); // forward
+            Gizmos.DrawLine(forwardSensorPoistion, forwardSensorPoistion + forward * 5f); // forward
             Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(carPos, carPos + right * 5f);   // right
+            Gizmos.DrawLine(forwardSensorPoistion, forwardSensorPoistion + right * 5f);   // right
 
             // Disegno nearest points (calcolati dal Job)
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(carPos, JOB_O_nearestLeftPoints[i]);
+            Gizmos.DrawLine(forwardSensorPoistion, JOB_O_nearestLeftPoints[i]);
             Gizmos.DrawSphere(JOB_O_nearestLeftPoints[i], 0.2f);
 
             Gizmos.color = Color.blue;
-            Gizmos.DrawLine(carPos, JOB_O_nearestRightPoints[i]);
+            Gizmos.DrawLine(forwardSensorPoistion, JOB_O_nearestRightPoints[i]);
             Gizmos.DrawSphere(JOB_O_nearestRightPoints[i], 0.2f);
+
+            // Nearest RaceLine point
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(carPos, JOB_O_nearestRaceLinePoints[i]);
+            Gizmos.DrawSphere(JOB_O_nearestRaceLinePoints[i], 0.2f);
 
             // === Disegno le zone Safe e Limit ===
 
@@ -139,11 +149,11 @@ public class CPUManager : MonoBehaviour
 
             // Limit zone (arancione)
             Gizmos.color = new Color(1f, 0.5f, 0f, 0.25f);
-            Gizmos.DrawWireSphere(carPos, scaledLimit);
+            Gizmos.DrawWireSphere(forwardSensorPoistion, scaledLimit);
 
             // Safe zone (verde chiaro)
             Gizmos.color = new Color(0f, 1f, 0f, 0.25f);
-            Gizmos.DrawWireSphere(carPos, scaledSafe);
+            Gizmos.DrawWireSphere(forwardSensorPoistion, scaledSafe);
         }
     }
     #endregion
@@ -158,6 +168,7 @@ public class CPUManager : MonoBehaviour
 
         List<Transform> cpuTransformList = new List<Transform>();
         List<float> cpuSpeedList = new List<float>();
+        List<Transform> nextRaceLinePositionList = new List<Transform>();
 
         foreach (GameObject player in players)
         {
@@ -167,6 +178,10 @@ public class CPUManager : MonoBehaviour
                 cpuTransformList.Add(player.transform);
                 // collect CPU current speed
                 cpuSpeedList.Add(player.GetComponent<PlayerController>().GetCurrentSpeed());
+                // collect CPU next checkpoint transform
+                int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.name == player.GetComponent<PlayerStructure>().data.name);
+                int nextCheckpointIndex = raceData.playerRaceDataList[playerDataToUpdateIndex].nextCheckpointIndex;
+                nextRaceLinePositionList.Add(checkPointList[nextCheckpointIndex].transform);
             }
         }
 
@@ -178,6 +193,7 @@ public class CPUManager : MonoBehaviour
         {
             JOB_I_cpuTransforms = cpuTransformList.ToArray();
             JOB_I_cpuCurrentSpeed = new NativeArray<float>(cpuSpeedList.ToArray(), Allocator.Persistent);
+            JOB_I_nextRaceLineTransforms = nextRaceLinePositionList.ToArray();
         }
 
         // TODO : get maxSpeed
@@ -202,16 +218,12 @@ public class CPUManager : MonoBehaviour
         NativeArray<Vector3> forwardDirections = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
         NativeArray<Vector3> rightDirections = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
 
-        NativeArray<Vector3> raceLinePoints = new NativeArray<Vector3>(RaceLinePositionList.Count, Allocator.TempJob);
-
-        for(int i = 0; i < RaceLinePositionList.Count; i++)
-        {
-            raceLinePoints[i] = RaceLinePositionList[i].transform.position;
-        }
-
+        NativeArray<Vector3> raceLinePoints = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
 
         for (int i = 0; i < cpuCount; i++)
         {
+            raceLinePoints[i] = JOB_I_nextRaceLineTransforms[i].transform.position;
+
             if (JOB_I_cpuTransforms[i] != null) {
                 positions[i] = JOB_I_cpuTransforms[i].position;
                 forwardDirections[i] = JOB_I_cpuTransforms[i].forward;
