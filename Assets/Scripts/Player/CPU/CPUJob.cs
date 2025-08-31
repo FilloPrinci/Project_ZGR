@@ -1,6 +1,7 @@
 ﻿using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 // ============================
@@ -21,6 +22,7 @@ public struct CPUJob : IJobParallelFor
     [ReadOnly] public NativeArray<Vector3> forwardDirections;
     [ReadOnly] public NativeArray<Vector3> rightDirections;
     [ReadOnly] public NativeArray<Vector3> raceLinePoints;
+    [ReadOnly] public NativeArray<bool> inCorner;
 
     // Track boundaries
     [ReadOnly] public NativeArray<Vector3> leftVertices;
@@ -83,11 +85,45 @@ public struct CPUJob : IJobParallelFor
 
         float steerIntensity = Mathf.Lerp(0.5f, 1f, speedFactor);
 
+        float sensorBasedSteer = 0f;
+        sensorBasedSteer = DecideSafeSensorSteering(leftZone, rightZone, leftDist, rightDist, scaledSafe, steerIntensity);
+
+        bool limitAllert = false;
+        if (leftDist < scaledLimit || rightDist < scaledLimit) limitAllert = true;
+
+        float raceLineBasedSteer = 0f;
         nearestRaceLinePoint[index] = NearestPointFromList(vehiclePosition, raceLinePoints);
-        
+        float horizontalOffset = HorizontalOffset(vehiclePosition, right, nearestRaceLinePoint[index]);
+        HorizontalZone nearestRaceLinePointZone = HorizontalRelativeTo(vehiclePosition, right, nearestRaceLinePoint[index], 2f);
+        Debug.Log("horizontalOffset: " + horizontalOffset + " zone: " + nearestRaceLinePointZone);
+        if(nearestRaceLinePointZone == HorizontalZone.Center)
+        {
+            horizontalOffset = 0f; // ignore small offsets when the point is in front
+        }
+        else
+        {
+            raceLineBasedSteer = DecideRaceLineSteering(horizontalOffset);
+        }
+
 
         // === Decide steering con parametri scalati ===
-        steer[index] = DecideSteering(leftZone, rightZone, leftDist, rightDist, scaledLimit, scaledSafe, steerIntensity);
+        if(inCorner[index])
+        {
+            steer[index] = sensorBasedSteer;
+        }
+        else
+        {
+            if (limitAllert)
+            {
+                steer[index] = sensorBasedSteer; // sensor has priority
+            }
+            else
+            {
+                steer[index] = raceLineBasedSteer; // weighted average, Race line is more important
+            }
+        }
+
+        
         accelerate[index] = 1; // always accelerate
         
     }
@@ -95,22 +131,30 @@ public struct CPUJob : IJobParallelFor
     // =========================
     // NEW: Central decision logic
     // =========================
-    private float DecideSteering(
+    private float DecideSafeSensorSteering(
         (VerticalZone v, HorizontalZone h) leftZone,
         (VerticalZone v, HorizontalZone h) rightZone,
-        float leftDist, float rightDist,
-        float limit, float safe, float steerIntensity)
+        float leftDist, float rightDist, float safe, float steerIntensity)
     {
         float steer = 0f;
 
         if (leftDist < rightDist)
         {
-            steer = ComputeSteeringFromLesftEasy(leftZone, rightZone, leftDist, limit, safe, steerIntensity);
+            steer = ComputeSteeringFromLesftEasy(leftZone, rightZone, leftDist, safe, steerIntensity);
         }
         else
         {
-            steer = ComputeSteeringFromRightEasy(leftZone, rightZone, rightDist, limit, safe, steerIntensity);
+            steer = ComputeSteeringFromRightEasy(leftZone, rightZone, rightDist, safe, steerIntensity);
         }
+
+        return steer;
+    }
+
+    private float DecideRaceLineSteering(float raceLinePointOffset)
+    {
+        float steer = 0f;
+
+        steer = Mathf.Clamp(raceLinePointOffset / 50f, -1f, 1f); // Normalize and clamp to [-1, 1]
 
         return steer;
     }
@@ -120,41 +164,39 @@ public struct CPUJob : IJobParallelFor
     // =========================
     private (VerticalZone, HorizontalZone) ClassifyZone(Vector3 carPos, Vector3 forward, Vector3 right, Vector3 point)
     {
-        float verticalCenterDepth = 2f; // Depth of the central vertical zone
-        float verticalOffset = 0.5f; // Offset to shift the center zone forward
-
         VerticalZone vZone;
-        vZone = verticalRealativeTo(carPos, forward, point);
+        vZone = VerticalRelativeTo(carPos, forward, point);
 
         HorizontalZone hZone;
-        hZone = horizontalRelativeTo(carPos, right, point);
+        hZone = HorizontalRelativeTo(carPos, right, point, 2f);
 
         return (vZone, hZone);
     }
 
-    private VerticalZone verticalRealativeTo(Vector3 carPos, Vector3 forward, Vector3 point)
+    private VerticalZone VerticalRelativeTo(Vector3 carPos, Vector3 forward, Vector3 point, float threshold = 1f)
     {
-        float verticalCenterDepth = 2f; // Depth of the central vertical zone
-        float verticalOffset = 0.5f; // Offset to shift the center zone forward
-        // Transform into car-local space
-        Vector3 local = Quaternion.Inverse(Quaternion.LookRotation(forward, Vector3.up)) * (point - carPos);
-        VerticalZone vZone;
-        if (local.z < -(verticalCenterDepth / 2f) + verticalOffset) vZone = VerticalZone.Behind;
-        else if (local.z > verticalCenterDepth / 2f + verticalOffset) vZone = VerticalZone.Ahead;
-        else vZone = VerticalZone.Center;
-        return vZone;
+        Vector3 diff = point - carPos;
+        float z = Vector3.Dot(forward.normalized, diff);
+
+        if (z < -threshold) return VerticalZone.Behind;
+        if (z > threshold) return VerticalZone.Ahead;
+        return VerticalZone.Center;
     }
 
-    private HorizontalZone horizontalRelativeTo(Vector3 carPos, Vector3 right, Vector3 point)
+    private HorizontalZone HorizontalRelativeTo(Vector3 carPos, Vector3 right, Vector3 point, float threshold = 1f)
     {
-        float horizontalCenterWidth = 2f; // Width of the central horizontal zone
-        // Transform into car-local space
-        Vector3 local = Quaternion.Inverse(Quaternion.LookRotation(right, Vector3.up)) * (point - carPos);
-        HorizontalZone hZone;
-        if (local.x < -(horizontalCenterWidth / 2f)) hZone = HorizontalZone.Left;
-        else if (local.x > horizontalCenterWidth / 2f) hZone = HorizontalZone.Right;
-        else hZone = HorizontalZone.Center;
-        return hZone;
+        float x = HorizontalOffset(carPos, right, point);
+
+        if (x < -threshold) return HorizontalZone.Left;
+        if (x > threshold) return HorizontalZone.Right;
+        return HorizontalZone.Center;
+    }
+
+    private float HorizontalOffset(Vector3 carPos, Vector3 right, Vector3 point)
+    {
+        Vector3 diff = point - carPos;
+        float x = Vector3.Dot(right.normalized, diff);
+        return x;
     }
 
     // =========================
@@ -162,14 +204,14 @@ public struct CPUJob : IJobParallelFor
     // =========================
 
     private float ComputeSteeringFromLesftEasy((VerticalZone v, HorizontalZone h) leftZone,
-        (VerticalZone v, HorizontalZone h) rightZone, float dist, float limit, float safe, float intensity)
+        (VerticalZone v, HorizontalZone h) rightZone, float dist, float safe, float intensity)
     {
         float steer = 0f;
 
         if (leftZone.v != VerticalZone.Behind)
         {
             // --- Compute distance-based factor ---
-            float distanceFactor = ComputeDistanceFactorEasy(dist, limit, safe);
+            float distanceFactor = ComputeDistanceFactorEasy(dist, safe);
 
 
             if (dist < safe * safe)
@@ -183,14 +225,14 @@ public struct CPUJob : IJobParallelFor
     }
 
     private float ComputeSteeringFromRightEasy((VerticalZone v, HorizontalZone h) leftZone,
-        (VerticalZone v, HorizontalZone h) rightZone, float dist, float limit, float safe, float intensity)
+        (VerticalZone v, HorizontalZone h) rightZone, float dist, float safe, float intensity)
     {
         float steer = 0f;
 
         if (rightZone.v != VerticalZone.Behind)
         {
             // --- Compute distance-based factor ---
-            float distanceFactor = ComputeDistanceFactorEasy(dist, limit, safe);
+            float distanceFactor = ComputeDistanceFactorEasy(dist, safe);
             if (dist < safe * safe)
             {
                 steer = -1f * distanceFactor;
@@ -200,70 +242,11 @@ public struct CPUJob : IJobParallelFor
         return steer;
     }
 
-    private float ComputeSteeringFromLeft(VerticalZone vZone, HorizontalZone hZone, float dist, float limit, float safe, float intensity)
-    {
-        float steer = 0f;
-        if (vZone == VerticalZone.Behind && hZone == HorizontalZone.Center) return 0f;
-
-        if (vZone == VerticalZone.Center || vZone == VerticalZone.Ahead)
-        {
-            if (hZone == HorizontalZone.Center)
-            {
-                steer = +0.25f * intensity;
-            }
-            else
-            {
-                // --- Compute distance-based factor ---
-                float distanceFactor = ComputeDistanceFactor(dist, limit, safe);
-
-                if (dist < limit * limit) steer = +1f * intensity * distanceFactor;
-                else if (dist < safe * safe) steer = +0.5f * intensity * distanceFactor;
-            }
-        }
-
-        return Mathf.Clamp(steer, -1f, 1f);
-    }
-
-    private float ComputeSteeringFromRight(VerticalZone vZone, HorizontalZone hZone, float dist, float limit, float safe, float intensity)
-    {
-        float steer = 0f;
-        if (vZone == VerticalZone.Behind && hZone == HorizontalZone.Center) return 0f;
-
-        if (vZone == VerticalZone.Center || vZone == VerticalZone.Ahead)
-        {
-            if (hZone == HorizontalZone.Center)
-            {
-                steer = -0.25f * intensity;
-            }
-            else
-            {
-                // --- Compute distance-based factor ---
-                float distanceFactor = ComputeDistanceFactor(dist, limit, safe);
-
-                if (dist < limit * limit) steer = -1f * intensity * distanceFactor;
-                else if (dist < safe * safe) steer = -0.25f * intensity * distanceFactor;
-            }
-        }
-
-        return Mathf.Clamp(steer, -1f, 1f);
-    }
-
     // =========================
     // NEW: Distance factor helper
     // =========================
-    private float ComputeDistanceFactor(float sqrDist, float limit, float safe)
-    {
-        float dist = Mathf.Sqrt(sqrDist);
 
-        if (dist >= safe) return 1f;   // far enough → normal steer
-        if (dist <= limit) return 2f;  // too close → double steer
-
-        // Between safe and limit → smooth interpolation
-        float t = Mathf.InverseLerp(safe, limit, dist);
-        return Mathf.Lerp(1f, 2f, 1f - t);
-    }
-
-    private float ComputeDistanceFactorEasy(float quadDist, float limit, float safe)
+    private float ComputeDistanceFactorEasy(float quadDist, float safe)
     {
         float distanceFactor = 0.1f;
 
