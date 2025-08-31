@@ -51,7 +51,7 @@ public struct CPUJob : IJobParallelFor
     // =========================
     public void Execute(int index)
     {
-        Vector3 pos = positions[index];
+        Vector3 vehiclePosition = positions[index];
 
         // === Define car orientation
         Vector3 forward = forwardDirections[index];
@@ -63,34 +63,33 @@ public struct CPUJob : IJobParallelFor
 
         float currentSteer = steer[index];
 
-
         // Use a position slightly ahead of the car for better zone classification
-        pos += (forward * (1 + (speedFactor * lookAheadForwardMultiplier))) + (right * currentSteer * lookAheadRightMultiplier * speedFactor);
+        Vector3 forwardSensorPoistion = vehiclePosition + (forward * (1 + (speedFactor * lookAheadForwardMultiplier))) + (right * currentSteer * lookAheadRightMultiplier * speedFactor);
+
 
         // === Compute closest points & squared distances ===
-        float leftDist = ComputeClosestDistance(pos, leftVertices, leftTriangles, leftLocalToWorld, out Vector3 closestLeft);
-        float rightDist = ComputeClosestDistance(pos, rightVertices, rightTriangles, rightLocalToWorld, out Vector3 closestRight);
+        float leftDist = ComputeClosestDistance(forwardSensorPoistion, leftVertices, leftTriangles, leftLocalToWorld, out Vector3 closestLeft);
+        float rightDist = ComputeClosestDistance(forwardSensorPoistion, rightVertices, rightTriangles, rightLocalToWorld, out Vector3 closestRight);
 
         nearestLeft[index] = closestLeft;
         nearestRight[index] = closestRight;
 
         // === Classify boundaries ===
-        var leftZone = ClassifyZone(pos, forward, right, closestLeft);
-        var rightZone = ClassifyZone(pos, forward, right, closestRight);
-
-
-        // supponiamo 50 = velocità "alta" (da tarare in base al tuo gioco)
+        var leftZone = ClassifyZone(forwardSensorPoistion, forward, right, closestLeft);
+        var rightZone = ClassifyZone(forwardSensorPoistion, forward, right, closestRight);
 
         float scaledLimit = limitDistance * (1f + speedFactor); // aumenta la distanza limite
         float scaledSafe = safeDistance * (1f + speedFactor * 1.5f); // aumenta la distanza sicura
 
         float steerIntensity = Mathf.Lerp(0.5f, 1f, speedFactor);
-        // a bassa velocità sterza forte, ad alta velocità sterza più morbido
+
+        nearestRaceLinePoint[index] = NearestPointFromList(vehiclePosition, raceLinePoints);
+        
 
         // === Decide steering con parametri scalati ===
         steer[index] = DecideSteering(leftZone, rightZone, leftDist, rightDist, scaledLimit, scaledSafe, steerIntensity);
         accelerate[index] = 1; // always accelerate
-        nearestRaceLinePoint[index] = NearestPointFromList(positions[index], raceLinePoints);
+        
     }
 
     // =========================
@@ -123,22 +122,39 @@ public struct CPUJob : IJobParallelFor
     {
         float verticalCenterDepth = 2f; // Depth of the central vertical zone
         float verticalOffset = 0.5f; // Offset to shift the center zone forward
-        float horizontalCenterWidth = 2f; // Width of the central horizontal zone
 
+        VerticalZone vZone;
+        vZone = verticalRealativeTo(carPos, forward, point);
+
+        HorizontalZone hZone;
+        hZone = horizontalRelativeTo(carPos, right, point);
+
+        return (vZone, hZone);
+    }
+
+    private VerticalZone verticalRealativeTo(Vector3 carPos, Vector3 forward, Vector3 point)
+    {
+        float verticalCenterDepth = 2f; // Depth of the central vertical zone
+        float verticalOffset = 0.5f; // Offset to shift the center zone forward
         // Transform into car-local space
         Vector3 local = Quaternion.Inverse(Quaternion.LookRotation(forward, Vector3.up)) * (point - carPos);
-
         VerticalZone vZone;
         if (local.z < -(verticalCenterDepth / 2f) + verticalOffset) vZone = VerticalZone.Behind;
         else if (local.z > verticalCenterDepth / 2f + verticalOffset) vZone = VerticalZone.Ahead;
         else vZone = VerticalZone.Center;
+        return vZone;
+    }
 
+    private HorizontalZone horizontalRelativeTo(Vector3 carPos, Vector3 right, Vector3 point)
+    {
+        float horizontalCenterWidth = 2f; // Width of the central horizontal zone
+        // Transform into car-local space
+        Vector3 local = Quaternion.Inverse(Quaternion.LookRotation(right, Vector3.up)) * (point - carPos);
         HorizontalZone hZone;
         if (local.x < -(horizontalCenterWidth / 2f)) hZone = HorizontalZone.Left;
         else if (local.x > horizontalCenterWidth / 2f) hZone = HorizontalZone.Right;
         else hZone = HorizontalZone.Center;
-
-        return (vZone, hZone);
+        return hZone;
     }
 
     // =========================
