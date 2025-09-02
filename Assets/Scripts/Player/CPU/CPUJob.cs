@@ -95,7 +95,6 @@ public struct CPUJob : IJobParallelFor
         nearestRaceLinePoint[index] = NearestPointFromList(vehiclePosition, raceLinePoints);
         float horizontalOffset = HorizontalOffset(vehiclePosition, right, nearestRaceLinePoint[index]);
         HorizontalZone nearestRaceLinePointZone = HorizontalRelativeTo(vehiclePosition, right, nearestRaceLinePoint[index], 2f);
-        Debug.Log("horizontalOffset: " + horizontalOffset + " zone: " + nearestRaceLinePointZone);
         if(nearestRaceLinePointZone == HorizontalZone.Center)
         {
             horizontalOffset = 0f; // ignore small offsets when the point is in front

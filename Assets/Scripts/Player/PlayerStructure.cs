@@ -151,6 +151,8 @@ public class PlayerStructure : MonoBehaviour
 
     public void UpdatePlayerGUI(PlayerStats playerStats)
     {
+        if(canvasInstance == null) return;
+
         ItemType[] items = playerStats.itemBuffer.ToArray();
 
         for (int i = 0; i< items.Length; i++)

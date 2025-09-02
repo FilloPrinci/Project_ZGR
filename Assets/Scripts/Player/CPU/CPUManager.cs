@@ -90,9 +90,14 @@ public class CPUManager : MonoBehaviour
         if (timeSinceLastUpdate < updateInterval) return;
         timeSinceLastUpdate = 0f;
 
-        UpdateCPUData();
+        
         RunCPUJob();
         
+    }
+
+    private void LateUpdate()
+    {
+        UpdateCPUData();
     }
 
     void OnDestroy()
@@ -180,7 +185,7 @@ public class CPUManager : MonoBehaviour
                 // collect CPU current speed
                 cpuSpeedList.Add(player.GetComponent<PlayerController>().GetCurrentSpeed());
                 // collect CPU next checkpoint transform
-                int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.name == player.GetComponent<PlayerStructure>().data.name);
+                int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.name == player.GetComponent<PlayerController>().playerData.name);
                 int nextCheckpointIndex = raceData.playerRaceDataList[playerDataToUpdateIndex].nextCheckpointIndex;
 
                 GameObject nextCheckpoint = checkPointList[nextCheckpointIndex];
@@ -196,8 +201,6 @@ public class CPUManager : MonoBehaviour
                             cpuInCornerList.Add(false);
                     }
                 }
-
-                
             }
         }
 
