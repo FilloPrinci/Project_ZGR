@@ -373,7 +373,8 @@ public class RaceManager : MonoBehaviour
 
                     GameObject playerInstance = GetPlayerInstanceFromPlayerRaceData(raceData.playerRaceDataList[playerDataToUpdateIndex]);
                     RaceGUI playerRaceGUI = GetRaceGUIFromPlayerInstance(playerInstance);
-                    playerRaceGUI.Finish();
+                    if(playerRaceGUI != null)
+                        playerRaceGUI.Finish();
 
                     // finish race
                     if (isRaceEnded())
@@ -553,6 +554,7 @@ public class RaceManager : MonoBehaviour
     
     public RaceGUI GetRaceGUIFromPlayerInstance(GameObject playerInstance)
     {
+        if (playerInstance.GetComponent<PlayerStructure>().data.playerInputIndex == InputIndex.CPU) return null;
             PlayerStructure playerStructure = playerInstance.GetComponent<PlayerStructure>();
             GameObject playerRaceGUI = playerStructure.GetCanvasInstance();
             return playerRaceGUI.GetComponent<RaceGUI>();
