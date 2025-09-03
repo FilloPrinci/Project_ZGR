@@ -428,17 +428,27 @@ public class RaceManager : MonoBehaviour
 
                 Debug.Log("the winner is : " + raceData.playerRaceDataList[0].playerData.name + " (player index : " + (int)raceData.playerRaceDataList[0].playerData.playerInputIndex  + " )");
 
-                ShowResultForPlayer((int)raceData.playerRaceDataList[0].playerData.playerInputIndex);
-
-                // finish race for all playuers
-                foreach (GameObject playerInstance in playerInstanceList)
+                foreach(PlayerRaceData playerRaceData in raceData.playerRaceDataList)
                 {
-                    if(playerInstance.GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
+                    if(playerRaceData.playerData.playerInputIndex != InputIndex.CPU)
                     {
-                        PlayerStructure playerStructure = playerInstance.GetComponent<PlayerStructure>();
-                        playerStructure.OnRaceEndPhase((int)raceData.playerRaceDataList[0].playerData.playerInputIndex);
+                        ShowResultForPlayer((int)playerRaceData.playerData.playerInputIndex);
+
+
+                        // finish race for all playuers
+                        foreach (GameObject playerInstance in playerInstanceList)
+                        {
+                            if (playerInstance.GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
+                            {
+                                PlayerStructure playerStructure = playerInstance.GetComponent<PlayerStructure>();
+                                playerStructure.OnRaceEndPhase((int)playerRaceData.playerData.playerInputIndex);
+                            }
+                        }
+                        break;
                     }
-                }
+                }               
+
+                
                 break;
         }
     }
