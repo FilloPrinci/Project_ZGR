@@ -66,8 +66,6 @@ public class PlayerStats : MonoBehaviour
 
     void UpdateEnergy(float value)
     {
-        Debug.Log("Updating energy by " + value);
-
         float energyResult = energy + value;
 
         if (energyResult < 0)
@@ -81,7 +79,6 @@ public class PlayerStats : MonoBehaviour
             energy = energyResult;
         }
 
-        Debug.Log("Current energy: " + energy);
     }
 
     void ApplyStats()
@@ -166,7 +163,6 @@ public class PlayerStats : MonoBehaviour
 
     public void OnEnergyRechargeBySpeed(float deltaTime, float currentSpeed)
     {
-        Debug.Log("Recharging energy...");
         float energyToCharge = energyZoneRecharge * currentSpeed * deltaTime;
         UpdateEnergy(energyToCharge);
         UpdateStats();
