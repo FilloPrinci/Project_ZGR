@@ -92,7 +92,7 @@ public struct CPUJob : IJobParallelFor
         if (leftDist < scaledLimit || rightDist < scaledLimit) limitAllert = true;
 
         float raceLineBasedSteer = 0f;
-        nearestRaceLinePoint[index] = NearestPointFromList(vehiclePosition, raceLinePoints);
+        nearestRaceLinePoint[index] = raceLinePoints[index];
         float horizontalOffset = HorizontalOffset(vehiclePosition, right, nearestRaceLinePoint[index]);
         HorizontalZone nearestRaceLinePointZone = HorizontalRelativeTo(vehiclePosition, right, nearestRaceLinePoint[index], 2f);
         if(nearestRaceLinePointZone == HorizontalZone.Center)
