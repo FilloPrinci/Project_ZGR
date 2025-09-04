@@ -39,7 +39,9 @@ public class RaceManager : MonoBehaviour
     public bool generateCPUPlayers = true;
     public int cpuPlayersAmount = 0; // Number of CPU players to generate if generateCPUPlayers is true
     public GameObject playerPrefab;
+    public GameObject checkPointListParent;
     public List<GameObject> checkPointList;
+
     public List<Transform> spawnPointList;
     
     public GameObject presentationManager;
@@ -68,6 +70,21 @@ public class RaceManager : MonoBehaviour
     public RacePhase GetCurrentRacePhase()
     {
         return currentRacePhase;   
+    }
+
+
+    private void OnValidate()
+    {
+        if (checkPointListParent != null)
+        {
+            checkPointList.Clear();
+            int childCount = checkPointListParent.transform.childCount;
+
+            for (int i = 0; i < childCount; i++)
+            {
+                checkPointList.Add(checkPointListParent.transform.GetChild(i).gameObject);
+            }
+        }
     }
 
     private void Awake()
