@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -314,6 +315,7 @@ public class RaceManager : MonoBehaviour
     {
         HideCountdownForAllPlayers();
         raceData.StartRace();
+        StartCoroutine(UpdateRankingCoroutine());
     }
 
     private void ManageRace(RaceMode raceMode)
@@ -332,9 +334,19 @@ public class RaceManager : MonoBehaviour
 
         }
 
-        RefreshPlayerRaceDataDistances();
-        raceData.RefreshPositions();
+        
         raceData.UpdatePlayerRaceDataTimings();
+    }
+
+    IEnumerator UpdateRankingCoroutine()
+    {
+        var wait = new WaitForSeconds(0.1f); // 10 Hz
+        while (true)
+        {
+            RefreshPlayerRaceDataDistances();
+            raceData.RefreshPositions();
+            yield return wait;
+        }
     }
 
     public GameObject GetPlayerInstanceFromID(string id)
