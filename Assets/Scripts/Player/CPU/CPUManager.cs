@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
 using Unity.Jobs;
@@ -43,6 +44,8 @@ public class CPUManager : MonoBehaviour
 
     private float updateInterval = 0.1f; // 10 Hz
     private float timeSinceLastUpdate = 0f;
+
+    private Coroutine cpuJobCycle;
     #endregion
 
     #region DEFAULT METHODS
@@ -82,6 +85,7 @@ public class CPUManager : MonoBehaviour
             JOB_IO_cpuAccelerate[i] = 1;
             JOB_IO_cpuSteer[i] = 0f;
         }
+
     }
 
     void FixedUpdate()
@@ -90,14 +94,21 @@ public class CPUManager : MonoBehaviour
         if (timeSinceLastUpdate < updateInterval) return;
         timeSinceLastUpdate = 0f;
 
-        
-        RunCPUJob();
-        
+        if(cpuJobCycle == null)
+        {
+            cpuJobCycle = StartCoroutine(CPUJobCycle());
+        }
     }
 
-    private void LateUpdate()
+    IEnumerator CPUJobCycle()
     {
-        UpdateCPUData();
+        var wait = new WaitForSeconds(0.1f); // 10 Hz
+        while (true)
+        {
+            UpdateCPUData();
+            RunCPUJob();
+            yield return wait;
+        }
     }
 
     void OnDestroy()
@@ -185,26 +196,47 @@ public class CPUManager : MonoBehaviour
                 // collect CPU current speed
                 cpuSpeedList.Add(player.GetComponent<PlayerController>().GetCurrentSpeed());
                 // collect CPU next checkpoint transform
-                int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.name == player.GetComponent<PlayerController>().playerData.name);
-                int nextCheckpointIndex = raceData.playerRaceDataList[playerDataToUpdateIndex].nextCheckpointIndex;
+                
+            }
+        }
 
-                GameObject nextCheckpoint = checkPointList[nextCheckpointIndex];
+        for(int i = 0; i < cpuTransformList.Count; i++)
+        {
+            GameObject player = cpuTransformList[i].gameObject;
+            int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.name == player.GetComponent<PlayerController>().playerData.name);
+            int nextCheckpointIndex = raceData.playerRaceDataList[playerDataToUpdateIndex].nextCheckpointIndex;
 
-                if (nextCheckpoint != null) {
-                    nextRaceLinePositionList.Add(nextCheckpoint.transform);
-                    CheckpointType checkpointType = nextCheckpoint.GetComponent<CheckpointType>();
-                    if(checkpointType != null)
-                    {
-                        if(checkpointType.checkpointType == CheckpointTypeEnum.CornerMid || checkpointType.checkpointType == CheckpointTypeEnum.CornerEnd)
-                            cpuInCornerList.Add(true);
-                        else
-                            cpuInCornerList.Add(false);
-                    }
+            GameObject nextCheckpoint = checkPointList[nextCheckpointIndex];
+
+            if (nextCheckpoint != null)
+            {
+                nextRaceLinePositionList.Add(nextCheckpoint.transform);
+                CheckpointType checkpointType = nextCheckpoint.GetComponent<CheckpointType>();
+                if (checkpointType != null)
+                {
+                    if (checkpointType.checkpointType == CheckpointTypeEnum.CornerMid || checkpointType.checkpointType == CheckpointTypeEnum.CornerEnd)
+                        cpuInCornerList.Add(true);
+                    else
+                        cpuInCornerList.Add(false);
                 }
             }
         }
 
-        if(cpuTransformList.Count != cpuCount && cpuSpeedList.Count != cpuCount)
+        
+    foreach(Transform checkpoint in nextRaceLinePositionList)
+        {
+            if (checkpoint == null)
+            {
+                Debug.LogWarning("CPUManager: One of the nextRaceLinePositionList checkpoints is null.");
+            }
+            else
+            {
+                Debug.Log("Checkpoint: " + checkpoint.gameObject.name);
+            }
+        }
+
+
+        if (cpuTransformList.Count != cpuCount && cpuSpeedList.Count != cpuCount)
         {
             Debug.LogWarning($"CPUManager: Expected {cpuCount} CPU players, but found {cpuTransformList.Count} and {cpuSpeedList.Count}.");
         }
@@ -311,6 +343,7 @@ public class CPUManager : MonoBehaviour
         positions.Dispose();
         nearestLeft.Dispose();
         nearestRight.Dispose();
+        nearestRaceLinePoint.Dispose();
     }
     #endregion
 
