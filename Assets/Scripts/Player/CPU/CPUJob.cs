@@ -104,23 +104,54 @@ public struct CPUJob : IJobParallelFor
             raceLineBasedSteer = DecideRaceLineSteering(horizontalOffset);
         }
 
+        // Getrting nearest CPUplayer position
+        NativeArray<Vector3> otherCPUpositions = new NativeArray<Vector3>();
+        otherCPUpositions = RemoveAt(positions, index, Allocator.Temp);
 
-        // === Decide steering con parametri scalati ===
-        if(inCorner[index])
+        Vector3 nearestPlayer = NearestPointFromList(vehiclePosition, otherCPUpositions);
+        float nearestPlayerHOffset = float.MaxValue;
+        VerticalZone nearestPlayerVZone = VerticalRelativeTo(vehiclePosition, forward, nearestPlayer, 3);
+        if(nearestPlayerVZone == VerticalZone.Center)
         {
-            steer[index] = sensorBasedSteer;
+            nearestPlayerHOffset = HorizontalOffset(vehiclePosition, right, nearestPlayer);
         }
-        else
+
+        if (Mathf.Abs(nearestPlayerHOffset) < 3f)
         {
-            if (limitAllert)
+            Debug.Log("nearestPlayerHOffset: " + nearestPlayerHOffset);
+            if(nearestPlayerHOffset > 0f)
             {
-                steer[index] = sensorBasedSteer; // sensor has priority
+                // tourn left
+                steer[index] = -0.2f;
             }
             else
             {
-                steer[index] = raceLineBasedSteer; // weighted average, Race line is more important
+                // tourn right
+                steer[index] = +0.2f;
             }
         }
+        else
+        {
+            // === Decide steering con parametri scalati ===
+            if (inCorner[index])
+            {
+                steer[index] = sensorBasedSteer;
+            }
+            else
+            {
+                if (limitAllert)
+                {
+                    steer[index] = sensorBasedSteer; // sensor has priority
+                }
+                else
+                {
+                    steer[index] = raceLineBasedSteer; // weighted average, Race line is more important
+                }
+            }
+
+        }
+
+        
 
         
         accelerate[index] = 1; // always accelerate
@@ -260,6 +291,21 @@ public struct CPUJob : IJobParallelFor
         return distanceFactor;
     }
 
+    public static NativeArray<Vector3> RemoveAt(NativeArray<Vector3> source, int index, Allocator allocator)
+    {
+        if (index < 0 || index >= source.Length)
+            throw new System.ArgumentOutOfRangeException(nameof(index));
+
+        NativeArray<Vector3> result = new NativeArray<Vector3>(source.Length - 1, allocator);
+
+        if (index > 0)
+            NativeArray<Vector3>.Copy(source, 0, result, 0, index);
+
+        if (index < source.Length - 1)
+            NativeArray<Vector3>.Copy(source, index + 1, result, index, source.Length - index - 1);
+
+        return result;
+    }
 
     // =========================
     // GEOMETRY HELPERS

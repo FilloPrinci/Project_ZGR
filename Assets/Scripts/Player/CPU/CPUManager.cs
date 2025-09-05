@@ -222,19 +222,6 @@ public class CPUManager : MonoBehaviour
             }
         }
 
-        
-    foreach(Transform checkpoint in nextRaceLinePositionList)
-        {
-            if (checkpoint == null)
-            {
-                Debug.LogWarning("CPUManager: One of the nextRaceLinePositionList checkpoints is null.");
-            }
-            else
-            {
-                Debug.Log("Checkpoint: " + checkpoint.gameObject.name);
-            }
-        }
-
 
         if (cpuTransformList.Count != cpuCount && cpuSpeedList.Count != cpuCount)
         {
