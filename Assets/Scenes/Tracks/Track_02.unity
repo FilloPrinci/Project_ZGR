@@ -710,7 +710,7 @@ MonoBehaviour:
     veichlePrefab: {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
     playerInputIndex: 0
     cpuIndex: -1
-  maxLaps: 1
+  maxLaps: 3
   avaiableVeichleList:
   - {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
 --- !u!4 &219254184
@@ -3972,6 +3972,7 @@ MonoBehaviour:
   forwardLookSteerMultiplier: 4
   borderLimitDistance: 2
   borderSafeDistance: 10
+  otherVeichleSafeDistance: 5
   cpuCount: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
