@@ -18,6 +18,7 @@ public struct CPUJob : IJobParallelFor
     [ReadOnly] public float maxSpeed;
     [ReadOnly] public float lookAheadForwardMultiplier;
     [ReadOnly] public float lookAheadRightMultiplier;
+    [ReadOnly] public float lookAheadVeichleMultiplier;
     [ReadOnly] public NativeArray<Vector3> positions;
     [ReadOnly] public NativeArray<Vector3> forwardDirections;
     [ReadOnly] public NativeArray<Vector3> rightDirections;
@@ -41,6 +42,7 @@ public struct CPUJob : IJobParallelFor
     // Distances thresholds
     public float limitDistance;
     public float safeDistance;
+    public float otherVeichleSafeDistance;
 
     // =========================
     // ENUM DEFINITIONS
@@ -108,26 +110,29 @@ public struct CPUJob : IJobParallelFor
         NativeArray<Vector3> otherCPUpositions = new NativeArray<Vector3>();
         otherCPUpositions = RemoveAt(positions, index, Allocator.Temp);
 
-        Vector3 nearestPlayer = NearestPointFromList(vehiclePosition, otherCPUpositions);
+        Vector3 nearestPlayerSensorPosition = vehiclePosition + (forward * lookAheadVeichleMultiplier);
+
+        Vector3 nearestPlayer = NearestPointFromList(nearestPlayerSensorPosition, otherCPUpositions);
         float nearestPlayerHOffset = float.MaxValue;
-        VerticalZone nearestPlayerVZone = VerticalRelativeTo(vehiclePosition, forward, nearestPlayer, 3);
-        if(nearestPlayerVZone == VerticalZone.Center)
+        VerticalZone nearestPlayerVZone = VerticalRelativeTo(nearestPlayerSensorPosition, forward, nearestPlayer, 3);
+        if(nearestPlayerVZone != VerticalZone.Behind)
         {
-            nearestPlayerHOffset = HorizontalOffset(vehiclePosition, right, nearestPlayer);
+            nearestPlayerHOffset = HorizontalOffset(nearestPlayerSensorPosition, right, nearestPlayer);
         }
 
-        if (Mathf.Abs(nearestPlayerHOffset) < 3f)
+        if (Mathf.Abs(nearestPlayerHOffset) < otherVeichleSafeDistance)
         {
-            Debug.Log("nearestPlayerHOffset: " + nearestPlayerHOffset);
+            float steerFactor = ComputeDistanceFactorEasy(nearestPlayerHOffset * nearestPlayerHOffset, otherVeichleSafeDistance);
+
             if(nearestPlayerHOffset > 0f)
             {
                 // tourn left
-                steer[index] = -0.2f;
+                steer[index] = -0.75f * steerFactor;
             }
             else
             {
                 // tourn right
-                steer[index] = +0.2f;
+                steer[index] = +0.75f * steerFactor;
             }
         }
         else

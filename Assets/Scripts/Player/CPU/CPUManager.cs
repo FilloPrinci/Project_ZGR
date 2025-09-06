@@ -15,9 +15,11 @@ public class CPUManager : MonoBehaviour
     [Header("Configuration")]
     public float forwardLookAheadMultiplier = 10f;
     public float forwardLookSteerMultiplier = 2f;
+    public float forwardLookotherVeichlesMultiplier = 1.5f;
 
     public float borderLimitDistance = 2f;
     public float borderSafeDistance = 6f;
+    public float otherVeichleSafeDistance = 3f;
     #endregion
 
     #region PRIVATE VARIABLES
@@ -172,6 +174,12 @@ public class CPUManager : MonoBehaviour
             // Safe zone (verde chiaro)
             Gizmos.color = new Color(0f, 1f, 0f, 0.25f);
             Gizmos.DrawWireSphere(forwardSensorPoistion, scaledSafe);
+
+            Vector3 forwardOtherVeichleSensorPosition = carPos + (forward * forwardLookotherVeichlesMultiplier);
+
+            // Other veichle safe zone
+            Gizmos.color = new Color(0.9f, 0.1f, 0.1f, 0.25f);
+            Gizmos.DrawWireSphere(forwardOtherVeichleSensorPosition, otherVeichleSafeDistance);
         }
     }
     #endregion
@@ -286,6 +294,7 @@ public class CPUManager : MonoBehaviour
             positions = positions,
             lookAheadForwardMultiplier = forwardLookAheadMultiplier,
             lookAheadRightMultiplier = forwardLookSteerMultiplier,
+            lookAheadVeichleMultiplier = forwardLookotherVeichlesMultiplier,
             forwardDirections = forwardDirections,
             rightDirections = rightDirections,
             raceLinePoints = raceLinePoints,
@@ -306,7 +315,8 @@ public class CPUManager : MonoBehaviour
             nearestRaceLinePoint = nearestRaceLinePoint,
 
             limitDistance = borderLimitDistance,
-            safeDistance = borderSafeDistance
+            safeDistance = borderSafeDistance,
+            otherVeichleSafeDistance = otherVeichleSafeDistance
         };
 
         JobHandle handle = job.Schedule(cpuCount, 1);
