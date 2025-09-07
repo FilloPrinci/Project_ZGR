@@ -43,6 +43,7 @@ public class RaceManager : MonoBehaviour
     public GameObject checkPointListParent;
     public List<GameObject> checkPointList;
 
+    public GameObject raceGrid;
     public List<Transform> spawnPointList;
     
     public GameObject presentationManager;
@@ -84,6 +85,16 @@ public class RaceManager : MonoBehaviour
             for (int i = 0; i < childCount; i++)
             {
                 checkPointList.Add(checkPointListParent.transform.GetChild(i).gameObject);
+            }
+        }
+
+        if (raceGrid != null) {
+            spawnPointList.Clear();
+            int childCount = raceGrid.transform.childCount;
+
+            for (int i = 0; i < childCount; i++)
+            {
+                spawnPointList.Add(raceGrid.transform.GetChild(i).gameObject.transform);
             }
         }
     }
@@ -340,7 +351,7 @@ public class RaceManager : MonoBehaviour
 
     IEnumerator UpdateRankingCoroutine()
     {
-        var wait = new WaitForSeconds(0.1f); // 10 Hz
+        var wait = new WaitForSeconds(1f/30f); // 30 Hz
         while (true)
         {
             RefreshPlayerRaceDataDistances();

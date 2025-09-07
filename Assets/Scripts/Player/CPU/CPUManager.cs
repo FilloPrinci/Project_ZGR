@@ -20,10 +20,13 @@ public class CPUManager : MonoBehaviour
     public float borderLimitDistance = 2f;
     public float borderSafeDistance = 6f;
     public float otherVeichleSafeDistance = 3f;
+
+    public float maxCheckpointTollerance = 5f;
+    public float minCheckpointTollerance = 1f;
     #endregion
 
     #region PRIVATE VARIABLES
-    
+
     private NativeArray<int> JOB_IO_cpuAccelerate;
     private NativeArray<float> JOB_IO_cpuSteer;
     private NativeArray<float> JOB_I_cpuCurrentSpeed;
@@ -104,7 +107,7 @@ public class CPUManager : MonoBehaviour
 
     IEnumerator CPUJobCycle()
     {
-        var wait = new WaitForSeconds(0.1f); // 10 Hz
+        var wait = new WaitForSeconds(1f/ 10f); // 10 Hz
         while (true)
         {
             UpdateCPUData();
@@ -295,6 +298,8 @@ public class CPUManager : MonoBehaviour
             lookAheadForwardMultiplier = forwardLookAheadMultiplier,
             lookAheadRightMultiplier = forwardLookSteerMultiplier,
             lookAheadVeichleMultiplier = forwardLookotherVeichlesMultiplier,
+            maxCheckpointTollerance = maxCheckpointTollerance,
+            minCheckpointTollerance = minCheckpointTollerance,
             forwardDirections = forwardDirections,
             rightDirections = rightDirections,
             raceLinePoints = raceLinePoints,
@@ -319,7 +324,7 @@ public class CPUManager : MonoBehaviour
             otherVeichleSafeDistance = otherVeichleSafeDistance
         };
 
-        JobHandle handle = job.Schedule(cpuCount, 1);
+        JobHandle handle = job.Schedule(cpuCount, 5);
         handle.Complete();
 
         for (int i = 0; i < cpuCount; i++)

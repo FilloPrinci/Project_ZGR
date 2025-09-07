@@ -6,33 +6,55 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class PlayerStats : MonoBehaviour
 {
-    public int hitDamage = 20;
+    [Header("ENERGY")]
+    
     public int energyRecharge = 5;
     public float energyZoneRecharge = 0.01f;
 
+    [Header("DAMAGE")]
+    public int hitDamage = 15;
+    public float normalDamageFactor = 1.0f;
+    public float playerDamageFactor = 1.5f;
+    public float obstacleDamageFactor = 2f;
+
+    [Header("COLLISION SPEED DAMAGE")]
+    public float normalSpeedCollistionFactor = 1.0f;
+    public float playerSpeedCollisionFactor = 0.1f;
+    public float obstacleSpeedCollisionFactor = 1.5f;
+
+    [Header("COLLISION BOUNCE")]
+    public float normalBounceCollistionFactor = 1.0f;
+    public float playerBounceCollisionFactor = 0.5f;
+    public float obstacleBounceCollisionFactor = 1.5f;
+
+    [Header("STATS")]
     public float maxSpeedKmH = 300f;
     public float maxRotationSpeed = 10f;
     public float acceleration = 5f;
     public float rotationAcceleration = 5f;
 
+    [Header("CURERNT STATS MULTIPLIER")]
     public float maxSpeedMultiplier = 1;
     public float maxRotationSpeedMultiplier = 1;
     public float accelerationMultiplier = 1;
     public float rotationAccelerationMultiplier = 1;
 
+    [Header("ITEMS MULTIPLIERS")]
     public float speedItemMultiplier = 0.25f;
     public float accelerationItemMultiplier = 0.5f;
     public float rotationSpeedItemMultiplier = 0.25f;
     public float rotationAccelerationItemMultiplier = 0.5f;
 
+    [Header("TURBO")]
     public float turboMaxSpeedMultiplier = 0.5f;
     public float turboAccelerationMultiplier = 1.0f;
-
-    public Queue<ItemType> itemBuffer = new Queue<ItemType>();
-    public int bufferSize = 3;
-
     public bool onTurbo = false;
     public int turboDuration = 2;
+
+    [Header("ITEMS SLOTS")]
+    public int bufferSize = 3;
+    public Queue<ItemType> itemBuffer = new Queue<ItemType>();
+
 
     private float currentMaxSpeed;
     private float currentRotationSpeed;
@@ -173,9 +195,9 @@ public class PlayerStats : MonoBehaviour
         StartCoroutine(TurboCoroutine());
     }
 
-    public void OnDamage()
+    public void OnDamage(float factor = 1f)
     {
-        UpdateEnergy(-hitDamage);
+        UpdateEnergy(-hitDamage * factor);
         UpdateStats();
     }
 

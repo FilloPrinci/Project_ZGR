@@ -19,7 +19,7 @@ GameObject:
   - component: {fileID: 3130506183759778273}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -73,9 +73,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 869ec3e6f72eb8f4fa007b29c7db7e6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitDamage: 15
   energyRecharge: 10
   energyZoneRecharge: 0.2
+  hitDamage: 15
+  normalDamageFactor: 1
+  playerDamageFactor: 1.5
+  obstacleDamageFactor: 2
+  normalSpeedCollistionFactor: 0.5
+  playerSpeedCollisionFactor: 0.9
+  obstacleSpeedCollisionFactor: 0.25
+  normalBounceCollistionFactor: 1
+  playerBounceCollisionFactor: 0.5
+  obstacleBounceCollisionFactor: 1.5
   maxSpeedKmH: 320
   maxRotationSpeed: 160
   acceleration: 0.5
@@ -90,9 +99,9 @@ MonoBehaviour:
   rotationAccelerationItemMultiplier: 0.25
   turboMaxSpeedMultiplier: 0.25
   turboAccelerationMultiplier: 1
-  bufferSize: 3
   onTurbo: 0
   turboDuration: 2
+  bufferSize: 3
 --- !u!114 &7242950170658541357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -117,7 +126,7 @@ MonoBehaviour:
   rotationMaxSpeed: 150
   rotationAccelleration: 3
   accelleration: 1
-  bounceForce: 10
+  bounceFactor: 1
   autoBrakeDecelleration: 1
   brakeDecelleration: 2.5
   collisionBounceDecelleration: 7.5
