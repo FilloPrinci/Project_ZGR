@@ -19,6 +19,8 @@ public struct CPUJob : IJobParallelFor
     [ReadOnly] public float lookAheadForwardMultiplier;
     [ReadOnly] public float lookAheadRightMultiplier;
     [ReadOnly] public float lookAheadVeichleMultiplier;
+    [ReadOnly] public float maxCheckpointTollerance;
+    [ReadOnly] public float minCheckpointTollerance;
     [ReadOnly] public NativeArray<Vector3> positions;
     [ReadOnly] public NativeArray<Vector3> forwardDirections;
     [ReadOnly] public NativeArray<Vector3> rightDirections;
@@ -93,17 +95,31 @@ public struct CPUJob : IJobParallelFor
         bool limitAllert = false;
         if (leftDist < scaledLimit || rightDist < scaledLimit) limitAllert = true;
 
+        // Compute Race line steering
         float raceLineBasedSteer = 0f;
+        float horizontalCheckpointTollerance = maxCheckpointTollerance;
+
+        float checkpointDistance = Mathf.Abs((vehiclePosition - raceLinePoints[index]).magnitude);
+        float checkpointFactor = 0f;
+
+        if (checkpointDistance > 20f)
+        {
+            checkpointFactor = ComputeDistanceFactorEasy(checkpointDistance * checkpointDistance, 500);
+        }
+
+        horizontalCheckpointTollerance = maxCheckpointTollerance / checkpointFactor;
+
+
         nearestRaceLinePoint[index] = raceLinePoints[index];
         float horizontalOffset = HorizontalOffset(vehiclePosition, right, nearestRaceLinePoint[index]);
-        HorizontalZone nearestRaceLinePointZone = HorizontalRelativeTo(vehiclePosition, right, nearestRaceLinePoint[index], 2f);
-        if(nearestRaceLinePointZone == HorizontalZone.Center)
+        HorizontalZone nearestRaceLinePointZone = HorizontalRelativeTo(vehiclePosition, right, nearestRaceLinePoint[index], horizontalCheckpointTollerance);
+        if (nearestRaceLinePointZone == HorizontalZone.Center)
         {
             horizontalOffset = 0f; // ignore small offsets when the point is in front
         }
         else
         {
-            raceLineBasedSteer = DecideRaceLineSteering(horizontalOffset);
+            raceLineBasedSteer = DecideRaceLineSteering(horizontalOffset) * checkpointFactor;
         }
 
         // Getrting nearest CPUplayer position
@@ -144,7 +160,9 @@ public struct CPUJob : IJobParallelFor
             }
             else
             {
-                if (limitAllert)
+                
+
+                if (limitAllert || checkpointFactor == 0)
                 {
                     steer[index] = sensorBasedSteer; // sensor has priority
                 }

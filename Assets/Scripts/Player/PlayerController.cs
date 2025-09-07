@@ -4,6 +4,14 @@ using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEngine;
 
+enum CollisionTypeEnum
+{
+    None,
+    Normal,
+    Player,
+    Obstacle
+}
+
 public class PlayerController : MonoBehaviour
 {
     public PlayerData playerData;
@@ -17,7 +25,7 @@ public class PlayerController : MonoBehaviour
     public float rotationMaxSpeed = 10;
     public float rotationAccelleration = 5;
     public float accelleration = 5f;
-    public float bounceForce = 1f;
+    public float bounceFactor = 0.5f;
     public float autoBrakeDecelleration = 1f;
     public float brakeDecelleration = 2.5f;
     public float collisionBounceDecelleration = 5f;
@@ -53,6 +61,8 @@ public class PlayerController : MonoBehaviour
 
     private float steerInput = 0f;
     private bool accelerateInput = false;
+
+    private CollisionTypeEnum lastCollisionType = CollisionTypeEnum.None;
 
 
     private void Start()
@@ -186,12 +196,49 @@ public class PlayerController : MonoBehaviour
 
     void Collide()
     {
-        normalMovementVelocity = normalMovementVelocity / 2;
+        float collistionMovementFactor = 1f;
+        float collistionBounceFactor = 1f;
+        float damageFactor = 1f;
+
+        if (playerStats != null)
+        {
+            
+
+            if (lastCollisionType == CollisionTypeEnum.Player)
+            {
+                collistionMovementFactor = playerStats.playerSpeedCollisionFactor;
+                damageFactor = playerStats.playerDamageFactor;
+                collistionBounceFactor = playerStats.playerBounceCollisionFactor;
+            }
+            else if (lastCollisionType == CollisionTypeEnum.Obstacle)
+            {
+                collistionMovementFactor = playerStats.obstacleSpeedCollisionFactor;
+                damageFactor = playerStats.obstacleDamageFactor;
+                collistionBounceFactor = playerStats.obstacleBounceCollisionFactor;
+            }
+            else if (lastCollisionType == CollisionTypeEnum.Normal)
+            {
+                collistionMovementFactor = playerStats.normalSpeedCollistionFactor;
+                damageFactor = playerStats.normalDamageFactor;
+                collistionBounceFactor = playerStats.normalBounceCollistionFactor;
+            }
+
+            // recive damage
+            playerStats.OnDamage(damageFactor);
+            if (playerStructure != null)
+            {
+                playerStructure.UpdatePlayerGUI(playerStats);
+            }
+
+        }
+
+        normalMovementVelocity = normalMovementVelocity * collistionMovementFactor;
+        
 
         if (lastCollisionDirection != Vector3.zero)
         {
             float currentSpeed = Speed(normalMovementVelocity);
-            float finalBounceForce = Mathf.Max(currentSpeed, bounceForce);
+            float finalBounceForce = Mathf.Max(currentSpeed * collistionBounceFactor * bounceFactor, 1f);
 
             collisionVelocity = lastCollisionDirection.normalized * finalBounceForce * deltaTime;
         }
@@ -304,17 +351,23 @@ public class PlayerController : MonoBehaviour
     {
         if (ShouldHandleCollision(other))
         {
-            collisionDetected = true;
-            lastCollisionDirection = calculateCollisionDirection(other);
-            // recive damage
-            if (playerStats != null)
+            if(other.tag.Equals("Player"))
             {
-                playerStats.OnDamage();
-                if (playerStructure != null)
-                {
-                    playerStructure.UpdatePlayerGUI(playerStats);
-                }
+                lastCollisionType = CollisionTypeEnum.Player;
             }
+            else if (other.tag.Equals("Obstacle"))
+            {
+                lastCollisionType = CollisionTypeEnum.Obstacle;
+            }
+            else
+            {
+                lastCollisionType = CollisionTypeEnum.Normal;
+            }
+
+            collisionDetected = true;
+            
+            lastCollisionDirection = calculateCollisionDirection(other);
+            
         }
         else if (other.tag.Equals("Checkpoint"))
         {
@@ -348,6 +401,19 @@ public class PlayerController : MonoBehaviour
     {
         if (ShouldHandleCollision(other))
         {
+            if (other.tag.Equals("Player"))
+            {
+                lastCollisionType = CollisionTypeEnum.Player;
+            }
+            else if (other.tag.Equals("Obstacle"))
+            {
+                lastCollisionType = CollisionTypeEnum.Obstacle;
+            }
+            else
+            {
+                lastCollisionType = CollisionTypeEnum.Normal;
+            }
+
             collisionDetected = true;
             lastCollisionDirection = calculateCollisionDirection(other);
         }
@@ -382,6 +448,9 @@ public class PlayerController : MonoBehaviour
     {
         if (ShouldHandleCollision(other))
         {
+            
+            lastCollisionType = CollisionTypeEnum.None;
+
             collisionDetected = false;
             lastCollisionDirection = Vector3.zero;
         }
