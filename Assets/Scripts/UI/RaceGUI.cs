@@ -275,13 +275,14 @@ public class RaceGUI : MonoBehaviour
         string playerLine = $"P \t Name \t Time \t Best Time";
         playerLineList.Add(playerLine);
 
-        raceData.playerRaceDataList.Sort((a, b) => a.position.CompareTo(b.position));
-        for (int i = 0; i < raceData.playerRaceDataList.Count; i++)
+        List<PlayerRaceData> finalPlayerRaceDataList = raceData.GetFinalPlayerRaceDataList();
+
+        for (int i = 0; i < finalPlayerRaceDataList.Count; i++)
         {
-            int position = raceData.playerRaceDataList[i].position;
-            string name = raceData.playerRaceDataList[i].playerData.name;
-            string totalTime = raceData.playerRaceDataList[i].GetTotalTime();
-            string bestTime = raceData.playerRaceDataList[i].GetBestLapTime();
+            int position = i + 1;
+            string name = finalPlayerRaceDataList[i].playerData.name;
+            string totalTime = finalPlayerRaceDataList[i].GetTotalTime();
+            string bestTime = finalPlayerRaceDataList[i].GetBestLapTime();
 
             playerLine = $"{position}\t{name}\t{totalTime}\t{bestTime}";
             playerLineList.Add(playerLine);

@@ -163,7 +163,7 @@ public class RaceManager : MonoBehaviour
 
                 for(int i = 0; i < playerDataList.Count; i++)
                 {
-                    playerRaceDataList.Add(new PlayerRaceData(playerDataList[i], 0, "", 0, 0, 0, 1));
+                    playerRaceDataList.Add(new PlayerRaceData(playerDataList[i], 0, "", 0, 0, 0, 1, true));
 
                 }
 
@@ -407,14 +407,19 @@ public class RaceManager : MonoBehaviour
 
                 raceData.playerRaceDataList[playerDataToUpdateIndex].currentSectorIndex = 0;
                 raceData.playerRaceDataList[playerDataToUpdateIndex].currentLap++;
-                if (raceData.playerRaceDataList[playerDataToUpdateIndex].currentLap > maxLaps)
+                if (raceData.playerRaceDataList[playerDataToUpdateIndex].currentLap > maxLaps && raceData.playerRaceDataList[playerDataToUpdateIndex].inRace)
                 {
                     // player has finished the race
+
+                    raceData.AddFinalResultForPlayerRaceData(raceData.playerRaceDataList[playerDataToUpdateIndex]);
 
                     GameObject playerInstance = GetPlayerInstanceFromPlayerRaceData(raceData.playerRaceDataList[playerDataToUpdateIndex]);
                     RaceGUI playerRaceGUI = GetRaceGUIFromPlayerInstance(playerInstance);
                     if(playerRaceGUI != null)
                         playerRaceGUI.Finish();
+
+                    // race is finished for this player
+                    raceData.playerRaceDataList[playerDataToUpdateIndex].inRace = false;
 
                     // finish race
                     if (isRaceEnded())
