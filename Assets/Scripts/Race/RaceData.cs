@@ -26,8 +26,9 @@ public class PlayerRaceData
     public TimeData currentLapTime;
     public float startTime;
     public List<TimeData> lapTimes = new List<TimeData>();
+    public bool inRace = true;
 
-    public PlayerRaceData(PlayerData playerData, int position, string time, int currentSectorIndex, int nextCheckpointIndex, float currentCheckpointDistance, int currentLap)
+    public PlayerRaceData(PlayerData playerData, int position, string time, int currentSectorIndex, int nextCheckpointIndex, float currentCheckpointDistance, int currentLap, bool inRace)
     {
         this.playerData = playerData;
         this.position = position;
@@ -39,6 +40,7 @@ public class PlayerRaceData
         this.lapTimes = new List<TimeData>();
         this.currentLapTime = new TimeData(0, 0);
         this.startTime = 0f;
+        this.inRace = inRace;
     }
 
     public bool RaceCompleted(int maxLaps) {
@@ -96,6 +98,8 @@ public class RaceData
 
     private List<PlayerRaceData> positionOrderedPlayerRaceDataList;
 
+    private List<PlayerRaceData> finalResultPlayerRaceDataList;
+
     private float startTime;
 
     public RaceData(List<PlayerRaceData> playerRaceDataList)
@@ -108,9 +112,19 @@ public class RaceData
     {
         startTime = Time.time;
 
-        foreach (PlayerRaceData playerRaceData in this.playerRaceDataList) {
-            playerRaceData.startTime = startTime;
+        if(finalResultPlayerRaceDataList != null)
+        {
+            finalResultPlayerRaceDataList.Clear();
         }
+        else
+        {
+            finalResultPlayerRaceDataList = new List<PlayerRaceData>();
+        }
+
+            foreach (PlayerRaceData playerRaceData in this.playerRaceDataList)
+            {
+                playerRaceData.startTime = startTime;
+            }
 
     }
 
@@ -180,5 +194,15 @@ public class RaceData
 
 
         return lines;
+    }
+
+    public void AddFinalResultForPlayerRaceData(PlayerRaceData playerRaceData)
+    {
+        finalResultPlayerRaceDataList.Add(playerRaceData);
+    }
+
+    public List<PlayerRaceData> GetFinalPlayerRaceDataList()
+    {
+        return finalResultPlayerRaceDataList;
     }
 }
