@@ -878,7 +878,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 757945320}
   generateCPUPlayers: 1
-  cpuPlayersAmount: 0
+  cpuPlayersAmount: 1
   playerPrefab: {fileID: 4423116904176109930, guid: 5be1c164d3800b84fa4bfdb9de999d80, type: 3}
   checkPointListParent: {fileID: 1080354031}
   checkPointList:
@@ -911,6 +911,13 @@ MonoBehaviour:
   - {fileID: 309764246}
   - {fileID: 87543277}
   - {fileID: 28622107}
+  - {fileID: 1037219421}
+  - {fileID: 1186058683}
+  - {fileID: 1231244747}
+  - {fileID: 1887751164}
+  - {fileID: 1306972104}
+  - {fileID: 1620961301}
+  - {fileID: 1454239352}
   presentationManager: {fileID: 941342185}
   mode: 2
   playerDataList:

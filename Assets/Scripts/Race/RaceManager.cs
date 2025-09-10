@@ -115,8 +115,12 @@ public class RaceManager : MonoBehaviour
             Debug.Log($"[RaceManager] : Generating {cpuPlayersAmount} CPU Players");
             if (cpuPlayersAmount == 0)
             {
-                cpuPlayersAmount = spawnPointList.Count - playerDataList.Count;
+                cpuPlayersAmount = spawnPointList.Count;
                 Debug.Log($"[RaceManager] : CPU Players amount set to {cpuPlayersAmount} based on spawnPointList");
+            }
+            else
+            {
+                cpuPlayersAmount += playerDataList.Count;
             }
         }
     }
@@ -127,6 +131,11 @@ public class RaceManager : MonoBehaviour
         currentLap = 0;
 
         LoadRaceSettings();
+
+        for(int i = 0; i < playerDataList.Count; i++)
+        {
+            playerDataList[i].SetPlayerIndex(i);
+        }
 
         // Generating CPU Players if needed
         if (generateCPUPlayers)

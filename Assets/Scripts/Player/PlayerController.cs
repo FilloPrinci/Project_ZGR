@@ -64,6 +64,7 @@ public class PlayerController : MonoBehaviour
 
     private CollisionTypeEnum lastCollisionType = CollisionTypeEnum.None;
 
+    private bool autoDrive = false;
 
     private void Start()
     {
@@ -80,7 +81,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if(playerData.playerInputIndex != InputIndex.CPU)
+            if(playerData.playerInputIndex != InputIndex.CPU && !autoDrive)
             {
                 playerInputHandler = globalInputManager.GetPlayerInput((int)playerData.playerInputIndex).GetComponent<PlayerInputHandler>();
             }
