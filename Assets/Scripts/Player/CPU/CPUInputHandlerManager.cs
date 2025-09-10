@@ -9,6 +9,7 @@ public class CPUInputHandlerManager : MonoBehaviour
     public int cpuPlayerAmount = 1;
 
     private List<PlayerInputHandler> cpuInputHandlers = new List<PlayerInputHandler>();
+    private RaceManager raceManager;
 
     void Awake()
     {
@@ -21,6 +22,20 @@ public class CPUInputHandlerManager : MonoBehaviour
             Debug.LogError("Duplicate CPUInputHandlerManager detected. Destroying extra instance.");
             Destroy(gameObject); // Assicura che ci sia solo un CPUInputHandlerManager
         }
+        
+    }
+
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        raceManager = RaceManager.Instance;
+
+        if (raceManager != null) {
+            cpuPlayerAmount = raceManager.cpuPlayersAmount;
+            Debug.Log("[CPUInputHandlerManager] found " + cpuPlayerAmount + " CPU players from RaceManager");
+        }
+        
 
         // Initialize CPU input handlers
         for (int i = 0; i < cpuPlayerAmount; i++)
@@ -31,13 +46,6 @@ public class CPUInputHandlerManager : MonoBehaviour
             cpuInputHandler.SetPlauerIndex(i); // Set player index for CPU input handler
             cpuInputHandlers.Add(cpuInputHandler);
         }
-    }
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
     }
 
     // Update is called once per frame
