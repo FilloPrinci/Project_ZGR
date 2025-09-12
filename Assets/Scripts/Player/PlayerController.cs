@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if(raceManager.GetCurrentRacePhase() == RacePhase.Race)
+        if(raceManager.GetCurrentRacePhase() == RacePhase.Race || raceManager.GetCurrentRacePhase() == RacePhase.Results)
         {
             steerInput = playerInputHandler.SteerInput;
             accelerateInput = playerInputHandler.AccelerateInput;
@@ -502,5 +502,13 @@ public class PlayerController : MonoBehaviour
     public GameObject GetVeichleModel()
     {
         return veichleModelInstance;
+    }
+
+    public void EndRace()
+    {
+        if (!autoDrive)
+        {
+            autoDrive = true;
+        }
     }
 }

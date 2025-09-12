@@ -23,7 +23,7 @@ public class PlayerData
         this.playerInputIndex = playerInputIndex;
     }
 
-    public void SetPlayerIndex(int index)
+    public void SetCPUIndex(int index)
     {
         cpuIndex = index;
     }
