@@ -200,15 +200,12 @@ public class CPUManager : MonoBehaviour
 
         foreach (GameObject player in players)
         {
-            if (player.GetComponent<PlayerStructure>().data.playerInputIndex == InputIndex.CPU)
-            {
+            
                 // collect CPU transforms
                 cpuTransformList.Add(player.transform);
                 // collect CPU current speed
                 cpuSpeedList.Add(player.GetComponent<PlayerController>().GetCurrentSpeed());
                 // collect CPU next checkpoint transform
-                
-            }
         }
 
         for(int i = 0; i < cpuTransformList.Count; i++)
