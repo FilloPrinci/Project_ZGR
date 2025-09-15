@@ -510,5 +510,8 @@ public class PlayerController : MonoBehaviour
         {
             autoDrive = true;
         }
+
+        // update input
+        playerInputHandler = CPUInputHandlerManager.Instance.GetCPUInput(playerData.cpuIndex);
     }
 }
