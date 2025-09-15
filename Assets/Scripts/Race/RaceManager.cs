@@ -136,7 +136,6 @@ public class RaceManager : MonoBehaviour
         {
             playerDataList[i].SetCPUIndex(i);
         }
-
         
 
         // Generating CPU Players if needed
@@ -155,10 +154,6 @@ public class RaceManager : MonoBehaviour
                     
             }
         }
-
-        
-
-        
 
         if (playerDataList.Count != 0)
         {
@@ -224,13 +219,51 @@ public class RaceManager : MonoBehaviour
         }
     }
     
-    private void addPlayerInstances()
+    private void addPlayerInstances(bool keepOrder = false)
     {
-        for (int i = 0; i < playerDataList.Count; i++)
+        if (keepOrder)
         {
-            GameObject newPlayer = InstantiatePlayer(playerDataList[i], spawnPointList[i]);
+            for (int i = 0; i < playerDataList.Count; i++)
+            {
+                GameObject newPlayer = InstantiatePlayer(playerDataList[i], spawnPointList[i]);
 
-            playerInstanceList.Add(newPlayer);
+                playerInstanceList.Add(newPlayer);
+            }
+        }
+        else
+        {
+            List<PlayerData> cpuData = new List<PlayerData>();
+            List<PlayerData> playerData = new List<PlayerData>();
+
+            foreach (PlayerData data in playerDataList) { 
+                if(data.playerInputIndex == InputIndex.CPU)
+                {
+                    cpuData.Add(data);
+                }
+                else
+                {
+                    playerData.Add(data);
+                }
+            }
+            
+            for (int i = 0; i < playerDataList.Count; i++)
+            {
+
+                GameObject newPlayer;
+                // first spawn CPU
+                if (i < cpuData.Count)
+                {
+                    newPlayer = InstantiatePlayer(cpuData[i], spawnPointList[i]);
+                }
+                // then spawn Players
+                else
+                {
+                    int playerIndex = i - cpuData.Count;
+                    newPlayer = InstantiatePlayer(playerData[playerIndex], spawnPointList[i]);
+                }
+
+                playerInstanceList.Add(newPlayer);
+            }
         }
     }
 

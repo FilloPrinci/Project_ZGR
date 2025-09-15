@@ -324,6 +324,7 @@ public class CPUManager : MonoBehaviour
         JobHandle handle = job.Schedule(cpuCount, 5);
         handle.Complete();
 
+        // TO-DO : iterate on instance players 
         for (int i = 0; i < cpuCount; i++)
         {
             cpuInputHandlerManager.GetCPUInput(i).OnCPUAccelerate(JOB_IO_cpuAccelerate[i] == 1 ? 1.0f : 0.0f);
