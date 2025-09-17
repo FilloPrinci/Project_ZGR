@@ -660,7 +660,7 @@ MonoBehaviour:
     veichlePrefab: {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
     playerInputIndex: 0
     cpuIndex: -1
-  maxLaps: 2
+  maxLaps: 3
   avaiableVeichleList:
   - {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
 --- !u!4 &219254184
@@ -5023,10 +5023,10 @@ MonoBehaviour:
   rightCollider: {fileID: 1890541144}
   forwardLookAheadMultiplier: 30
   forwardLookSteerMultiplier: 4
-  forwardLookotherVeichlesMultiplier: 4
+  forwardLookotherVeichlesMultiplier: 3.5
   borderLimitDistance: 2
   borderSafeDistance: 10
-  otherVeichleSafeDistance: 3.5
+  otherVeichleSafeDistance: 3
   maxCheckpointTollerance: 10
   minCheckpointTollerance: 1
   cpuCount: 0
