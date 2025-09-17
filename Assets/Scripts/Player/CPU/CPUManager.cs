@@ -42,6 +42,7 @@ public class CPUManager : MonoBehaviour
 
     private RaceManager raceManager;
     private RaceData raceData;
+    private List<GameObject> instancedPlayersList;
     List<GameObject> checkPointList;
     private CPUInputHandlerManager cpuInputHandlerManager;
 
@@ -64,6 +65,7 @@ public class CPUManager : MonoBehaviour
         }
         raceData = raceManager.GetRaceData();
         checkPointList = raceManager.checkPointList;
+        instancedPlayersList = raceManager.GetAllPlayerInstances();
 
         cpuInputHandlerManager = CPUInputHandlerManager.Instance;
         if (cpuInputHandlerManager == null)
@@ -243,7 +245,6 @@ public class CPUManager : MonoBehaviour
             JOB_I_cpuInCorner = new NativeArray<bool>(cpuInCornerList.ToArray(), Allocator.Persistent);
         }
 
-        // TODO : get maxSpeed
         JOB_I_maxSpeed = players[0].GetComponent<PlayerController>().maxSpeed;
 
     }
@@ -323,8 +324,36 @@ public class CPUManager : MonoBehaviour
 
         JobHandle handle = job.Schedule(cpuCount, 5);
         handle.Complete();
+        /*
+        if (instancedPlayersList != null)
+        {
+            for (int i = 0; i < instancedPlayersList.Count; i++)
+            {
+                int playerCPUIndex = instancedPlayersList[i].GetComponent<PlayerData>().cpuIndex;
 
-        // TO-DO : iterate on instance players 
+                cpuInputHandlerManager.GetCPUInput(playerCPUIndex).OnCPUAccelerate(JOB_IO_cpuAccelerate[playerCPUIndex] == 1 ? 1.0f : 0.0f);
+                cpuInputHandlerManager.GetCPUInput(playerCPUIndex).OnCPUSteer(JOB_IO_cpuSteer[playerCPUIndex]);
+
+                // Save nearest points for gizmos
+                JOB_O_nearestLeftPoints[playerCPUIndex] = nearestLeft[playerCPUIndex];
+                JOB_O_nearestRightPoints[playerCPUIndex] = nearestRight[playerCPUIndex];
+                JOB_O_nearestRaceLinePoints[playerCPUIndex] = nearestRaceLinePoint[playerCPUIndex];
+            }
+        }
+        else
+        {
+            for (int i = 0; i < cpuCount; i++)
+            {
+                cpuInputHandlerManager.GetCPUInput(i).OnCPUAccelerate(JOB_IO_cpuAccelerate[i] == 1 ? 1.0f : 0.0f);
+                cpuInputHandlerManager.GetCPUInput(i).OnCPUSteer(JOB_IO_cpuSteer[i]);
+
+                // Save nearest points for gizmos
+                JOB_O_nearestLeftPoints[i] = nearestLeft[i];
+                JOB_O_nearestRightPoints[i] = nearestRight[i];
+                JOB_O_nearestRaceLinePoints[i] = nearestRaceLinePoint[i];
+            }
+        }*/
+
         for (int i = 0; i < cpuCount; i++)
         {
             cpuInputHandlerManager.GetCPUInput(i).OnCPUAccelerate(JOB_IO_cpuAccelerate[i] == 1 ? 1.0f : 0.0f);
@@ -335,6 +364,7 @@ public class CPUManager : MonoBehaviour
             JOB_O_nearestRightPoints[i] = nearestRight[i];
             JOB_O_nearestRaceLinePoints[i] = nearestRaceLinePoint[i];
         }
+
 
         leftVertices.Dispose();
         leftTriangles.Dispose();

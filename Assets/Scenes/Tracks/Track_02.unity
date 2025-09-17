@@ -878,7 +878,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 757945320}
   generateCPUPlayers: 1
-  cpuPlayersAmount: 1
+  cpuPlayersAmount: 0
   playerPrefab: {fileID: 4423116904176109930, guid: 5be1c164d3800b84fa4bfdb9de999d80, type: 3}
   checkPointListParent: {fileID: 1080354031}
   checkPointList:
