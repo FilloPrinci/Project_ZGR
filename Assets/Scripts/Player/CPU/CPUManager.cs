@@ -218,6 +218,8 @@ public class CPUManager : MonoBehaviour
 
             GameObject nextCheckpoint = checkPointList[nextCheckpointIndex];
 
+            //Debug.Log("next checkpoint for player" + player.GetComponent<PlayerController>().playerData.name + " is: " + nextCheckpoint.name);
+
             if (nextCheckpoint != null)
             {
                 nextRaceLinePositionList.Add(nextCheckpoint.transform);
