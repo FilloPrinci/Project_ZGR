@@ -253,12 +253,15 @@ public class RaceManager : MonoBehaviour
                 // first spawn CPU
                 if (i < cpuData.Count)
                 {
+                    cpuData[i].cpuIndex = i;
                     newPlayer = InstantiatePlayer(cpuData[i], spawnPointList[i]);
                 }
                 // then spawn Players
                 else
                 {
                     int playerIndex = i - cpuData.Count;
+                    Debug.Log("assigning cpuIndex: " + playerIndex);
+                    playerData[playerIndex].cpuIndex = i;
                     newPlayer = InstantiatePlayer(playerData[playerIndex], spawnPointList[i]);
                 }
 
