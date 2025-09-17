@@ -180,7 +180,7 @@ public class CPUManager : MonoBehaviour
             Gizmos.color = new Color(0f, 1f, 0f, 0.25f);
             Gizmos.DrawWireSphere(forwardSensorPoistion, scaledSafe);
 
-            Vector3 forwardOtherVeichleSensorPosition = carPos + (forward * forwardLookotherVeichlesMultiplier);
+            Vector3 forwardOtherVeichleSensorPosition = carPos + (forward * speedFactor * forwardLookotherVeichlesMultiplier);
 
             // Other veichle safe zone
             Gizmos.color = new Color(0.9f, 0.1f, 0.1f, 0.25f);

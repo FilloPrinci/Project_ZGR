@@ -126,7 +126,7 @@ public struct CPUJob : IJobParallelFor
         NativeArray<Vector3> otherCPUpositions = new NativeArray<Vector3>();
         otherCPUpositions = RemoveAt(positions, index, Allocator.Temp);
 
-        Vector3 nearestPlayerSensorPosition = vehiclePosition + (forward * lookAheadVeichleMultiplier);
+        Vector3 nearestPlayerSensorPosition = vehiclePosition + (forward * speedFactor * lookAheadVeichleMultiplier);
 
         Vector3 nearestPlayer = NearestPointFromList(nearestPlayerSensorPosition, otherCPUpositions);
         float nearestPlayerHOffset = float.MaxValue;
