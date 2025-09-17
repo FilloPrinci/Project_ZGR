@@ -467,6 +467,7 @@ public class RaceManager : MonoBehaviour
 
                     GameObject playerInstance = GetPlayerInstanceFromPlayerRaceData(raceData.playerRaceDataList[playerDataToUpdateIndex]);
                     RaceGUI playerRaceGUI = GetRaceGUIFromPlayerInstance(playerInstance);
+
                     if(playerRaceGUI != null)
                         playerRaceGUI.Finish();
 
@@ -530,7 +531,7 @@ public class RaceManager : MonoBehaviour
                 {
                     if(playerRaceData.playerData.playerInputIndex != InputIndex.CPU)
                     {
-                        ShowResultForPlayer((int)playerRaceData.playerData.playerInputIndex);
+                        ShowResultForPlayer(playerRaceData);
 
 
                         // finish race for all playuers
@@ -611,13 +612,16 @@ public class RaceManager : MonoBehaviour
             }
         }
     }
-    public void ShowResultForPlayer(int playerIndex)
+    public void ShowResultForPlayer(PlayerRaceData playerDaceData)
     {
-        if (playerInstanceList[playerIndex].GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
-        {
-            GameObject winnerPlayer = playerInstanceList[playerIndex];
+        GameObject playerInstance =  GetPlayerInstanceFromPlayerRaceData(playerDaceData);
 
-            RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(winnerPlayer);
+        Debug.Log("Showung results to player " + playerInstance.GetComponent<PlayerStructure>().data.name);
+
+        if (playerInstance.GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
+        {
+
+            RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(playerInstance);
             playerRaceGui.SetCanShowResults(true);
         }
     }
