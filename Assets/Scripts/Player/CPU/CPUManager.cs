@@ -289,6 +289,16 @@ public class CPUManager : MonoBehaviour
         NativeArray<Vector3> nearestRight = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
         NativeArray<Vector3> nearestRaceLinePoint = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
 
+        // Difficulty
+        NativeArray<int> cpuLevelList = new NativeArray<int>(cpuCount, Allocator.TempJob);
+        NativeArray<int> errorValueList = new NativeArray<int>(cpuCount, Allocator.TempJob);
+
+        for (int i = 0; i<cpuCount; i++)
+        {
+            cpuLevelList[i] = Random.Range(0, 11);
+            errorValueList[i] = Random.Range(0, 11);
+        }
+
         CPUJob job = new CPUJob
         {
             accelerate = JOB_IO_cpuAccelerate,
@@ -304,6 +314,8 @@ public class CPUManager : MonoBehaviour
             rightDirections = rightDirections,
             raceLinePoints = raceLinePoints,
             inCorner = JOB_I_cpuInCorner,
+            cpuLevelList = cpuLevelList,
+            errorValueList = errorValueList,
 
             maxSpeed = JOB_I_maxSpeed,
 
@@ -324,7 +336,7 @@ public class CPUManager : MonoBehaviour
             otherVeichleSafeDistance = otherVeichleSafeDistance
         };
 
-        JobHandle handle = job.Schedule(cpuCount, 5);
+        JobHandle handle = job.Schedule(cpuCount, 4);
         handle.Complete();
         /*
         if (instancedPlayersList != null)

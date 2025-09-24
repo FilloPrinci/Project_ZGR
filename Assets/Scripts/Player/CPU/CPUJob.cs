@@ -26,6 +26,8 @@ public struct CPUJob : IJobParallelFor
     [ReadOnly] public NativeArray<Vector3> rightDirections;
     [ReadOnly] public NativeArray<Vector3> raceLinePoints;
     [ReadOnly] public NativeArray<bool> inCorner;
+    [ReadOnly] public NativeArray<int> cpuLevelList;
+    [ReadOnly] public NativeArray<int> errorValueList;
 
     // Track boundaries
     [ReadOnly] public NativeArray<Vector3> leftVertices;
@@ -57,6 +59,15 @@ public struct CPUJob : IJobParallelFor
     // =========================
     public void Execute(int index)
     {
+        int cpuLevel = cpuLevelList[index];
+
+        int errorValue = errorValueList[index];
+
+        float generatedErrorValue = 0;
+
+        generatedErrorValue = ((10 - cpuLevel) * (10 - errorValue))/ 10;
+
+
         Vector3 vehiclePosition = positions[index];
 
         // === Define car orientation
@@ -136,7 +147,8 @@ public struct CPUJob : IJobParallelFor
             nearestPlayerHOffset = HorizontalOffset(nearestPlayerSensorPosition, right, nearestPlayer);
         }
 
-        if (Mathf.Abs(nearestPlayerHOffset) < otherVeichleSafeDistance)
+        // check and avoid collision with other player if cpu level is > 2
+        if (Mathf.Abs(nearestPlayerHOffset) < otherVeichleSafeDistance && cpuLevel > 2)
         {
             float steerFactor = ComputeDistanceFactorEasy(nearestPlayerHOffset * nearestPlayerHOffset, otherVeichleSafeDistance);
 
@@ -161,8 +173,8 @@ public struct CPUJob : IJobParallelFor
             else
             {
                 
-
-                if (limitAllert || checkpointFactor == 0)
+                // even if in line sector, if cpu level is > 5 , dont hit the walls
+                if ((limitAllert || checkpointFactor == 0) && cpuLevel > 5)
                 {
                     steer[index] = sensorBasedSteer; // sensor has priority
                 }
