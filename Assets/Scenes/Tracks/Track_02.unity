@@ -614,7 +614,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 757945320}
   generateCPUPlayers: 1
-  cpuPlayersAmount: 0
+  cpuPlayersAmount: 4
   playerPrefab: {fileID: 4423116904176109930, guid: 5be1c164d3800b84fa4bfdb9de999d80, type: 3}
   checkPointListParent: {fileID: 1080354031}
   checkPointList:
@@ -5021,6 +5021,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftCollider: {fileID: 1890541143}
   rightCollider: {fileID: 1890541144}
+  jobHz: 15
+  cpuLevel: 10
   forwardLookAheadMultiplier: 30
   forwardLookSteerMultiplier: 4
   forwardLookotherVeichlesMultiplier: 3.5
