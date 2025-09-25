@@ -34,6 +34,8 @@ public class CPUManager : MonoBehaviour
     private Transform[] JOB_I_cpuTransforms;
     private Transform[] JOB_I_nextRaceLineTransforms;
     private float JOB_I_maxSpeed;
+    // Difficulty
+    private NativeArray<int> JOB_I_cpuLevel;
 
     // Debug storage: nearest points found for gizmos
     private Vector3[] JOB_O_nearestLeftPoints;
@@ -82,6 +84,7 @@ public class CPUManager : MonoBehaviour
         JOB_I_cpuTransforms = new Transform[cpuCount];
         JOB_I_nextRaceLineTransforms = new Transform[cpuCount];
         JOB_I_cpuInCorner = new NativeArray<bool>(cpuCount, Allocator.Persistent);
+        JOB_I_cpuLevel = new NativeArray<int>(cpuCount, Allocator.Persistent);
 
         JOB_O_nearestLeftPoints = new Vector3[cpuCount];
         JOB_O_nearestRightPoints = new Vector3[cpuCount];
@@ -91,7 +94,11 @@ public class CPUManager : MonoBehaviour
         {
             JOB_IO_cpuAccelerate[i] = 1;
             JOB_IO_cpuSteer[i] = 0f;
+            JOB_I_cpuLevel[i] = Random.Range(0, 11);
         }
+
+        
+        
 
     }
 
@@ -269,11 +276,14 @@ public class CPUManager : MonoBehaviour
         NativeArray<Vector3> rightDirections = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
 
         NativeArray<Vector3> raceLinePoints = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
+        NativeArray<int> errorValueList = new NativeArray<int>(cpuCount, Allocator.TempJob);
+
 
         for (int i = 0; i < cpuCount; i++)
         {
 
             raceLinePoints[i] = JOB_I_nextRaceLineTransforms[i].transform.position;
+            errorValueList[i] = Random.Range(0, 11);
 
 
             if (JOB_I_cpuTransforms[i] != null) {
@@ -289,15 +299,7 @@ public class CPUManager : MonoBehaviour
         NativeArray<Vector3> nearestRight = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
         NativeArray<Vector3> nearestRaceLinePoint = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
 
-        // Difficulty
-        NativeArray<int> cpuLevelList = new NativeArray<int>(cpuCount, Allocator.TempJob);
-        NativeArray<int> errorValueList = new NativeArray<int>(cpuCount, Allocator.TempJob);
-
-        for (int i = 0; i<cpuCount; i++)
-        {
-            cpuLevelList[i] = Random.Range(0, 11);
-            errorValueList[i] = Random.Range(0, 11);
-        }
+        
 
         CPUJob job = new CPUJob
         {
@@ -314,7 +316,7 @@ public class CPUManager : MonoBehaviour
             rightDirections = rightDirections,
             raceLinePoints = raceLinePoints,
             inCorner = JOB_I_cpuInCorner,
-            cpuLevelList = cpuLevelList,
+            cpuLevelList = JOB_I_cpuLevel,
             errorValueList = errorValueList,
 
             maxSpeed = JOB_I_maxSpeed,
