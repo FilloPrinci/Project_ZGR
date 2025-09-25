@@ -13,6 +13,9 @@ public class CPUManager : MonoBehaviour
     public MeshCollider rightCollider;
 
     [Header("Configuration")]
+    public float jobHz = 10f;
+    public int cpuLevel = 0;
+
     public float forwardLookAheadMultiplier = 10f;
     public float forwardLookSteerMultiplier = 2f;
     public float forwardLookotherVeichlesMultiplier = 1.5f;
@@ -94,7 +97,15 @@ public class CPUManager : MonoBehaviour
         {
             JOB_IO_cpuAccelerate[i] = 1;
             JOB_IO_cpuSteer[i] = 0f;
-            JOB_I_cpuLevel[i] = Random.Range(0, 11);
+            if(cpuLevel == 0)
+            {
+                JOB_I_cpuLevel[i] = Random.Range(0, 11);
+            }
+            else
+            {
+                JOB_I_cpuLevel[i] = cpuLevel;
+            }
+            
         }
 
         
@@ -116,7 +127,7 @@ public class CPUManager : MonoBehaviour
 
     IEnumerator CPUJobCycle()
     {
-        var wait = new WaitForSeconds(1f/ 10f); // 10 Hz
+        var wait = new WaitForSeconds(1f/ jobHz);
         while (true)
         {
             UpdateCPUData();
