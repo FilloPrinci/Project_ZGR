@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class SingleSelector : MonoBehaviour
 {
@@ -61,17 +62,29 @@ public class SingleSelector : MonoBehaviour
         selectionConfirmed = false;
     }
 
-    public void SelectNext()
+    public void OnSelectNext(InputAction.CallbackContext context)
     {
-        if (!selectionConfirmed) {
-            selectedVeichleIndex++;
-            if (selectedVeichleIndex >= veichlePrefabList.Count)
+        if (context.performed)
+        {
+            if (!selectionConfirmed)
             {
-                selectedVeichleIndex = 0; // Loop back to the first veichle
+                selectedVeichleIndex++;
+                if (selectedVeichleIndex >= veichlePrefabList.Count)
+                {
+                    selectedVeichleIndex = 0; // Loop back to the first veichle
+                }
+                Debug.Log("[VeichleSelector] INFO: Player " + playerIndex + " selected next veichle: " + selectedVeichleIndex);
+
+                UpdateSelectedVeichle();
             }
-            UpdateSelectedVeichle();
         }
         
+        
+    }
+
+    public void OnKeyTest(int value)
+    {
+        Debug.Log("[VeichleSelector] INFO: Player " + playerIndex + " pressed test key with value: " + value);
     }
 
     public GameObject GetSelectedVeichlePrefab()

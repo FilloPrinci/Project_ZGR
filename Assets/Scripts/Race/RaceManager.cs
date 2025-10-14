@@ -463,17 +463,51 @@ public class RaceManager : MonoBehaviour
                 {
                     // player has finished the race
 
+                    // register player result
                     raceData.AddFinalResultForPlayerRaceData(raceData.playerRaceDataList[playerDataToUpdateIndex]);
 
-                    GameObject playerInstance = GetPlayerInstanceFromPlayerRaceData(raceData.playerRaceDataList[playerDataToUpdateIndex]);
-                    RaceGUI playerRaceGUI = GetRaceGUIFromPlayerInstance(playerInstance);
-
-                    if(playerRaceGUI != null)
-                        playerRaceGUI.Finish();
-
-                    // race is finished for this player
+                    // disable player controls
                     raceData.playerRaceDataList[playerDataToUpdateIndex].inRace = false;
+
+                    GameObject playerInstance = GetPlayerInstanceFromPlayerRaceData(raceData.playerRaceDataList[playerDataToUpdateIndex]);
                     playerInstance.GetComponent<PlayerController>().EndRace();
+                    
+
+                    if(playerInstance.GetComponent<PlayerController>().playerData.playerInputIndex != InputIndex.CPU)
+                    {
+                        // real player ended his race
+
+                        RaceGUI playerRaceGUI = GetRaceGUIFromPlayerInstance(playerInstance);
+                        if (playerRaceGUI != null)
+                        {
+                            playerRaceGUI.Finish();
+                        }
+
+                        if (mode == RaceMode.RaceSingleplayer)
+                        {
+                            // race is completed, register all positions and finish race for all the CPUs
+                            foreach (PlayerRaceData playerRaceData in raceData.playerRaceDataList)
+                            {
+                                if (playerRaceData.inRace && playerRaceData != raceData.playerRaceDataList[playerDataToUpdateIndex])
+                                {
+                                    raceData.AddFinalResultForPlayerRaceData(playerRaceData);
+                                    playerRaceData.inRace = false;
+                                    GameObject playerInst = GetPlayerInstanceFromPlayerRaceData(playerRaceData);
+                                    playerInst.GetComponent<PlayerController>().EndRace();
+                                }
+                            }
+
+                        }
+                        else if (mode == RaceMode.RaceMultiplayer)
+                        {
+                            // wait for other players to finish, register only this player position
+                            // check if this is the last player
+                        }
+                    }
+                    else
+                    {
+                        // CPU ended his race
+                    }
 
                     // finish race
                     if (isRaceEnded())
@@ -495,7 +529,7 @@ public class RaceManager : MonoBehaviour
         bool isRaceEnded = true;
         foreach (PlayerRaceData playerRasceData in raceData.playerRaceDataList)
         {
-            isRaceEnded = isRaceEnded && playerRasceData.RaceCompleted(maxLaps);
+            isRaceEnded = isRaceEnded && !playerRasceData.inRace;
         }
         return isRaceEnded;
     }
