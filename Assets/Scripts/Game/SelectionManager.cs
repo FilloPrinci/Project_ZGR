@@ -104,12 +104,12 @@ public class SelectionManager : MonoBehaviour
         StartSelection();
     }
 
-    private Transform CalculateCameraPivotPosition()
+    private Vector3 CalculateCameraPivotPosition()
     {
         if (selectorList.Count == 0)
         {
             Debug.LogError("[SelectionManager] ERROR: selectorList is empty");
-            return null;
+            return Vector3.zero;
         }
         // Calculate the average position of all active selectors
         Vector3 averagePosition = Vector3.zero;
@@ -126,17 +126,17 @@ public class SelectionManager : MonoBehaviour
         }
         averagePosition /= activeCount;
         // Create a new Transform to represent the camera pivot
-        Transform pivot = new GameObject("CameraPivot").transform;
-        pivot.position = averagePosition;
+        Vector3 pivot = Vector3.zero;
+        pivot = averagePosition;
         float distance = cameraMinDistance + (cameraMaxDistance - cameraMinDistance) / selectorList.Count * activeCount;
-        pivot.position = new Vector3(pivot.position.x, cameraHeight, -distance);
+        pivot = new Vector3(pivot.x, cameraHeight, -distance);
 
         return pivot;
     }
 
     private void UpdateCameraPosition()
     {
-        cameraPivot.position = CalculateCameraPivotPosition().position;
+        cameraPivot.position = CalculateCameraPivotPosition();
 
         if (cameraPivot != null)
         {

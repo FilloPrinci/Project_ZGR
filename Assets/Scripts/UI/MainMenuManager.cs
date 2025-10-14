@@ -132,6 +132,12 @@ public class MainMenuManager : MonoBehaviour
         SwitchToSelection();
     }
 
+    public void OnRaceSelect()
+    {
+        raceSettings.OnSingleplayerRaceModeSelect();
+        SwitchToSelection();
+    }
+
     public void SwitchToSelection()
     {
         if(selector != null)
