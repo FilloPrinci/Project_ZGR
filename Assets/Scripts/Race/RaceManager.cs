@@ -445,68 +445,80 @@ public class RaceManager : MonoBehaviour
     public void OnCheckpoint(string playerID, GameObject checkPointGameObject)
     {
         int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.name == playerID);
-        if (checkPointGameObject.transform.parent?.gameObject == checkPointList[raceData.playerRaceDataList[playerDataToUpdateIndex].nextCheckpointIndex])
+        PlayerRaceData currentPlayerRaceData = raceData.playerRaceDataList[playerDataToUpdateIndex];
+
+        if (checkPointGameObject.transform.parent?.gameObject == checkPointList[currentPlayerRaceData.nextCheckpointIndex])
         {
-            raceData.playerRaceDataList[playerDataToUpdateIndex].currentSectorIndex++;
+            currentPlayerRaceData.currentSectorIndex++;
 
             // check if player has completed the lap
-            if (raceData.playerRaceDataList[playerDataToUpdateIndex].currentSectorIndex > checkPointList.Count - 1)
+            if (currentPlayerRaceData.currentSectorIndex > checkPointList.Count - 1)
             {
                 // player has completed the lap
 
                 raceData.SetLapTimeForPlayer(playerDataToUpdateIndex);
 
 
-                raceData.playerRaceDataList[playerDataToUpdateIndex].currentSectorIndex = 0;
-                raceData.playerRaceDataList[playerDataToUpdateIndex].currentLap++;
-                if (raceData.playerRaceDataList[playerDataToUpdateIndex].currentLap > maxLaps && raceData.playerRaceDataList[playerDataToUpdateIndex].inRace)
+                currentPlayerRaceData.currentSectorIndex = 0;
+                currentPlayerRaceData.currentLap++;
+                if (currentPlayerRaceData.currentLap > maxLaps && currentPlayerRaceData.inRace)
                 {
                     // player has finished the race
 
                     // register player result
-                    raceData.AddFinalResultForPlayerRaceData(raceData.playerRaceDataList[playerDataToUpdateIndex]);
+                    raceData.AddFinalResultForPlayerRaceData(currentPlayerRaceData);
 
                     // disable player controls
-                    raceData.playerRaceDataList[playerDataToUpdateIndex].inRace = false;
+                    currentPlayerRaceData.inRace = false;
 
-                    GameObject playerInstance = GetPlayerInstanceFromPlayerRaceData(raceData.playerRaceDataList[playerDataToUpdateIndex]);
+                    GameObject playerInstance = GetPlayerInstanceFromPlayerRaceData(currentPlayerRaceData);
                     playerInstance.GetComponent<PlayerController>().EndRace();
                     
 
-                    if(playerInstance.GetComponent<PlayerController>().playerData.playerInputIndex != InputIndex.CPU)
+
+                    if (playerInstance.GetComponent<PlayerController>().playerData.playerInputIndex != InputIndex.CPU)
                     {
                         // real player ended his race
-
-                        RaceGUI playerRaceGUI = GetRaceGUIFromPlayerInstance(playerInstance);
-                        if (playerRaceGUI != null)
-                        {
-                            playerRaceGUI.Finish();
-                        }
+                        playerInstance.GetComponent<PlayerController>().EndRace();
 
                         if (mode == RaceMode.RaceSingleplayer)
                         {
                             // race is completed, register all positions and finish race for all the CPUs
                             foreach (PlayerRaceData playerRaceData in raceData.playerRaceDataList)
                             {
-                                if (playerRaceData.inRace && playerRaceData != raceData.playerRaceDataList[playerDataToUpdateIndex])
+                                if (playerRaceData.inRace && playerRaceData != currentPlayerRaceData)
                                 {
                                     raceData.AddFinalResultForPlayerRaceData(playerRaceData);
-                                    playerRaceData.inRace = false;
-                                    GameObject playerInst = GetPlayerInstanceFromPlayerRaceData(playerRaceData);
-                                    playerInst.GetComponent<PlayerController>().EndRace();
+                                    playerRaceData.inRace = false;                                    
                                 }
                             }
-
                         }
                         else if (mode == RaceMode.RaceMultiplayer)
                         {
                             // wait for other players to finish, register only this player position
+
+
                             // check if this is the last player
+                        }
+
+                        RaceGUI playerRaceGUI = GetRaceGUIFromPlayerInstance(playerInstance);
+                        if (playerRaceGUI != null)
+                        {
+                            playerRaceGUI.Finish();
+                            playerRaceGUI.SetCanShowPositionResult(true);
                         }
                     }
                     else
                     {
                         // CPU ended his race
+
+                        PlayerRaceData CPURaceData = raceData.GetPlayerRaceDataByID(playerInstance.GetComponent<PlayerStructure>().data.name);
+
+                        if (CPURaceData.inRace)
+                        {
+                            raceData.AddFinalResultForPlayerRaceData(CPURaceData);
+                            CPURaceData.inRace = false;
+                        }
                     }
 
                     // finish race
@@ -650,7 +662,7 @@ public class RaceManager : MonoBehaviour
     {
         GameObject playerInstance =  GetPlayerInstanceFromPlayerRaceData(playerDaceData);
 
-        Debug.Log("Showung results to player " + playerInstance.GetComponent<PlayerStructure>().data.name);
+        Debug.Log("Showing results for player " + playerInstance.GetComponent<PlayerStructure>().data.name);
 
         if (playerInstance.GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
         {

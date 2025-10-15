@@ -183,6 +183,12 @@ public class RaceData
         PlayerRaceData playerRaceData = playerRaceDataList.Find(p => p.playerData.name == id);
         return playerRaceData;
     }
+
+    public PlayerRaceData GetFinalPlayerRaceDataByID(string id)
+    {
+        PlayerRaceData playerRaceData = finalResultPlayerRaceDataList.Find(p => p.playerData.name == id);
+        return playerRaceData;
+    }
     public List<string> GetRaceDataAsLines()
     {
         List<string> lines = new List<string>();
@@ -199,6 +205,7 @@ public class RaceData
     public void AddFinalResultForPlayerRaceData(PlayerRaceData playerRaceData)
     {
         finalResultPlayerRaceDataList.Add(playerRaceData);
+        Debug.Log("" + playerRaceData.playerData.name + " registered position: " + playerRaceData.position);
     }
 
     public List<PlayerRaceData> GetFinalPlayerRaceDataList()
