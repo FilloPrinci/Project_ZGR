@@ -77,6 +77,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationSpeed: 10
-  distanceFromCenter: 10
-  cameraAngle: 5
+  distanceFromCenter: 25
+  cameraAngle: 30
+  heightOffset: 5
   cameraPoint: {fileID: 6617278663689221842}
