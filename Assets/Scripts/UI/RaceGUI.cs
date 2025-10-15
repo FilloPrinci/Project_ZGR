@@ -15,12 +15,14 @@ public class RaceGUI : MonoBehaviour
     public GameObject raceDataPanel;
     public GameObject speedometerPanel;
     public GameObject statsPanel;
+    public GameObject positionResultPanel;
 
     [Header("Texts")]
     public TextMeshProUGUI raceDataText;
     public TextMeshProUGUI resultsDataText;
     public TextMeshProUGUI countdownText;
     public TextMeshProUGUI speedometerText;
+    public TextMeshProUGUI positionResultText;
 
     [Header("GameObjects")]
     public GameObject currentPlayer;
@@ -44,6 +46,7 @@ public class RaceGUI : MonoBehaviour
     private bool canShowSpeedometer = true;
     private bool canShowStats = true;
     private bool canShowResults = false;
+    private bool canShowPositionResult = false;
     private bool canShowCountdown = false;
     private bool canShowPauseMenu = false;
 
@@ -70,6 +73,7 @@ public class RaceGUI : MonoBehaviour
     {
         ShowRaceDataLines();
         ShowRaceResults();
+        ShowPositionResult();
         ShowCountDown();
         ShowPauseMenu();
         UpdateSpeedometer();
@@ -203,6 +207,20 @@ public class RaceGUI : MonoBehaviour
 
     }
 
+    void ShowPositionResult()
+    {
+        if (canShowPositionResult)
+        {
+            if (!positionResultPanel.activeInHierarchy)
+            {
+                positionResultPanel.SetActive(true);
+            }
+
+            
+
+        }
+    }
+
     void ShowCountDown()
     {
         if (canShowCountdown) {
@@ -247,6 +265,16 @@ public class RaceGUI : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(resultMenuSelectionStart);
         }
+    }
+
+    public void SetCanShowPositionResult(bool canShowPositionResults)
+    {
+        this.canShowPositionResult = canShowPositionResults;
+
+        PlayerRaceData currentPlayerRaceData = raceManager.GetRaceData().GetFinalPlayerRaceDataByID(currentPlayerData.name);
+        string positionString = "" + currentPlayerRaceData.position;
+
+        positionResultText.text = positionString;
     }
 
     public void SetCanShowCountdown(bool canShowCountdown)
