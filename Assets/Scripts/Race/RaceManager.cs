@@ -452,86 +452,98 @@ public class RaceManager : MonoBehaviour
             currentPlayerRaceData.currentSectorIndex++;
 
             // check if player has completed the lap
-            if (currentPlayerRaceData.currentSectorIndex > checkPointList.Count - 1)
+            if (currentPlayerRaceData.currentSectorIndex > checkPointList.Count - 1 )
             {
                 // player has completed the lap
 
-                raceData.SetLapTimeForPlayer(playerDataToUpdateIndex);
-
-
                 currentPlayerRaceData.currentSectorIndex = 0;
                 currentPlayerRaceData.currentLap++;
+
+                raceData.SetLapTimeForPlayer(playerDataToUpdateIndex);
+
                 if (currentPlayerRaceData.currentLap > maxLaps && currentPlayerRaceData.inRace)
                 {
                     // player has finished the race
-
-                    // register player result
-                    raceData.AddFinalResultForPlayerRaceData(currentPlayerRaceData);
-
-                    // disable player controls
-                    currentPlayerRaceData.inRace = false;
-
-                    GameObject playerInstance = GetPlayerInstanceFromPlayerRaceData(currentPlayerRaceData);
-                    playerInstance.GetComponent<PlayerController>().EndRace();
-                    
+                    managePlayerRaceEnd(currentPlayerRaceData);
 
 
-                    if (playerInstance.GetComponent<PlayerController>().playerData.playerInputIndex != InputIndex.CPU)
+                }
+            }
+                
+            currentPlayerRaceData.nextCheckpointIndex = currentPlayerRaceData.currentSectorIndex;
+
+
+        }
+        else
+        {
+            Debug.Log($"[RaceManager] : Player {playerID} hit wrong checkpoint. Expected {currentPlayerRaceData.nextCheckpointIndex}, got {Array.IndexOf(checkPointList.ToArray(), checkPointGameObject.transform.parent?.gameObject)}");
+        }
+
+    }
+
+    void managePlayerRaceEnd(PlayerRaceData currentPlayerRaceData)
+    {
+        // register player result
+        raceData.AddFinalResultForPlayerRaceData(currentPlayerRaceData);
+
+        // disable player controls
+        currentPlayerRaceData.inRace = false;
+
+        GameObject playerInstance = GetPlayerInstanceFromPlayerRaceData(currentPlayerRaceData);
+        playerInstance.GetComponent<PlayerController>().EndRace();
+
+
+
+        if (playerInstance.GetComponent<PlayerController>().playerData.playerInputIndex != InputIndex.CPU)
+        {
+            // real player ended his race
+            playerInstance.GetComponent<PlayerController>().EndRace();
+
+            if (mode == RaceMode.RaceSingleplayer)
+            {
+                // race is completed, register all positions and finish race for all the CPUs
+                foreach (PlayerRaceData playerRaceData in raceData.playerRaceDataList)
+                {
+                    if (playerRaceData.inRace && playerRaceData != currentPlayerRaceData)
                     {
-                        // real player ended his race
-                        playerInstance.GetComponent<PlayerController>().EndRace();
-
-                        if (mode == RaceMode.RaceSingleplayer)
-                        {
-                            // race is completed, register all positions and finish race for all the CPUs
-                            foreach (PlayerRaceData playerRaceData in raceData.playerRaceDataList)
-                            {
-                                if (playerRaceData.inRace && playerRaceData != currentPlayerRaceData)
-                                {
-                                    raceData.AddFinalResultForPlayerRaceData(playerRaceData);
-                                    playerRaceData.inRace = false;                                    
-                                }
-                            }
-                        }
-                        else if (mode == RaceMode.RaceMultiplayer)
-                        {
-                            // wait for other players to finish, register only this player position
-
-
-                            // check if this is the last player
-                        }
-
-                        RaceGUI playerRaceGUI = GetRaceGUIFromPlayerInstance(playerInstance);
-                        if (playerRaceGUI != null)
-                        {
-                            playerRaceGUI.Finish();
-                            playerRaceGUI.SetCanShowPositionResult(true);
-                        }
-                    }
-                    else
-                    {
-                        // CPU ended his race
-
-                        PlayerRaceData CPURaceData = raceData.GetPlayerRaceDataByID(playerInstance.GetComponent<PlayerStructure>().data.name);
-
-                        if (CPURaceData.inRace)
-                        {
-                            raceData.AddFinalResultForPlayerRaceData(CPURaceData);
-                            CPURaceData.inRace = false;
-                        }
-                    }
-
-                    // finish race
-                    if (isRaceEnded())
-                    {
-                        TriggerRaceEvent(RacePhaseEvent.RaceEnd);
+                        raceData.AddFinalResultForPlayerRaceData(playerRaceData);
+                        playerRaceData.inRace = false;
                     }
                 }
             }
+            else if (mode == RaceMode.RaceMultiplayer)
+            {
+                // wait for other players to finish, register only this player position
 
-            raceData.playerRaceDataList[playerDataToUpdateIndex].nextCheckpointIndex = raceData.playerRaceDataList[playerDataToUpdateIndex].currentSectorIndex;
+
+                // check if this is the last player
+            }
+
+            RaceGUI playerRaceGUI = GetRaceGUIFromPlayerInstance(playerInstance);
+            if (playerRaceGUI != null)
+            {
+                playerRaceGUI.Finish();
+                playerRaceGUI.SetCanShowPositionResult(true);
+            }
+        }
+        else
+        {
+            // CPU ended his race
+
+            PlayerRaceData CPURaceData = raceData.GetPlayerRaceDataByID(playerInstance.GetComponent<PlayerStructure>().data.name);
+
+            if (CPURaceData.inRace)
+            {
+                raceData.AddFinalResultForPlayerRaceData(CPURaceData);
+                CPURaceData.inRace = false;
+            }
         }
 
+        // finish race
+        if (isRaceEnded())
+        {
+            TriggerRaceEvent(RacePhaseEvent.RaceEnd);
+        }
     }
 
     bool isRaceEnded()
