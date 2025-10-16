@@ -80,7 +80,7 @@ MonoBehaviour:
   playerDamageFactor: 1.5
   obstacleDamageFactor: 2
   normalSpeedCollistionFactor: 0.5
-  playerSpeedCollisionFactor: 0.9
+  playerSpeedCollisionFactor: 1
   obstacleSpeedCollisionFactor: 0.25
   normalBounceCollistionFactor: 1
   playerBounceCollisionFactor: 0.5
