@@ -202,6 +202,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 250
@@ -245,6 +257,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (25)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -335,6 +351,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: -100
@@ -378,6 +406,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -738,7 +770,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 757945320}
   generateCPUPlayers: 1
-  cpuPlayersAmount: 12
+  cpuPlayersAmount: 0
   playerPrefab: {fileID: 4423116904176109930, guid: 5be1c164d3800b84fa4bfdb9de999d80, type: 3}
   checkPointListParent: {fileID: 1080354031}
   checkPointList:
@@ -929,6 +961,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 100
@@ -973,6 +1017,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SkyScraper (24)
       objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -991,6 +1039,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: -250
@@ -1034,6 +1094,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (23)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1272,6 +1336,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 250
@@ -1315,6 +1391,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1409,6 +1489,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: -100
@@ -1452,6 +1544,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1532,6 +1628,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 72.6
@@ -1576,6 +1684,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SkyScraper (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1594,6 +1706,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: -50
@@ -1638,6 +1762,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SkyScraper (20)
       objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1656,6 +1784,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 250
@@ -1699,6 +1839,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2366,6 +2510,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 72.6
@@ -2409,6 +2565,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2824,6 +2984,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: -300
@@ -2868,6 +3040,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SkyScraper (13)
       objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2892,7 +3068,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &974034367
 Transform:
@@ -3010,6 +3186,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: -300
@@ -3053,6 +3241,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3112,6 +3304,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 72.6
@@ -3155,6 +3359,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (16)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3443,6 +3651,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 250
@@ -3486,6 +3706,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (11)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3813,6 +4037,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 72.6
@@ -3856,6 +4092,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3937,6 +4177,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 72.6
@@ -3981,6 +4233,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SkyScraper (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3999,6 +4255,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: -300
@@ -4042,6 +4310,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (14)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4242,6 +4514,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 250
@@ -4285,6 +4569,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4432,6 +4720,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: -200
@@ -4476,6 +4776,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SkyScraper (21)
       objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4494,6 +4798,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 250
@@ -4537,6 +4853,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (17)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4855,6 +5175,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: -100
@@ -4898,6 +5230,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (22)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5186,6 +5522,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 100
@@ -5229,6 +5577,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (18)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5308,7 +5660,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 2
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
@@ -5528,7 +5880,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1880059690
 Transform:
@@ -6086,6 +6438,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: 250
@@ -6130,6 +6494,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SkyScraper (19)
       objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6148,6 +6516,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: -100
@@ -6191,6 +6571,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6239,6 +6623,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: -300
@@ -6282,6 +6678,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper (15)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6770,6 +7170,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 974034367}
     m_Modifications:
+    - target: {fileID: 1656937373884205550, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 2771428261382025902, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170914581607278445, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 8373211324437156502, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_LocalPosition.x
       value: -100
@@ -6813,6 +7225,10 @@ PrefabInstance:
     - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
       propertyPath: m_Name
       value: SkyScraper
+      objectReference: {fileID: 0}
+    - target: {fileID: 9185179377412507692, guid: cefc830549d5c7449b5b1899d2bea933, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
