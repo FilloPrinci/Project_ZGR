@@ -48,6 +48,7 @@ public class PlayerController : MonoBehaviour
 
     private float rotationVelocity = 0;
     private float currentRotationSpeed = 0;
+    private float fixedDeltaTime;
     private float deltaTime;
 
     private bool collisionDetected = false;
@@ -110,7 +111,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if(raceManager.GetCurrentRacePhase() == RacePhase.Race || raceManager.GetCurrentRacePhase() == RacePhase.Results)
+        deltaTime = Time.deltaTime;
+
+        if (raceManager.GetCurrentRacePhase() == RacePhase.Race || raceManager.GetCurrentRacePhase() == RacePhase.Results)
         {
             steerInput = playerInputHandler.SteerInput;
             accelerateInput = playerInputHandler.AccelerateInput;
@@ -127,7 +130,9 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
-        InterpolateVeichlePivot();
+        InterpolateVeichlePivotRotation();
+        //InterpolateVeichlePivotPosition();
+        veichlePivot.position = currentPosition;
     }
 
     private void FixedUpdate()
@@ -140,7 +145,7 @@ public class PlayerController : MonoBehaviour
             rotationAccelleration = playerStats.CurrentRotationAcceleration;
         }
 
-        deltaTime = Time.fixedDeltaTime;
+        fixedDeltaTime = Time.fixedDeltaTime;
 
         HandleSteering();
 
@@ -173,27 +178,49 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void InterpolateVeichlePivot()
+    void InterpolateVeichlePivotRotation()
     {
-
+    
         // Smooth rotation using exponential decay on Quaternions
         Quaternion currentRotationQuat = veichlePivot.rotation;
         Quaternion targetRotationQuat = currentRotation;
-
+    
         float t = 1f - Mathf.Exp(-pivotRotationDecay * deltaTime);
         Quaternion smoothedRotation = Quaternion.Slerp(currentRotationQuat, targetRotationQuat, t);
-
+    
         veichlePivot.rotation = smoothedRotation;
+    }
 
-        // Smooth position using exponential decay
-        //veichlePivot.position = ExpDecay(veichlePivot.position, currentPosition, pivotPositionDecay, deltaTime);
-        veichlePivot.position = currentPosition;
+    void InterpolateVeichlePivotPosition()
+    {
+
+        // Posizione: mantieni XZ precisi (presa da currentPosition), smussa solo Y in spazio locale del pivot
+        Vector3 targetPos = currentPosition;
+
+        // Current pos in locale del pivot
+        Vector3 localCurrent = veichlePivot.InverseTransformPoint(veichlePivot.position);
+        Vector3 localTarget = veichlePivot.InverseTransformPoint(targetPos);
+
+        // Smoothing esponenziale solo sulla Y
+        float posT = 1f - Mathf.Exp(-pivotPositionDecay * deltaTime);
+        localCurrent.y = Mathf.Lerp(localCurrent.y, localTarget.y, posT);
+
+        // Mantieni X e Z del target (in world) — per evitare slittamenti, converti XZ direttamente
+        // Ricostruisci posizione world partendo dalla XZ target e dalla Y smussata (in locale)
+        Vector3 worldXZ = new Vector3(targetPos.x, 0f, targetPos.z);
+        Vector3 reconstructed = veichlePivot.TransformPoint(new Vector3(localCurrent.x, localCurrent.y, localCurrent.z));
+
+        // Sostituisci XZ con quelli target per sicurezza (evita drift)
+        reconstructed.x = worldXZ.x;
+        reconstructed.z = worldXZ.z;
+
+        veichlePivot.position = reconstructed;
     }
 
     void Bounce()
     {
         float currentCollisionSpeed = Speed(collisionVelocity);
-        collisionVelocity = collisionVelocity.normalized * AccellerateSpeed(0, collisionBounceDecelleration, currentCollisionSpeed) * deltaTime;
+        collisionVelocity = collisionVelocity.normalized * AccellerateSpeed(0, collisionBounceDecelleration, currentCollisionSpeed) * fixedDeltaTime;
     }
 
     void Collide()
@@ -242,7 +269,7 @@ public class PlayerController : MonoBehaviour
             float currentSpeed = Speed(normalMovementVelocity);
             float finalBounceForce = Mathf.Max(currentSpeed * collistionBounceFactor * bounceFactor, 1f);
 
-            collisionVelocity = lastCollisionDirection.normalized * finalBounceForce * deltaTime;
+            collisionVelocity = lastCollisionDirection.normalized * finalBounceForce * fixedDeltaTime;
         }
 
         feedBackManager.TriggerCameraShake();
@@ -260,7 +287,7 @@ public class PlayerController : MonoBehaviour
             rotationVelocity = AccellerateRotationSpeed(0, rotationAccelleration);
         }
 
-        transform.Rotate(0, rotationVelocity * deltaTime, 0, Space.Self);
+        transform.Rotate(0, rotationVelocity * fixedDeltaTime, 0, Space.Self);
     }
 
     void HandleMovement()
@@ -269,11 +296,11 @@ public class PlayerController : MonoBehaviour
 
         if (accelerateInput)
         {
-            normalMovementVelocity = transform.forward * AccellerateSpeed(maxSpeed, accelleration, currentSpeed) * deltaTime;
+            normalMovementVelocity = transform.forward * AccellerateSpeed(maxSpeed, accelleration, currentSpeed) * fixedDeltaTime;
         }
         else
         {
-            normalMovementVelocity = transform.forward * AccellerateSpeed(0, autoBrakeDecelleration, currentSpeed) * deltaTime;
+            normalMovementVelocity = transform.forward * AccellerateSpeed(0, autoBrakeDecelleration, currentSpeed) * fixedDeltaTime;
         }
     }
 
@@ -285,7 +312,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            currentRotationSpeed = ExpDecay(currentRotationSpeed, targetSpeed, accelleration, deltaTime);
+            currentRotationSpeed = ExpDecay(currentRotationSpeed, targetSpeed, accelleration, fixedDeltaTime);
         }
         return currentRotationSpeed;
     }
@@ -298,7 +325,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            currentSpeed = ExpDecay(currentSpeed, targetSpeed, accelleration, deltaTime);
+            currentSpeed = ExpDecay(currentSpeed, targetSpeed, accelleration, fixedDeltaTime);
         }
         return currentSpeed;
     }
@@ -333,7 +360,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            transform.position += Vector3.down * gravityFallbackSpeed * deltaTime;
+            transform.position += Vector3.down * gravityFallbackSpeed * fixedDeltaTime;
         }
     }
 
@@ -429,7 +456,7 @@ public class PlayerController : MonoBehaviour
                     if (zoneData.Type == ZoneType.Recharge)
                     {
                         float currentSpeed = Speed(normalMovementVelocity);
-                        playerStats.OnEnergyRechargeBySpeed(deltaTime, currentSpeed);
+                        playerStats.OnEnergyRechargeBySpeed(fixedDeltaTime, currentSpeed);
                         if (playerStructure != null)
                         {
                             playerStructure.UpdatePlayerGUI(playerStats);
@@ -492,7 +519,7 @@ public class PlayerController : MonoBehaviour
 
     float Speed(Vector3 vector)
     {
-        return vector.magnitude / deltaTime;
+        return vector.magnitude / fixedDeltaTime;
     }
     public float GetCurrentSpeed()
     {
