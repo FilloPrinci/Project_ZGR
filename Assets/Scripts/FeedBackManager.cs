@@ -5,6 +5,7 @@ using UnityEngine;
 public class FeedBackManager : MonoBehaviour
 {
     private GameObject playerVeichle;
+    private VeichleAnchors veichleAnchors;
     [Header("playerVeichle Settings")]
     public float maxTiltAngleZ = 15f;
     public float maxTiltAngleY = 45f;
@@ -28,6 +29,8 @@ public class FeedBackManager : MonoBehaviour
     {
         playerVeichle = GetComponent<PlayerController>().GetVeichleModel();
         steeringAmount = 0;
+
+        veichleAnchors = GetComponent<PlayerController>().GetVeichleAnchors();
     }
 
     // Update is called once per frame
@@ -50,6 +53,20 @@ public class FeedBackManager : MonoBehaviour
             StopCoroutine(shakeCoroutine);
 
         shakeCoroutine = StartCoroutine(CameraShake());
+    }
+
+    public void TurboFeedBack(bool onTurbo) {
+        if(veichleAnchors != null)
+        {
+            if (onTurbo)
+            {
+                veichleAnchors.cameraPivot.localPosition = Vector3.Lerp(veichleAnchors.cameraPivot.localPosition, veichleAnchors.Turbo_cameraPivot.localPosition, 0.1f);
+            }
+            else
+            {
+                veichleAnchors.cameraPivot.localPosition = Vector3.Lerp(veichleAnchors.cameraPivot.localPosition, veichleAnchors.Normal_cameraPivot.localPosition, 0.02f);
+            }
+        }
     }
 
     private void SteerFeedBack(float amount)

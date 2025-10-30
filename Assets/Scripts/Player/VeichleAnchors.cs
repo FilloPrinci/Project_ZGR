@@ -4,6 +4,8 @@ public class VeichleAnchors : MonoBehaviour
 {
     public Transform pivot;
     public Transform cameraPivot;
+    public Transform Normal_cameraPivot;
+    public Transform Turbo_cameraPivot;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
