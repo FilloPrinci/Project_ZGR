@@ -122,6 +122,7 @@ public class PlayerController : MonoBehaviour
         }
 
             feedBackManager.SetSteeringFeedBackAmount(steerInput);
+            feedBackManager.SetTurboFeedBack(playerStats.onTurbo);
     }
 
     private void LateUpdate()
@@ -502,6 +503,11 @@ public class PlayerController : MonoBehaviour
     public GameObject GetVeichleModel()
     {
         return veichleModelInstance;
+    }
+
+    public GameObject GetPlayerPivot()
+    {
+        return veichlePivot.gameObject;
     }
 
     public void EndRace()

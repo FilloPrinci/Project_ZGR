@@ -5,10 +5,12 @@ using UnityEngine;
 public class FeedBackManager : MonoBehaviour
 {
     private GameObject playerVeichle;
+    private VeichleAnchors anchors;
     [Header("playerVeichle Settings")]
     public float maxTiltAngleZ = 15f;
     public float maxTiltAngleY = 45f;
     public float tiltSmoothSpeed = 5f;
+
     public GameObject playerCamera;
 
     [Header("Camera Shake Settings")]
@@ -28,6 +30,7 @@ public class FeedBackManager : MonoBehaviour
     {
         playerVeichle = GetComponent<PlayerController>().GetVeichleModel();
         steeringAmount = 0;
+        anchors = GetComponent<PlayerController>().GetPlayerPivot().GetComponent<VeichleAnchors>();
     }
 
     // Update is called once per frame
@@ -36,6 +39,7 @@ public class FeedBackManager : MonoBehaviour
         if (playerVeichle.activeInHierarchy)
         {
             SteerFeedBack(steeringAmount);
+
         }
              
     }
@@ -50,6 +54,26 @@ public class FeedBackManager : MonoBehaviour
             StopCoroutine(shakeCoroutine);
 
         shakeCoroutine = StartCoroutine(CameraShake());
+    }
+
+    public void SetTurboFeedBack(bool inTurbo)
+    {
+        if(anchors != null)
+        {
+            if (inTurbo)
+            {
+                anchors.cameraPivot.localPosition = Vector3.Lerp(anchors.cameraPivot.localPosition, anchors.Turbo_cameraPivot.localPosition, 0.1f);
+            }
+            else
+            {
+                anchors.cameraPivot.localPosition = Vector3.Lerp(anchors.cameraPivot.localPosition, anchors.NormalCameraPivot.localPosition, 0.02f);
+            }
+        }
+        else
+        {
+            Debug.LogError("Anchors not found in FeedBackManager");
+        }
+        
     }
 
     private void SteerFeedBack(float amount)
