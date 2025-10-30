@@ -56,10 +56,10 @@ MonoBehaviour:
   feedBack: {fileID: 2753818033003460965}
   canvasPrefab: {fileID: 8332201281868801339, guid: 210cef8cc7b01664f8ebf5becf555cf9, type: 3}
   data:
-    name: CPU4
-    veichlePrefab: {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
-    playerInputIndex: 4
-    cpuIndex: 3
+    name: Player1
+    veichlePrefab: {fileID: 7064990795267870941, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
+    playerInputIndex: 0
+    cpuIndex: 19
   playerCamera: {fileID: 0}
 --- !u!114 &7834776545252078584
 MonoBehaviour:
@@ -178,9 +178,8 @@ MonoBehaviour:
   maxTiltAngleZ: 15
   maxTiltAngleY: 7
   tiltSmoothSpeed: 10
-  playerCamera: {fileID: 0}
-  shakeDuration: 0.1
-  shakeMagnitude: 0.5
+  shakeDuration: 0.5
+  shakeMagnitude: 0.2
 --- !u!65 &1331134543065289110
 BoxCollider:
   m_ObjectHideFlags: 0

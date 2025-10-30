@@ -10,7 +10,6 @@ public class FeedBackManager : MonoBehaviour
     public float maxTiltAngleZ = 15f;
     public float maxTiltAngleY = 45f;
     public float tiltSmoothSpeed = 5f;
-    public GameObject playerCamera;
 
     [Header("Camera Shake Settings")]
     public float shakeDuration = 0.5f;
@@ -24,6 +23,8 @@ public class FeedBackManager : MonoBehaviour
     private float currentTiltAngleZ = 0f;
     private float currentTiltAngleY = 0f;
 
+    private float deltaTime;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -36,6 +37,7 @@ public class FeedBackManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        deltaTime = Time.deltaTime;
         if (playerVeichle.activeInHierarchy)
         {
             SteerFeedBack(steeringAmount);
@@ -50,7 +52,11 @@ public class FeedBackManager : MonoBehaviour
     public void TriggerCameraShake()
     {
         if (shakeCoroutine != null)
+        {
             StopCoroutine(shakeCoroutine);
+
+        }
+            
 
         shakeCoroutine = StartCoroutine(CameraShake());
     }
@@ -60,11 +66,19 @@ public class FeedBackManager : MonoBehaviour
         {
             if (onTurbo)
             {
-                veichleAnchors.cameraPivot.localPosition = Vector3.Lerp(veichleAnchors.cameraPivot.localPosition, veichleAnchors.Turbo_cameraPivot.localPosition, 0.1f);
+                veichleAnchors.cameraPivot.localPosition = Vector3.Lerp(veichleAnchors.cameraPivot.localPosition, veichleAnchors.Turbo_cameraPivot.localPosition, deltaTime * 4f);
             }
             else
             {
-                veichleAnchors.cameraPivot.localPosition = Vector3.Lerp(veichleAnchors.cameraPivot.localPosition, veichleAnchors.Normal_cameraPivot.localPosition, 0.02f);
+                if((veichleAnchors.cameraPivot.localPosition - veichleAnchors.Normal_cameraPivot.localPosition).magnitude > 0.01f)
+                {
+                    veichleAnchors.cameraPivot.localPosition = Vector3.Lerp(veichleAnchors.cameraPivot.localPosition, veichleAnchors.Normal_cameraPivot.localPosition, deltaTime);
+                }
+                else
+                {
+                    veichleAnchors.cameraPivot.localPosition = veichleAnchors.Normal_cameraPivot.localPosition;
+                }
+                
             }
         }
     }
@@ -88,21 +102,29 @@ public class FeedBackManager : MonoBehaviour
 
     private IEnumerator CameraShake()
     {
-        yield return null;
-        //originalCamPos = playerCamera.transform.localPosition;
-        //float elapsed = 0f;
-        //
-        //while (elapsed < shakeDuration)
-        //{
-        //    float offsetX = Random.Range(-1f, 1f) * shakeMagnitude;
-        //    float offsetY = Random.Range(-1f, 1f) * shakeMagnitude;
-        //
-        //    playerCamera.transform.localPosition = originalCamPos + new Vector3(offsetX, offsetY, 0f);
-        //
-        //    yield return new WaitForSeconds(0.1f);
-        //    elapsed += Time.deltaTime;
-        //}
-        //
-        //playerCamera.transform.localPosition = originalCamPos;
+        Vector3 originalCamPos = veichleAnchors.cameraPivot.localPosition;
+        float elapsed = 0f;
+
+        while (elapsed < shakeDuration)
+        {
+            // Normalizza il tempo (0 ? 1)
+            float t = elapsed / shakeDuration;
+
+            // 1?? Inizio: botta verso il basso
+            // 2?? Poi effetto molla (oscillazione smorzata)
+            float damper = Mathf.Exp(-5f * t); // smorzamento
+            float spring = Mathf.Sin(t * Mathf.PI * 4f); // oscillazione
+
+            // Movimento verticale: inizia con una botta negativa e poi rimbalza
+            float offsetY = (-Mathf.Abs(Mathf.Sin(t * Mathf.PI)) + spring) * shakeMagnitude * damper;
+
+            veichleAnchors.cameraPivot.localPosition = originalCamPos + new Vector3(0f, offsetY, 0f);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ritorna esattamente alla posizione originale
+        veichleAnchors.cameraPivot.localPosition = originalCamPos;
     }
 }
