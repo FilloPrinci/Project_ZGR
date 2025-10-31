@@ -9698,8 +9698,8 @@ MonoBehaviour:
   cpuPlayerDataList: []
   veichlePrefabList:
   - {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
-  - {fileID: 7064990795267870941, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
-  - {fileID: 3416946221655606573, guid: 1d78c1a18cc5e964da0b851a9e8983b2, type: 3}
+  - {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
+  - {fileID: 4699924895700797138, guid: a3bb4ad6c635fd44dac73aa2e5772f91, type: 3}
   defaultVeichleIndex: 0
   defaultRaceTrackIndex: 1
 --- !u!4 &1650133777
