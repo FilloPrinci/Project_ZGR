@@ -60,7 +60,8 @@ public class RaceManager : MonoBehaviour
     private List<GameObject> playerInstanceList;
     private List<int> sectorList;
     private RaceData raceData;
-    
+    private int humanPlayersAmount = 0;
+
 
     private bool isPaused = false;
 
@@ -123,7 +124,9 @@ public class RaceManager : MonoBehaviour
                 cpuPlayersAmount += playerDataList.Count;
             }
         }
+        humanPlayersAmount = playerDataList.Count;
     }
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -345,13 +348,15 @@ public class RaceManager : MonoBehaviour
                 }
                 else
                 {
-                    if (playerInstanceList.Count == 2)
+                    Debug.Log("[RaceManager] : Activating multiplayer camera mode... humanPlayersAmount: " + humanPlayersAmount);
+
+                    if (humanPlayersAmount == 2)
                     {
                         instanceStructure.ActivatePlayerCamera(CameraMode.MultiPlayer2);
-                    }else if (playerInstanceList.Count == 3)
+                    }else if (humanPlayersAmount == 3)
                     {
                         instanceStructure.ActivatePlayerCamera(CameraMode.MultiPlayer3);
-                    }else if(playerInstanceList.Count == 4)
+                    }else if(humanPlayersAmount == 4)
                     {
                         instanceStructure.ActivatePlayerCamera(CameraMode.MultiPlayer4);
                     }

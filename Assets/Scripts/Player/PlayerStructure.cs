@@ -69,6 +69,8 @@ public class PlayerStructure : MonoBehaviour
 
     public void ActivatePlayerCamera(CameraMode mode)
     {
+        Debug.Log("Activating camera for player: " + data.name + " in mode: " + mode.ToString());
+
         Camera cam = playerCamera.GetComponent<Camera>();
 
         int playerIndex = (int)data.playerInputIndex;
