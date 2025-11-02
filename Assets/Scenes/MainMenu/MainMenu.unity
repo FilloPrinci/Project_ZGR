@@ -1243,6 +1243,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 1958967651}
     m_Modifications:
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: Gamepad
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
+      propertyPath: m_NeverAutoSwitchControlSchemes
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[13].m_ActionId
       value: 9b1afddc-d3af-43a3-a69c-c6d9269bf42b
       objectReference: {fileID: 0}
@@ -1259,6 +1267,10 @@ PrefabInstance:
       value: 'Selection/SelectNext[/Keyboard/rightArrow]'
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
+      propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 168325692}
@@ -1272,7 +1284,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SelectNext
+      value: OnSelectNext
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
@@ -4045,6 +4057,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 1958967651}
     m_Modifications:
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: Gamepad
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
+      propertyPath: m_NeverAutoSwitchControlSchemes
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[13].m_ActionId
       value: 9b1afddc-d3af-43a3-a69c-c6d9269bf42b
       objectReference: {fileID: 0}
@@ -4061,6 +4081,10 @@ PrefabInstance:
       value: 'Selection/SelectNext[/Keyboard/rightArrow]'
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
+      propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 447603838}
@@ -4074,7 +4098,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SelectNext
+      value: OnSelectNext
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
@@ -9018,6 +9042,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 1958967651}
     m_Modifications:
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: Gamepad
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
+      propertyPath: m_NeverAutoSwitchControlSchemes
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[13].m_ActionId
       value: 9b1afddc-d3af-43a3-a69c-c6d9269bf42b
       objectReference: {fileID: 0}
@@ -9034,6 +9066,10 @@ PrefabInstance:
       value: 'Selection/SelectNext[/Keyboard/rightArrow]'
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
+      propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1507442514}
@@ -9047,7 +9083,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SelectNext
+      value: OnSelectNext
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
@@ -10516,7 +10552,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.size
@@ -10532,7 +10568,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[1].m_Mode
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -10580,7 +10616,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: OnKeyTest
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
@@ -10601,6 +10637,10 @@ PrefabInstance:
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: SingleSelector, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
+      propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_IntArgument

@@ -149,7 +149,9 @@ public class RaceManager : MonoBehaviour
                 // Real CPU are after the player
                 if(i >= playerDataList.Count)
                 {
-                    PlayerData cpuPlayerData = new PlayerData("CPU" + (i), avaiableVeichleList[0], InputIndex.CPU);
+                    int veichleIndex = UnityEngine.Random.Range(0, avaiableVeichleList.Count);
+
+                    PlayerData cpuPlayerData = new PlayerData("CPU" + (i), avaiableVeichleList[veichleIndex], InputIndex.CPU);
                     cpuPlayerData.SetCPUIndex(i);
                     playerDataList.Add(cpuPlayerData);
                 }

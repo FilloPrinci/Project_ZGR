@@ -820,9 +820,15 @@ MonoBehaviour:
     veichlePrefab: {fileID: 4699924895700797138, guid: a3bb4ad6c635fd44dac73aa2e5772f91, type: 3}
     playerInputIndex: 1
     cpuIndex: -1
+  - name: Player3
+    veichlePrefab: {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
+    playerInputIndex: 2
+    cpuIndex: -1
   maxLaps: 3
   avaiableVeichleList:
   - {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
+  - {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
+  - {fileID: 4699924895700797138, guid: a3bb4ad6c635fd44dac73aa2e5772f91, type: 3}
 --- !u!4 &219254184
 Transform:
   m_ObjectHideFlags: 0
