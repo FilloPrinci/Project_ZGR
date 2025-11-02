@@ -82,6 +82,26 @@ public class SingleSelector : MonoBehaviour
         
     }
 
+    public void OnSelectPrev(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            if (!selectionConfirmed)
+            {
+                selectedVeichleIndex--;
+                if (selectedVeichleIndex < 0)
+                {
+                    selectedVeichleIndex = veichlePrefabList.Count-1; // Loop back to the last veichle
+                }
+                Debug.Log("[VeichleSelector] INFO: Player " + playerIndex + " selected next veichle: " + selectedVeichleIndex);
+
+                UpdateSelectedVeichle();
+            }
+        }
+
+
+    }
+
     public void OnKeyTest(int value)
     {
         Debug.Log("[VeichleSelector] INFO: Player " + playerIndex + " pressed test key with value: " + value);
