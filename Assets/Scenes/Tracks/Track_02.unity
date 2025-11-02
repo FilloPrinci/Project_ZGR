@@ -810,11 +810,15 @@ MonoBehaviour:
   - {fileID: 654429899}
   - {fileID: 828431472}
   presentationManager: {fileID: 941342185}
-  mode: 2
+  mode: 3
   playerDataList:
   - name: Player1
-    veichlePrefab: {fileID: 7064990795267870941, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
+    veichlePrefab: {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
     playerInputIndex: 0
+    cpuIndex: -1
+  - name: Player2
+    veichlePrefab: {fileID: 4699924895700797138, guid: a3bb4ad6c635fd44dac73aa2e5772f91, type: 3}
+    playerInputIndex: 1
     cpuIndex: -1
   maxLaps: 3
   avaiableVeichleList:
