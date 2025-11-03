@@ -34,7 +34,7 @@ public class GlobalInputManager : MonoBehaviour
 
         if (raceManager != null)
         {
-            playerAmount = raceManager.playerDataList.Count;
+            playerAmount = raceManager.GetHumanPlayersAmount();
         }
 
         InstantiatePlayerInputs(playerAmount);

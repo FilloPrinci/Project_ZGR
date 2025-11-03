@@ -75,6 +75,11 @@ public class RaceManager : MonoBehaviour
         return currentRacePhase;   
     }
 
+    public int GetHumanPlayersAmount()
+    {
+        return humanPlayersAmount;
+    }
+
 
     private void OnValidate()
     {
@@ -124,6 +129,8 @@ public class RaceManager : MonoBehaviour
                 cpuPlayersAmount += playerDataList.Count;
             }
         }
+        LoadRaceSettings();
+
         humanPlayersAmount = playerDataList.Count;
     }
 
@@ -133,7 +140,7 @@ public class RaceManager : MonoBehaviour
     {
         currentLap = 0;
 
-        LoadRaceSettings();
+        
 
         for (int i = 0; i < playerDataList.Count; i++)
         {

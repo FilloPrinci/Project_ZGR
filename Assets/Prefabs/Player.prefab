@@ -57,7 +57,7 @@ MonoBehaviour:
   canvasPrefab: {fileID: 8332201281868801339, guid: 210cef8cc7b01664f8ebf5becf555cf9, type: 3}
   data:
     name: Player1
-    veichlePrefab: {fileID: 7064990795267870941, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
+    veichlePrefab: {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
     playerInputIndex: 0
     cpuIndex: 19
   playerCamera: {fileID: 0}
@@ -80,10 +80,10 @@ MonoBehaviour:
   playerDamageFactor: 1.5
   obstacleDamageFactor: 2
   normalSpeedCollistionFactor: 0.5
-  playerSpeedCollisionFactor: 1
+  playerSpeedCollisionFactor: 0.99
   obstacleSpeedCollisionFactor: 0.25
   normalBounceCollistionFactor: 1
-  playerBounceCollisionFactor: 0.5
+  playerBounceCollisionFactor: 0.25
   obstacleBounceCollisionFactor: 1.5
   maxSpeedKmH: 320
   maxRotationSpeed: 160
