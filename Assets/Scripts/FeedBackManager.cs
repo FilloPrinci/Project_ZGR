@@ -24,14 +24,19 @@ public class FeedBackManager : MonoBehaviour
     private float currentTiltAngleY = 0f;
 
     private float deltaTime;
+    private PlayerController playerController;
+
+    private float currentEnginePower = 0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        playerVeichle = GetComponent<PlayerController>().GetVeichleModel();
+        playerController = GetComponent<PlayerController>();
+
+        playerVeichle = playerController.GetVeichleModel();
         steeringAmount = 0;
 
-        veichleAnchors = GetComponent<PlayerController>().GetVeichleAnchors();
+        veichleAnchors = playerController.GetVeichleAnchors();
     }
 
     // Update is called once per frame
@@ -41,8 +46,24 @@ public class FeedBackManager : MonoBehaviour
         if (playerVeichle.activeInHierarchy)
         {
             SteerFeedBack(steeringAmount);
+            EngineFeedback();
         }
              
+    }
+
+    void EngineFeedback()
+    {
+        if (playerController.GetAccelerateInput())
+        {
+            currentEnginePower = Mathf.Lerp(currentEnginePower, 1f, deltaTime * 2f);
+        }
+        else
+        {
+            currentEnginePower = Mathf.Lerp(currentEnginePower, 0f, deltaTime * 2f);
+        }
+
+        playerVeichle.GetComponent<VeichleEffects>().particlePower = 0.5f * currentEnginePower;
+
     }
 
     public void SetSteeringFeedBackAmount(float newAmount) { 

@@ -66,6 +66,7 @@ public class PlayerController : MonoBehaviour
     private CollisionTypeEnum lastCollisionType = CollisionTypeEnum.None;
 
     private bool autoDrive = false;
+    private float enginePower = 0.25f;
 
     private void Start()
     {
@@ -113,7 +114,7 @@ public class PlayerController : MonoBehaviour
     {
         deltaTime = Time.deltaTime;
 
-        if (raceManager.GetCurrentRacePhase() == RacePhase.Race || raceManager.GetCurrentRacePhase() == RacePhase.Results)
+        if (raceManager.GetCurrentRacePhase() == RacePhase.CountDown || raceManager.GetCurrentRacePhase() == RacePhase.Race || raceManager.GetCurrentRacePhase() == RacePhase.Results)
         {
             steerInput = playerInputHandler.SteerInput;
             accelerateInput = playerInputHandler.AccelerateInput;
@@ -124,7 +125,7 @@ public class PlayerController : MonoBehaviour
             accelerateInput = false;
         }
 
-            feedBackManager.SetSteeringFeedBackAmount(steerInput);
+        feedBackManager.SetSteeringFeedBackAmount(steerInput);
         feedBackManager.TurboFeedBack(playerStats.onTurbo);
     }
 
@@ -137,6 +138,8 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        fixedDeltaTime = Time.fixedDeltaTime;
+
         if (playerStats != null)
         {
             maxSpeed = playerStats.CurrentMaxSpeed;
@@ -145,26 +148,64 @@ public class PlayerController : MonoBehaviour
             rotationAccelleration = playerStats.CurrentRotationAcceleration;
         }
 
-        fixedDeltaTime = Time.fixedDeltaTime;
-
-        HandleSteering();
-
-        if (!collisionDetected)
+        if(raceManager.GetCurrentRacePhase() == RacePhase.Presentation)
         {
-            if (collisionVelocity != Vector3.zero)
+            // place the veichle
+            StartHoverEngine(enginePower);
+        }
+        else if (raceManager.GetCurrentRacePhase() == RacePhase.CountDown)
+        {
+            // hold still and start engine
+            StartHoverEngine(enginePower);
+
+            if (accelerateInput)
             {
-                Bounce();
+                if (enginePower < 1f)
+                {
+                    enginePower = ExpDecay(enginePower, 1f, 2, fixedDeltaTime);
+                }
             }
-            HandleMovement();
+            else
+            {
+                if (enginePower > 0.25f)
+                {
+                    enginePower = ExpDecay(enginePower, 0.25f, 5, fixedDeltaTime);
+                }
+            }
+
+            
+                
+
         }
-        else
+        else if (raceManager.GetCurrentRacePhase() == RacePhase.Race || raceManager.GetCurrentRacePhase() == RacePhase.Results)
         {
-            Collide();
+            // can race on the track
+            HandleSteering();
+
+            if (!collisionDetected)
+            {
+                if (collisionVelocity != Vector3.zero)
+                {
+                    Bounce();
+                }
+                HandleMovement();
+            }
+            else
+            {
+                Collide();
+            }
+
+            transform.position += (normalMovementVelocity + collisionVelocity);
+
+            
+
+            if (lastCollisionDirection != Vector3.zero)
+            {
+                Debug.DrawRay(transform.position, lastCollisionDirection * 3f, Color.red, 0, false);
+            }
+
+            ApplyGravityAndHover();
         }
-
-        transform.position += (normalMovementVelocity + collisionVelocity);
-
-        ApplyGravityAndHover();
 
         // Store previous and current transforms for interpolation
         previousPosition = currentPosition;
@@ -172,10 +213,8 @@ public class PlayerController : MonoBehaviour
         currentPosition = transform.position;
         currentRotation = transform.rotation;
 
-        if (lastCollisionDirection != Vector3.zero)
-        {
-            Debug.DrawRay(transform.position, lastCollisionDirection * 3f, Color.red, 0, false);
-        }
+
+
     }
 
     void InterpolateVeichlePivotRotation()
@@ -344,15 +383,44 @@ public class PlayerController : MonoBehaviour
         );
     }
 
-    void ApplyGravityAndHover()
+    void StartHoverEngine(float power)
     {
-        float gravityFallbackSpeed = 50f;
+        float gravityFallbackSpeed = 10f;
 
         RaycastHit hit;
         // Use the layer mask to filter the raycast
         if (Physics.Raycast(transform.position, -transform.up, out hit, hoverHeight * 2f, hoverRaycastMask))
         {
-            Vector3 desiredPosition = hit.point + hit.normal * hoverHeight;
+            Vector3 desiredPosition = hit.point + hit.normal * hoverHeight * power;
+            transform.position = desiredPosition;
+
+            Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
+            transform.rotation = targetRotation;
+        }
+        else
+        {
+            transform.position += Vector3.down * gravityFallbackSpeed * fixedDeltaTime;
+        }
+    }
+
+    void ApplyGravityAndHover()
+    {
+        float gravityFallbackSpeed = 10f;
+        
+
+        RaycastHit hit;
+        // Use the layer mask to filter the raycast
+        if (Physics.Raycast(transform.position, -transform.up, out hit, hoverHeight * 2f, hoverRaycastMask))
+        {
+            if(enginePower > 0.9f)
+            {
+                enginePower = 1f;
+            }
+            else
+            {
+                enginePower = ExpDecay(enginePower, 1f, 10, fixedDeltaTime);
+            }
+            Vector3 desiredPosition = hit.point + hit.normal * hoverHeight * enginePower;
             transform.position = desiredPosition;
 
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
@@ -485,13 +553,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+
+
     private Vector3 calculateCollisionDirection(Collider otherCollider)
     {
+        Vector3 worldDirection;
+
         if (otherCollider is BoxCollider || otherCollider is SphereCollider || otherCollider is CapsuleCollider ||
             (otherCollider is MeshCollider meshCol && meshCol.convex))
         {
             Vector3 contactPoint = otherCollider.ClosestPoint(transform.position);
-            return (transform.position - contactPoint).normalized;
+            worldDirection = (transform.position - contactPoint).normalized;
         }
         else
         {
@@ -506,15 +578,35 @@ public class PlayerController : MonoBehaviour
 
             if (isOverlapping)
             {
-                return direction;
+                // Draw the penetration direction in the Scene view
+                Vector3 start = transform.position;
+                Vector3 end = start + direction * distance;
+
+                Debug.DrawLine(start, end, Color.red, 1f); // Draws a red line for 1 second
+
+                Debug.Log($"[ComputePenetration] Overlap with {otherCollider.name} | Direction: {direction} | Distance: {distance:F3}");
+
+                worldDirection = direction;
             }
             else
             {
                 Vector3 fallbackContact = otherCollider.bounds.ClosestPoint(transform.position);
                 Debug.LogWarning($"[Fallback] Collider {otherCollider.name} does not support ClosestPoint. Used bounding box.");
-                return (transform.position - fallbackContact).normalized;
+                worldDirection = (transform.position - fallbackContact).normalized;
             }
         }
+
+        // Convert the direction from world space to local space
+        Vector3 localDir = transform.InverseTransformDirection(worldDirection);
+
+        // Ignore the Y axis to keep only the XZ plane
+        localDir.y = 0f;
+
+        // Normalize to prevent distortion after removing Y
+        localDir.Normalize();
+
+        // Convert back to world space if you want to apply it globally
+        return transform.TransformDirection(localDir);
     }
 
     float Speed(Vector3 vector)
@@ -525,6 +617,11 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 currentRealSpeed = normalMovementVelocity + collisionVelocity;
         return Speed(currentRealSpeed);
+    }
+
+    public float GetMaxSpeed()
+    {
+        return maxSpeed;
     }
 
     public GameObject GetVeichleModel()
@@ -546,5 +643,10 @@ public class PlayerController : MonoBehaviour
 
         // update input
         playerInputHandler = CPUInputHandlerManager.Instance.GetCPUInput(playerData.cpuIndex);
+    }
+
+    public bool GetAccelerateInput()
+    {
+        return accelerateInput;
     }
 }
