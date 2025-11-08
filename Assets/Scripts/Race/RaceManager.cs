@@ -40,6 +40,7 @@ public class RaceManager : MonoBehaviour
     public bool generateCPUPlayers = true;
     public int cpuPlayersAmount = 0; // Number of CPU players to generate if generateCPUPlayers is true
     public GameObject playerPrefab;
+    public Collider trackMainCollider;
     public GameObject checkPointListParent;
     public List<GameObject> checkPointList;
 

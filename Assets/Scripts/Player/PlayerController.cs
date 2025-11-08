@@ -1,8 +1,10 @@
-using NUnit.Framework.Interfaces;
+﻿using NUnit.Framework.Interfaces;
+using System.Collections;
 using System.Collections.Specialized;
 using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 enum CollisionTypeEnum
 {
@@ -38,6 +40,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     public  float pivotPositionDecay = 10f;
 
+    [SerializeField]
+    public bool debugMode = false;
+
     private GlobalInputManager globalInputManager;
     private PlayerInputHandler playerInputHandler;
     private RaceManager raceManager;
@@ -67,6 +72,15 @@ public class PlayerController : MonoBehaviour
 
     private bool autoDrive = false;
     private float enginePower = 0.25f;
+    private Collider trackMainCollider;
+    private BoxCollider selfCollider;
+    private Vector3 globalUpdateMovementVector = Vector3.zero;
+    private Vector3 globalBounceVector = Vector3.zero;
+    private float globalUpdateSpeed = 0f;
+
+    private Vector3 coroutineCurrentPosition = Vector3.zero;
+    private Vector3 coroutineLastPosition = Vector3.zero;
+
 
     private void Start()
     {
@@ -101,19 +115,27 @@ public class PlayerController : MonoBehaviour
             currentRotation = transform.rotation;
             previousRotation = currentRotation;
 
-
-
             veichlePivot.position = transform.position;
             veichlePivot.rotation = transform.rotation;
         }
 
-            
+        if(raceManager != null)
+        {
+            trackMainCollider = raceManager.trackMainCollider;
+        }
+
+        selfCollider = GetComponent<BoxCollider>();
+        /*if (speedCoroutine == null)
+        {
+            speedCoroutine = StartCoroutine(UpdatePositionsForSpeed(5));
+        }*/
     }
 
     private void Update()
     {
         deltaTime = Time.deltaTime;
 
+        // collect input
         if (raceManager.GetCurrentRacePhase() == RacePhase.CountDown || raceManager.GetCurrentRacePhase() == RacePhase.Race || raceManager.GetCurrentRacePhase() == RacePhase.Results)
         {
             steerInput = playerInputHandler.SteerInput;
@@ -125,8 +147,93 @@ public class PlayerController : MonoBehaviour
             accelerateInput = false;
         }
 
+        // update player stats
+        if (playerStats != null)
+        {
+            maxSpeed = playerStats.CurrentMaxSpeed;
+            accelleration = playerStats.CurrentAcceleration;
+            rotationMaxSpeed = playerStats.CurrentRotationSpeed;
+            rotationAccelleration = playerStats.CurrentRotationAcceleration;
+        }
+
+        // manage race steps
+        if (raceManager.GetCurrentRacePhase() == RacePhase.Presentation)
+        {
+            // place the veichle
+            StartHoverEngine(enginePower, deltaTime, debugMode);
+        }
+        else if (raceManager.GetCurrentRacePhase() == RacePhase.CountDown)
+        {
+            // hold still and start engine
+            StartHoverEngine(enginePower, deltaTime, debugMode);
+
+            if (accelerateInput)
+            {
+                if (enginePower < 1f)
+                {
+                    enginePower = ExpDecay(enginePower, 1f, 2, deltaTime);
+                }
+            }
+            else
+            {
+                if (enginePower > 0.25f)
+                {
+                    enginePower = ExpDecay(enginePower, 0.25f, 5, deltaTime);
+                }
+            }
+
+        }
+        else if (raceManager.GetCurrentRacePhase() == RacePhase.Race || raceManager.GetCurrentRacePhase() == RacePhase.Results)
+        {
+            // can race on the track
+            HandleSteering(deltaTime);
+            globalUpdateMovementVector = CalculateLocalMovement(deltaTime);
+
+            Vector3 updateDifference = currentPosition - previousPosition;
+
+
+            // check if collides
+            Vector3 exitVector = CheckFastCollision(updateDifference, debugMode);
+            if (exitVector != Vector3.zero)
+            {
+                collisionDetected = true;
+                lastCollisionType = CollisionTypeEnum.Normal;
+                globalBounceVector = OnUpadteCollisionDetected(exitVector, deltaTime);
+                globalUpdateMovementVector = globalBounceVector;
+                Debug.DrawLine(transform.position, transform.position + exitVector, Color.white, 0, false);
+                transform.position += exitVector;
+            }
+            else
+            {
+                collisionDetected = false;
+
+                if(globalBounceVector != Vector3.zero)
+                {
+                    transform.localPosition += globalUpdateMovementVector + globalBounceVector;
+                    globalBounceVector = ExpDecay(globalBounceVector, Vector3.zero, collisionBounceDecelleration, deltaTime);
+                }
+                else
+                {
+                    transform.localPosition += globalUpdateMovementVector;
+                }
+            }
+
+            // manage hover and gravity
+            ApplyGravityAndHover(deltaTime, debugMode);
+        }
+
+        // Store previous and current transforms for interpolation
+        previousPosition = currentPosition;
+        previousRotation = currentRotation;
+        currentPosition = transform.position;
+        currentRotation = transform.rotation;
+
+        // manage feedback
         feedBackManager.SetSteeringFeedBackAmount(steerInput);
         feedBackManager.TurboFeedBack(playerStats.onTurbo);
+
+        globalUpdateSpeed = Speed(globalUpdateMovementVector, deltaTime);
+
     }
 
     private void LateUpdate()
@@ -138,7 +245,13 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        fixedDeltaTime = Time.fixedDeltaTime;
+
+
+        //fixedDeltaTime = Time.fixedDeltaTime;
+        
+
+        /*
+        
 
         if (playerStats != null)
         {
@@ -213,8 +326,56 @@ public class PlayerController : MonoBehaviour
         currentPosition = transform.position;
         currentRotation = transform.rotation;
 
+        */
 
+    }
 
+    Vector3 CheckFastCollision(Vector3 selfColliderLocalPosition, bool debug)
+    {
+        if (trackMainCollider == null || selfCollider == null)
+            return Vector3.zero;
+
+        if(selfColliderLocalPosition != null && selfColliderLocalPosition != Vector3.zero)
+        {
+            selfCollider.center = transform.forward * selfColliderLocalPosition.z;
+        }
+
+        Vector3 direction;
+        float distance;
+
+        bool isOverlapping = Physics.ComputePenetration(
+            selfCollider, transform.position, transform.rotation,
+            trackMainCollider, trackMainCollider.transform.position, trackMainCollider.transform.rotation,
+            out direction, out distance
+        );
+
+        if (isOverlapping)
+        {
+            if (debug)
+            {
+                // Visualize the exit direction
+                Debug.DrawLine(transform.position, transform.position + direction * distance, Color.red, 0f, false);
+            }
+            
+
+            Vector3 localDir = transform.InverseTransformDirection(direction * distance);
+            localDir.y = 0f;
+            float len = localDir.magnitude;
+            localDir.Normalize();
+            localDir *= distance; // original lenght
+
+            // Convert back to world space
+            Vector3 worldDirXZ = transform.TransformDirection(localDir);
+
+            return worldDirXZ;
+        }
+        else
+        {
+            Debug.DrawRay(transform.position, Vector3.up * 0.3f, Color.green, 0f, false);
+            return Vector3.zero;
+        }
+
+        
     }
 
     void InterpolateVeichlePivotRotation()
@@ -244,7 +405,7 @@ public class PlayerController : MonoBehaviour
         float posT = 1f - Mathf.Exp(-pivotPositionDecay * deltaTime);
         localCurrent.y = Mathf.Lerp(localCurrent.y, localTarget.y, posT);
 
-        // Mantieni X e Z del target (in world) � per evitare slittamenti, converti XZ direttamente
+        // Mantieni X e Z del target (in world) — per evitare slittamenti, converti XZ direttamente
         // Ricostruisci posizione world partendo dalla XZ target e dalla Y smussata (in locale)
         Vector3 worldXZ = new Vector3(targetPos.x, 0f, targetPos.z);
         Vector3 reconstructed = veichlePivot.TransformPoint(new Vector3(localCurrent.x, localCurrent.y, localCurrent.z));
@@ -256,13 +417,68 @@ public class PlayerController : MonoBehaviour
         veichlePivot.position = reconstructed;
     }
 
-    void Bounce()
+    void Bounce(float time)
     {
-        float currentCollisionSpeed = Speed(collisionVelocity);
-        collisionVelocity = collisionVelocity.normalized * AccellerateSpeed(0, collisionBounceDecelleration, currentCollisionSpeed) * fixedDeltaTime;
+        float currentCollisionSpeed = Speed(collisionVelocity, time);
+        collisionVelocity = collisionVelocity.normalized * AccellerateSpeed(0, collisionBounceDecelleration, currentCollisionSpeed, time) * time;
     }
 
-    void Collide()
+    Vector3 OnUpadteCollisionDetected(Vector3 collisionExitDirection, float time)
+    {
+        float collistionMovementFactor = 1f;
+        float collistionBounceFactor = 1f;
+        float damageFactor = 1f;
+
+        Vector3 collisionVector = Vector3.zero;
+
+        if (playerStats != null)
+        {
+
+
+            if (lastCollisionType == CollisionTypeEnum.Player)
+            {
+                collistionMovementFactor = playerStats.playerSpeedCollisionFactor;
+                damageFactor = playerStats.playerDamageFactor;
+                collistionBounceFactor = playerStats.playerBounceCollisionFactor;
+            }
+            else if (lastCollisionType == CollisionTypeEnum.Obstacle)
+            {
+                collistionMovementFactor = playerStats.obstacleSpeedCollisionFactor;
+                damageFactor = playerStats.obstacleDamageFactor;
+                collistionBounceFactor = playerStats.obstacleBounceCollisionFactor;
+            }
+            else if (lastCollisionType == CollisionTypeEnum.Normal)
+            {
+                collistionMovementFactor = playerStats.normalSpeedCollistionFactor;
+                damageFactor = playerStats.normalDamageFactor;
+                collistionBounceFactor = playerStats.normalBounceCollistionFactor;
+            }
+
+            // recive damage
+            playerStats.OnDamage(damageFactor);
+            if (playerStructure != null)
+            {
+                playerStructure.UpdatePlayerGUI(playerStats);
+            }
+
+        }
+
+        globalUpdateMovementVector *= collistionMovementFactor;
+
+        if (collisionExitDirection != Vector3.zero)
+        {
+            float currentSpeed = Speed(globalUpdateMovementVector, time);
+            float finalBounceForce = Mathf.Max(currentSpeed * collistionBounceFactor * bounceFactor, 1f);
+
+            collisionVector = collisionExitDirection.normalized * finalBounceForce * time;
+        }
+
+        feedBackManager.TriggerCameraShake();
+
+        return collisionVector;
+    }
+
+    void Collide(float time)
     {
         float collistionMovementFactor = 1f;
         float collistionBounceFactor = 1f;
@@ -305,7 +521,7 @@ public class PlayerController : MonoBehaviour
 
         if (lastCollisionDirection != Vector3.zero)
         {
-            float currentSpeed = Speed(normalMovementVelocity);
+            float currentSpeed = Speed(normalMovementVelocity, time);
             float finalBounceForce = Mathf.Max(currentSpeed * collistionBounceFactor * bounceFactor, 1f);
 
             collisionVelocity = lastCollisionDirection.normalized * finalBounceForce * fixedDeltaTime;
@@ -314,36 +530,53 @@ public class PlayerController : MonoBehaviour
         feedBackManager.TriggerCameraShake();
     }
 
-    void HandleSteering()
+    void HandleSteering(float time)
     {
 
         if (steerInput != 0)
         {
-            rotationVelocity = AccellerateRotationSpeed(rotationMaxSpeed * steerInput, rotationAccelleration);
+            rotationVelocity = AccellerateRotationSpeed(rotationMaxSpeed * steerInput, rotationAccelleration, time);
         }
         else
         {
-            rotationVelocity = AccellerateRotationSpeed(0, rotationAccelleration);
+            rotationVelocity = AccellerateRotationSpeed(0, rotationAccelleration, time);
         }
 
-        transform.Rotate(0, rotationVelocity * fixedDeltaTime, 0, Space.Self);
+        transform.Rotate(0, rotationVelocity * time, 0, Space.Self);
     }
 
-    void HandleMovement()
+    Vector3 CalculateLocalMovement(float time)
     {
-        float currentSpeed = Speed(normalMovementVelocity);
+        Vector3 movement = Vector3.zero;
+        float currentSpeed = globalUpdateMovementVector.magnitude / time;
 
         if (accelerateInput)
         {
-            normalMovementVelocity = transform.forward * AccellerateSpeed(maxSpeed, accelleration, currentSpeed) * fixedDeltaTime;
+            movement = transform.forward * AccellerateSpeed(maxSpeed, accelleration, currentSpeed, time) * time;
         }
         else
         {
-            normalMovementVelocity = transform.forward * AccellerateSpeed(0, autoBrakeDecelleration, currentSpeed) * fixedDeltaTime;
+            movement = transform.forward * AccellerateSpeed(0, autoBrakeDecelleration, currentSpeed, time) * time;
+        }
+
+            return movement;
+    }
+
+    void HandleMovement(float time)
+    {
+        float currentSpeed = Speed(normalMovementVelocity, time);
+
+        if (accelerateInput)
+        {
+            normalMovementVelocity = transform.forward * AccellerateSpeed(maxSpeed, accelleration, currentSpeed, fixedDeltaTime) * fixedDeltaTime;
+        }
+        else
+        {
+            normalMovementVelocity = transform.forward * AccellerateSpeed(0, autoBrakeDecelleration, currentSpeed, fixedDeltaTime) * fixedDeltaTime;
         }
     }
 
-    float AccellerateRotationSpeed(float targetSpeed, float accelleration)
+    float AccellerateRotationSpeed(float targetSpeed, float accelleration, float time)
     {
         if (Mathf.Abs(targetSpeed - currentRotationSpeed) < 0.1f)
         {
@@ -351,12 +584,12 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            currentRotationSpeed = ExpDecay(currentRotationSpeed, targetSpeed, accelleration, fixedDeltaTime);
+            currentRotationSpeed = ExpDecay(currentRotationSpeed, targetSpeed, accelleration, time);
         }
         return currentRotationSpeed;
     }
 
-    float AccellerateSpeed(float targetSpeed, float accelleration, float currentSpeed)
+    float AccellerateSpeed(float targetSpeed, float accelleration, float currentSpeed, float time)
     {
         if (Mathf.Abs(targetSpeed - currentSpeed) < 0.1f)
         {
@@ -364,14 +597,14 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            currentSpeed = ExpDecay(currentSpeed, targetSpeed, accelleration, fixedDeltaTime);
+            currentSpeed = ExpDecay(currentSpeed, targetSpeed, accelleration, time);
         }
         return currentSpeed;
     }
 
-    float ExpDecay(float a, float b, float decay, float deltaTime)
+    float ExpDecay(float a, float b, float decay, float time)
     {
-        return Mathf.Lerp(a, b, 1 - Mathf.Exp(-decay * deltaTime));
+        return Mathf.Lerp(a, b, 1 - Mathf.Exp(-decay * time));
     }
 
     Vector3 ExpDecay(Vector3 a, Vector3 b, float decay, float deltaTime)
@@ -383,14 +616,25 @@ public class PlayerController : MonoBehaviour
         );
     }
 
-    void StartHoverEngine(float power)
+    void StartHoverEngine(float power, float time, bool drawLine)
     {
         float gravityFallbackSpeed = 10f;
 
         RaycastHit hit;
-        // Use the layer mask to filter the raycast
-        if (Physics.Raycast(transform.position, -transform.up, out hit, hoverHeight * 2f, hoverRaycastMask))
+        Vector3 rayOrigin = transform.position + transform.up;
+
+        if (drawLine)
         {
+            Debug.DrawLine(rayOrigin, rayOrigin - transform.up * hoverHeight * 4f, Color.blue, 0f, false);
+        }
+
+        // Use the layer mask to filter the raycast
+        if (Physics.Raycast(rayOrigin, -transform.up, out hit, hoverHeight * 4f, hoverRaycastMask))
+        {
+            if (drawLine)
+            {
+                Debug.DrawLine(rayOrigin, hit.point, Color.cyan, 0f, false);
+            }
             Vector3 desiredPosition = hit.point + hit.normal * hoverHeight * power;
             transform.position = desiredPosition;
 
@@ -399,26 +643,37 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            transform.position += Vector3.down * gravityFallbackSpeed * fixedDeltaTime;
+            transform.position += Vector3.down * gravityFallbackSpeed * time;
         }
     }
 
-    void ApplyGravityAndHover()
+    void ApplyGravityAndHover(float time, bool drawLine)
     {
         float gravityFallbackSpeed = 10f;
-        
+        Vector3 rayOrigin = transform.position + transform.up;
+
 
         RaycastHit hit;
         // Use the layer mask to filter the raycast
-        if (Physics.Raycast(transform.position, -transform.up, out hit, hoverHeight * 2f, hoverRaycastMask))
+        if (drawLine)
         {
-            if(enginePower > 0.9f)
+            Debug.DrawLine(rayOrigin, rayOrigin - transform.up * hoverHeight * 4f, Color.blue, 0f, false);
+        }
+        
+        if (Physics.Raycast(rayOrigin, -transform.up, out hit, hoverHeight * 4f, hoverRaycastMask))
+        {
+            if (drawLine)
+            {
+                Debug.DrawLine(rayOrigin, hit.point, Color.cyan, 0f, false);
+            }
+
+            if (enginePower > 0.9f)
             {
                 enginePower = 1f;
             }
             else
             {
-                enginePower = ExpDecay(enginePower, 1f, 10, fixedDeltaTime);
+                enginePower = ExpDecay(enginePower, 1f, 10, time);
             }
             Vector3 desiredPosition = hit.point + hit.normal * hoverHeight * enginePower;
             transform.position = desiredPosition;
@@ -428,7 +683,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            transform.position += Vector3.down * gravityFallbackSpeed * fixedDeltaTime;
+            transform.position += Vector3.down * gravityFallbackSpeed * time;
         }
     }
 
@@ -444,9 +699,14 @@ public class PlayerController : MonoBehaviour
         return handleCollision;
     }
 
+    private bool specialCollision(Collider collider)
+    {
+        return collider.tag.Equals("Player") || collider.tag.Equals("Obstacle");
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        if (ShouldHandleCollision(other))
+        if(specialCollision(other))
         {
             if(other.tag.Equals("Player"))
             {
@@ -456,15 +716,12 @@ public class PlayerController : MonoBehaviour
             {
                 lastCollisionType = CollisionTypeEnum.Obstacle;
             }
-            else
-            {
-                lastCollisionType = CollisionTypeEnum.Normal;
-            }
 
             collisionDetected = true;
-            
-            lastCollisionDirection = calculateCollisionDirection(other);
-            
+
+            //lastCollisionDirection = calculateCollisionDirection(other);
+            Vector3 exitVector = calculateCollisionDirection(other);
+            globalBounceVector = OnUpadteCollisionDetected(exitVector, deltaTime);
         }
         else if (other.tag.Equals("Checkpoint"))
         {
@@ -496,7 +753,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (ShouldHandleCollision(other))
+        if (specialCollision(other))
         {
             if (other.tag.Equals("Player"))
             {
@@ -523,8 +780,8 @@ public class PlayerController : MonoBehaviour
                 {
                     if (zoneData.Type == ZoneType.Recharge)
                     {
-                        float currentSpeed = Speed(normalMovementVelocity);
-                        playerStats.OnEnergyRechargeBySpeed(fixedDeltaTime, currentSpeed);
+                        float currentSpeed = GetCurrentSpeed();
+                        playerStats.OnEnergyRechargeBySpeed(Time.fixedDeltaTime, currentSpeed);
                         if (playerStructure != null)
                         {
                             playerStructure.UpdatePlayerGUI(playerStats);
@@ -553,8 +810,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
-
     private Vector3 calculateCollisionDirection(Collider otherCollider)
     {
         Vector3 worldDirection;
@@ -578,20 +833,12 @@ public class PlayerController : MonoBehaviour
 
             if (isOverlapping)
             {
-                // Draw the penetration direction in the Scene view
-                Vector3 start = transform.position;
-                Vector3 end = start + direction * distance;
-
-                Debug.DrawLine(start, end, Color.red, 1f); // Draws a red line for 1 second
-
-                Debug.Log($"[ComputePenetration] Overlap with {otherCollider.name} | Direction: {direction} | Distance: {distance:F3}");
 
                 worldDirection = direction;
             }
             else
             {
                 Vector3 fallbackContact = otherCollider.bounds.ClosestPoint(transform.position);
-                Debug.LogWarning($"[Fallback] Collider {otherCollider.name} does not support ClosestPoint. Used bounding box.");
                 worldDirection = (transform.position - fallbackContact).normalized;
             }
         }
@@ -609,14 +856,13 @@ public class PlayerController : MonoBehaviour
         return transform.TransformDirection(localDir);
     }
 
-    float Speed(Vector3 vector)
+    float Speed(Vector3 vector, float time)
     {
-        return vector.magnitude / fixedDeltaTime;
+        return vector.magnitude / time;
     }
     public float GetCurrentSpeed()
     {
-        Vector3 currentRealSpeed = normalMovementVelocity + collisionVelocity;
-        return Speed(currentRealSpeed);
+        return globalUpdateSpeed;
     }
 
     public float GetMaxSpeed()
@@ -649,4 +895,5 @@ public class PlayerController : MonoBehaviour
     {
         return accelerateInput;
     }
+
 }
