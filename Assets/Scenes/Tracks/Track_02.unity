@@ -125,7 +125,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1307076796}
     m_Modifications:
     - target: {fileID: 56048794592184767, guid: 776187fa348713f4bbde78e5c06cc7ab, type: 3}
       propertyPath: m_Name
@@ -176,6 +176,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 776187fa348713f4bbde78e5c06cc7ab, type: 3}
+--- !u!4 &8067066 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3683789046485496249, guid: 776187fa348713f4bbde78e5c06cc7ab, type: 3}
+  m_PrefabInstance: {fileID: 8067065}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &30928721
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4008,6 +4013,8 @@ Transform:
   m_Children:
   - {fileID: 1066355374}
   - {fileID: 389573321}
+  - {fileID: 8067066}
+  - {fileID: 1557477436}
   m_Father: {fileID: 492140621}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1370088613
@@ -4638,7 +4645,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1307076796}
     m_Modifications:
     - target: {fileID: 56048794592184767, guid: 776187fa348713f4bbde78e5c06cc7ab, type: 3}
       propertyPath: m_Name
@@ -4689,6 +4696,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 776187fa348713f4bbde78e5c06cc7ab, type: 3}
+--- !u!4 &1557477436 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3683789046485496249, guid: 776187fa348713f4bbde78e5c06cc7ab, type: 3}
+  m_PrefabInstance: {fileID: 1557477435}
+  m_PrefabAsset: {fileID: 0}
 --- !u!64 &1584720526 stripped
 MeshCollider:
   m_CorrespondingSourceObject: {fileID: -2563127944207771510, guid: d4e8a6628e00a35488c672dd7a1eebfe, type: 3}
@@ -8676,5 +8688,3 @@ SceneRoots:
   - {fileID: 492140621}
   - {fileID: 4081064456460614264}
   - {fileID: 974034367}
-  - {fileID: 8067065}
-  - {fileID: 1557477435}
