@@ -56,10 +56,15 @@ Material:
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _CastShadows: 1
+    - _CoatSmoothness: 0.9
     - _Cull: 2
     - _DstBlend: 0
+    - _Fersnel: 0
     - _Float: 0
-    - _Intensity: 1.5
+    - _Intensity: 1
+    - _MaxSmoothness: 0.8
+    - _Metallic: 0.7
+    - _MinSmoothness: 0.1
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
