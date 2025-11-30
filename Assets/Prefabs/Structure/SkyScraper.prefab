@@ -54,7 +54,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8228727530530706292, guid: 666e5ffe958f795449327b82443a4261, type: 3}
       propertyPath: m_ScaleInLightmap
-      value: 0.005
+      value: 0.025
       objectReference: {fileID: 0}
     - target: {fileID: -8228727530530706292, guid: 666e5ffe958f795449327b82443a4261, type: 3}
       propertyPath: m_StaticShadowCaster
@@ -74,7 +74,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 937058302558737963, guid: 666e5ffe958f795449327b82443a4261, type: 3}
       propertyPath: m_ScaleInLightmap
-      value: 0.005
+      value: 0.025
       objectReference: {fileID: 0}
     - target: {fileID: 937058302558737963, guid: 666e5ffe958f795449327b82443a4261, type: 3}
       propertyPath: m_StaticShadowCaster
@@ -86,7 +86,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 13710b3830b4bfb4dabcd1a5bf019607, type: 2}
     - target: {fileID: 5559124037246743466, guid: 666e5ffe958f795449327b82443a4261, type: 3}
       propertyPath: m_ScaleInLightmap
-      value: 0.005
+      value: 0.025
       objectReference: {fileID: 0}
     - target: {fileID: 5559124037246743466, guid: 666e5ffe958f795449327b82443a4261, type: 3}
       propertyPath: m_StaticShadowCaster

@@ -17,6 +17,7 @@ public class PlayerStructure : MonoBehaviour
     public GameObject canvasPrefab;
     public PlayerData data;
     public GameObject playerCamera;
+    public float defaultCameraFOV = 70f;
 
     private GameObject canvasInstance;
     private GameObject pivotInstance;
@@ -49,6 +50,7 @@ public class PlayerStructure : MonoBehaviour
     GameObject SpawnCamera(Transform anchor) {
         GameObject cameraObject = new GameObject(data.name + "Camera");
         Camera cam = cameraObject.AddComponent<Camera>();
+        cam.fieldOfView = defaultCameraFOV;
 
         // URP settings
         var cameraData = cameraObject.AddComponent<UniversalAdditionalCameraData>();

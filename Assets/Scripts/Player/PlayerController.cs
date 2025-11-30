@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     public PlayerStructure playerStructure;
 
     public float hoverHeight = 0.5f;
+    public float startHoverHeight = 0.3f;
 
     public float maxSpeed = 300f;
     public float rotationMaxSpeed = 10;
@@ -71,7 +72,7 @@ public class PlayerController : MonoBehaviour
     private CollisionTypeEnum lastCollisionType = CollisionTypeEnum.None;
 
     private bool autoDrive = false;
-    private float enginePower = 0.25f;
+    private float enginePower =0f;
     private Collider trackMainCollider;
     private BoxCollider selfCollider;
     private Vector3 globalUpdateMovementVector = Vector3.zero;
@@ -176,9 +177,9 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                if (enginePower > 0.25f)
+                if (enginePower > 0)
                 {
-                    enginePower = ExpDecay(enginePower, 0.25f, 5, deltaTime);
+                    enginePower = ExpDecay(enginePower, 0, 5, deltaTime);
                 }
             }
 
@@ -635,7 +636,7 @@ public class PlayerController : MonoBehaviour
             {
                 Debug.DrawLine(rayOrigin, hit.point, Color.cyan, 0f, false);
             }
-            Vector3 desiredPosition = hit.point + hit.normal * hoverHeight * power;
+            Vector3 desiredPosition = hit.point + (hit.normal * startHoverHeight) + (hit.normal * (hoverHeight - startHoverHeight) * power);
             transform.position = desiredPosition;
 
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
