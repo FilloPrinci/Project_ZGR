@@ -118,6 +118,7 @@ MonoBehaviour:
     playerInputIndex: 0
     cpuIndex: 11
   playerCamera: {fileID: 0}
+  defaultCameraFOV: 70
 --- !u!114 &7834776545252078584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,7 +233,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1.4, y: 0.25, z: 3}
-  m_Center: {x: 0, y: 0.2, z: 0.2}
+  m_Center: {x: 0, y: 0.25, z: 0.2}
 --- !u!114 &1649203415823695494
 MonoBehaviour:
   m_ObjectHideFlags: 0

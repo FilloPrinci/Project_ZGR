@@ -82,6 +82,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 coroutineCurrentPosition = Vector3.zero;
     private Vector3 coroutineLastPosition = Vector3.zero;
 
+    private Vector3 selfColliderStartSize = Vector3.zero;
+
 
     private void Start()
     {
@@ -126,6 +128,10 @@ public class PlayerController : MonoBehaviour
         }
 
         selfCollider = GetComponent<BoxCollider>();
+        if (selfCollider != null) {
+            selfColliderStartSize = selfCollider.size;
+        }
+
         /*if (speedCoroutine == null)
         {
             speedCoroutine = StartCoroutine(UpdatePositionsForSpeed(5));
@@ -191,10 +197,12 @@ public class PlayerController : MonoBehaviour
             globalUpdateMovementVector = CalculateLocalMovement(deltaTime);
 
             Vector3 updateDifference = currentPosition - previousPosition;
+            float forwardAmount = Vector3.Dot(updateDifference, transform.forward);
 
+            forwardAmount *= deltaTime;
 
             // check if collides
-            Vector3 exitVector = CheckFastCollision(updateDifference, debugMode);
+            Vector3 exitVector = CheckFastCollision(forwardAmount, debugMode);
             if (exitVector != Vector3.zero)
             {
                 collisionDetected = true;
@@ -331,14 +339,19 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    Vector3 CheckFastCollision(Vector3 selfColliderLocalPosition, bool debug)
+    Vector3 CheckFastCollision(float forwardAmount, bool debug)
     {
         if (trackMainCollider == null || selfCollider == null)
             return Vector3.zero;
 
-        if(selfColliderLocalPosition != null && selfColliderLocalPosition != Vector3.zero)
+        if(forwardAmount != 0)
         {
-            selfCollider.center = transform.forward * selfColliderLocalPosition.z;
+
+            selfCollider.size = new Vector3(selfColliderStartSize.x, selfColliderStartSize.y, selfColliderStartSize.z + forwardAmount);
+            selfCollider.center = new Vector3(selfCollider.center.x, selfCollider.center.y, forwardAmount / 2);
+
+
+            //selfCollider.center = transform.forward * selfColliderLocalPosition.z;
         }
 
         Vector3 direction;
