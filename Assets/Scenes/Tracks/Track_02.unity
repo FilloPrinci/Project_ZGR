@@ -820,6 +820,7 @@ GameObject:
   m_Component:
   - component: {fileID: 219254184}
   - component: {fileID: 219254183}
+  - component: {fileID: 219254185}
   m_Layer: 0
   m_Name: RaceManager
   m_TagString: Untagged
@@ -873,7 +874,12 @@ MonoBehaviour:
   - {fileID: 1707406140}
   - {fileID: 413805042}
   - {fileID: 50206153}
+  - {fileID: 2033066457}
+  - {fileID: 1263027260}
+  - {fileID: 1098216855}
+  - {fileID: 1323328838}
   presentationManager: {fileID: 941342185}
+  playersCollisionDetection: {fileID: 219254185}
   mode: 2
   playerDataList:
   - name: Player1
@@ -900,6 +906,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &219254185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219254182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee46473823dbcdc44a86aa1abb72bafb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  players: []
+  executeCollisionDetection: 0
 --- !u!1001 &256714998
 PrefabInstance:
   m_ObjectHideFlags: 0

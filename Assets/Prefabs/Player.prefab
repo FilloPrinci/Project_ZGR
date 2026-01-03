@@ -114,9 +114,9 @@ MonoBehaviour:
   canvasPrefab: {fileID: 8332201281868801339, guid: 210cef8cc7b01664f8ebf5becf555cf9, type: 3}
   data:
     name: Player1
-    veichlePrefab: {fileID: 4699924895700797138, guid: a3bb4ad6c635fd44dac73aa2e5772f91, type: 3}
+    veichlePrefab: {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
     playerInputIndex: 0
-    cpuIndex: 11
+    cpuIndex: 15
   playerCamera: {fileID: 0}
   defaultCameraFOV: 70
 --- !u!114 &7834776545252078584
@@ -135,7 +135,7 @@ MonoBehaviour:
   energyZoneRecharge: 0.2
   hitDamage: 15
   normalDamageFactor: 1
-  playerDamageFactor: 1.5
+  playerDamageFactor: 0.5
   obstacleDamageFactor: 2
   normalSpeedCollistionFactor: 0.75
   playerSpeedCollisionFactor: 0.99

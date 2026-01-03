@@ -84,6 +84,15 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 selfColliderStartSize = Vector3.zero;
 
+    public BoxCollider GetCollider()
+    {
+        if(selfCollider == null)
+        {
+            selfCollider = GetComponent<BoxCollider>();
+        }
+
+        return selfCollider;
+    }
 
     private void Start()
     {
@@ -822,6 +831,13 @@ public class PlayerController : MonoBehaviour
             collisionDetected = false;
             lastCollisionDirection = Vector3.zero;
         }
+    }
+
+    public void onOtherPlayerCollisionDetected(Collider other)
+    {
+        lastCollisionType = CollisionTypeEnum.Player;
+        collisionDetected = true;
+        lastCollisionDirection = calculateCollisionDirection(other);
     }
 
     private Vector3 calculateCollisionDirection(Collider otherCollider)
