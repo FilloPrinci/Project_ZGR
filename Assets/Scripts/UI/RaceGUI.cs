@@ -76,11 +76,11 @@ public class RaceGUI : MonoBehaviour
         ShowPositionResult();
         ShowCountDown();
         ShowPauseMenu();
-        UpdateSpeedometer();
+        UpdateSpeedometer(Time.fixedDeltaTime);
         ShowEnergy();
     }
 
-    void UpdateSpeedometer()
+    void UpdateSpeedometer(float time)
     {
         if (canShowSpeedometer)
         {

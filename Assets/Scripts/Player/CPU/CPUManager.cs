@@ -113,12 +113,8 @@ public class CPUManager : MonoBehaviour
 
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        timeSinceLastUpdate += Time.deltaTime;
-        if (timeSinceLastUpdate < updateInterval) return;
-        timeSinceLastUpdate = 0f;
-
         if(cpuJobCycle == null)
         {
             cpuJobCycle = StartCoroutine(CPUJobCycle());
@@ -127,11 +123,13 @@ public class CPUManager : MonoBehaviour
 
     IEnumerator CPUJobCycle()
     {
-        var wait = new WaitForSeconds(1f/ jobHz);
+        float jobDeltaTime = 1f / jobHz;
+        var wait = new WaitForSeconds(jobDeltaTime);
+        
         while (true)
         {
             UpdateCPUData();
-            RunCPUJob();
+            RunCPUJob(jobDeltaTime);
             yield return wait;
         }
     }
@@ -269,7 +267,7 @@ public class CPUManager : MonoBehaviour
 
     }
 
-    private void RunCPUJob()
+    private void RunCPUJob(float time)
     {
         if (leftCollider == null || rightCollider == null) return;
 

@@ -40,6 +40,7 @@ public class RaceManager : MonoBehaviour
     public bool generateCPUPlayers = true;
     public int cpuPlayersAmount = 0; // Number of CPU players to generate if generateCPUPlayers is true
     public GameObject playerPrefab;
+    public Collider trackMainCollider;
     public GameObject checkPointListParent;
     public List<GameObject> checkPointList;
 
@@ -47,6 +48,7 @@ public class RaceManager : MonoBehaviour
     public List<Transform> spawnPointList;
     
     public GameObject presentationManager;
+    public PlayersCollisionDetection playersCollisionDetection;
 
     [Header("Default parameters")]
     public RaceMode mode;
@@ -61,6 +63,7 @@ public class RaceManager : MonoBehaviour
     private List<int> sectorList;
     private RaceData raceData;
     private int humanPlayersAmount = 0;
+    
 
 
     private bool isPaused = false;
@@ -229,6 +232,7 @@ public class RaceManager : MonoBehaviour
             }
             TriggerRaceEvent(RacePhaseEvent.Start);
         }
+
     }
     
     private void addPlayerInstances(bool keepOrder = false)
@@ -346,6 +350,8 @@ public class RaceManager : MonoBehaviour
     private void OnCountDownStart() { 
 
         mainCamera.gameObject.SetActive(false);
+
+        playersCollisionDetection.InitializePlayersColliders(getPlayerControllerList());
 
         // switch to players cameras
         foreach (GameObject playerInstnce in playerInstanceList)
@@ -742,6 +748,20 @@ public class RaceManager : MonoBehaviour
             PlayerStructure playerStructure = playerInstance.GetComponent<PlayerStructure>();
             GameObject playerRaceGUI = playerStructure.GetCanvasInstance();
             return playerRaceGUI.GetComponent<RaceGUI>();
+    }
+
+    public List<PlayerController> getPlayerControllerList()
+    {
+        List<PlayerController> playerControllerList = new List<PlayerController>();
+        foreach (GameObject playerInstance in playerInstanceList)
+        {
+            PlayerController playerController = playerInstance.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerControllerList.Add(playerController);
+            }
+        }
+        return playerControllerList;
     }
 
     public List<GameObject> GetAllPlayerInstances()

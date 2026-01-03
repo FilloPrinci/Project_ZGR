@@ -16,20 +16,23 @@ public class CameraController : MonoBehaviour
        
     }
 
+    private void Start()
+    {
+        if (cameraDesiredPosition == null)
+        {
+            Debug.LogError("CameraController: cameraDesiredPosition is not assigned.");
+        }
+        else
+        {
+            transform.rotation = cameraDesiredPosition.rotation;
+        }
+    }
+
     private void LateUpdate()
     {
         if ( cameraDesiredPosition == null) return;
 
-        // Posizione smussata con ExpDecay
-        Vector3 currentPosition = transform.position;
         Vector3 targetPosition = cameraDesiredPosition.position;
-
-
-        //transform.position = new Vector3(
-        //    ExpDecay(currentPosition.x, targetPosition.x, positionSmoothSpeed, deltaTime),
-        //    ExpDecay(currentPosition.y, targetPosition.y, positionSmoothSpeed, deltaTime),
-        //    ExpDecay(currentPosition.z, targetPosition.z, positionSmoothSpeed, deltaTime)
-        //);
 
         transform.position = targetPosition;
 
