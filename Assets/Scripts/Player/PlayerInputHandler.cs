@@ -9,7 +9,7 @@ public class PlayerInputHandler : MonoBehaviour
     private bool isAccelerating;
     private bool isPressingStart;
 
-    private int playerIndex = 0;
+    public int playerIndex = 0;
 
     public float SteerInput => moveInput.x;
     public bool AccelerateInput => isAccelerating;
@@ -22,7 +22,7 @@ public class PlayerInputHandler : MonoBehaviour
         raceManager = RaceManager.Instance;
     }
 
-    public void SetPlauerIndex(int index)
+    public void SetPlayerIndex(int index)
     {
         playerIndex = index;
     }
@@ -57,7 +57,7 @@ public class PlayerInputHandler : MonoBehaviour
         isPressingStart = context.ReadValue<float>() > 0.1f;
 
         if (isPressingStart) {
-            raceManager.OnSkip(playerIndex);
+            raceManager.OnStartButtonPress(playerIndex);
                 
         }
     }

@@ -49,14 +49,17 @@ public class GlobalInputManager : MonoBehaviour
         {
             GameObject newPlayerInput = Instantiate(playerInputPrefab);
             playerInputList.Add(newPlayerInput);
-            newPlayerInput.GetComponent<PlayerInputHandler>().SetPlauerIndex(i); // Set player index
+            newPlayerInput.GetComponent<PlayerInputHandler>().SetPlayerIndex(i); // Set player index
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void RemovePlayerInputInstances()
     {
-        
+        foreach (GameObject playerInput in playerInputList)
+        {
+            Destroy(playerInput);
+        }
+        playerInputList.Clear();
     }
 
     public GameObject GetPlayerInput(int playerIndex)

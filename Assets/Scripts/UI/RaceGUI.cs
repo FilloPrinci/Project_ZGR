@@ -41,6 +41,7 @@ public class RaceGUI : MonoBehaviour
     private PlayerData currentPlayerData;
     private PlayerStats currentPlayerStats;
     private SceneReferences sceneReferences;
+    private RaceSettings raceSettings;
 
     private bool canShowRaceDataLines = true;
     private bool canShowSpeedometer = true;
@@ -60,6 +61,7 @@ public class RaceGUI : MonoBehaviour
         currentPlayerData = currentPlayer.GetComponent<PlayerController>().playerData;
         currentPlayerStats = currentPlayer.GetComponent<PlayerController>().playerStats;
         sceneReferences = SceneReferences.Instance;
+        raceSettings = RaceSettings.Instance;
     }
 
     // Update is called once per frame
@@ -385,6 +387,27 @@ public class RaceGUI : MonoBehaviour
 
     public void OnRaceExit()
     {
-        SceneManager.LoadScene(sceneReferences.startScene);
+        if (raceManager != null) {
+            raceManager.ExitRace();
+        }
+
+        if (raceSettings != null)
+        {
+            raceSettings.ResetSettings();
+        }
+        else
+        {
+            Debug.LogError("RaceSettings instance is null!");
+        }
+
+        if (sceneReferences != null)
+        {
+            SceneManager.LoadScene(sceneReferences.startScene);
+        }
+        else
+        {
+            Debug.LogError("sceneReferences instance is null!!");
+        }
+        
     }
 }
