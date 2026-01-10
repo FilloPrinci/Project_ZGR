@@ -823,6 +823,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        /*
         if (ShouldHandleCollision(other))
         {
             
@@ -830,7 +831,7 @@ public class PlayerController : MonoBehaviour
 
             collisionDetected = false;
             lastCollisionDirection = Vector3.zero;
-        }
+        }*/
     }
 
     public void onOtherPlayerCollisionDetected(Collider other)

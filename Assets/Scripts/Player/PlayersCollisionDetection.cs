@@ -37,7 +37,7 @@ public class PlayersCollisionDetection : MonoBehaviour
                     executeCollisionDetection = false;
                 }
             }
-            Debug.LogAssertion("PlayersCollisionDetection: Initialization completed");
+            Debug.Log("PlayersCollisionDetection: Initialization completed");
         }
         else
         {
