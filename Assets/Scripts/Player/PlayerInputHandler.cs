@@ -9,7 +9,7 @@ public class PlayerInputHandler : MonoBehaviour
     private bool isAccelerating;
     private bool isPressingStart;
 
-    private int playerIndex = 0;
+    public int playerIndex = 0;
 
     public float SteerInput => moveInput.x;
     public bool AccelerateInput => isAccelerating;

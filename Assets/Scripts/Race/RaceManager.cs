@@ -642,6 +642,11 @@ public class RaceManager : MonoBehaviour
         }
     }
 
+    public void ExitRace()
+    {
+        GlobalInputManager.Instance.RemovePlayerInputInstances();
+    }
+
     public void OnPauseEnter(int playerIndex)
     {
         ShowPauseMenuForInputPlayer(playerIndex);
@@ -688,14 +693,33 @@ public class RaceManager : MonoBehaviour
 
     public void ShowPauseMenuForInputPlayer(int playerIndex)
     {
-        PlayerStructure playerStructure = playerInstanceList[playerIndex].GetComponent<PlayerStructure>();
+        GameObject playerInstance = GetPlayerInstanceFromPlayerInputIndex(playerIndex);
 
-        if (playerStructure.data.playerInputIndex != InputIndex.CPU)
+        PlayerStructure playerStructure = playerInstance.GetComponent<PlayerStructure>();
+
+        if(playerStructure != null)
         {
-            Debug.Log("[RaceManager] : Showing pause menu for player " + playerStructure.name);
-            RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(playerInstanceList[playerIndex]);
-            playerRaceGui.SetCanShowPauseMenu(true);
+            if (playerStructure.data.playerInputIndex != InputIndex.CPU)
+            {
+                Debug.Log("[RaceManager] : Showing pause menu for player " + playerStructure.name);
+                RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(playerInstance);
+                if (playerRaceGui != null)
+                {
+                    playerRaceGui.SetCanShowPauseMenu(true);
+                }
+                else
+                {
+                    Debug.LogError("[RaceManager] : No RaceGUI found for player " + playerStructure.name);
+                }
+            }
         }
+        else
+        {
+            Debug.LogError("[RaceManager] : No PlayerStructure found for player index " + playerIndex);
+            return;
+        }
+
+        
     }
 
     public void HidePauseMenuForAllPlayers()
@@ -786,6 +810,18 @@ public class RaceManager : MonoBehaviour
     public List<GameObject> GetAllPlayerInstances()
     {
         return playerInstanceList;
+    }
+
+    public GameObject GetPlayerInstanceFromPlayerInputIndex(int inputIndex) {
+        foreach (GameObject playerInstance in playerInstanceList)
+        {
+            if ((int)playerInstance.GetComponent<PlayerStructure>().data.playerInputIndex == inputIndex)
+            {
+                return playerInstance;
+            }
+        }
+
+        return null;
     }
 
 }

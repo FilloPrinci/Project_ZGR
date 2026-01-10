@@ -53,10 +53,13 @@ public class GlobalInputManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void RemovePlayerInputInstances()
     {
-        
+        foreach (GameObject playerInput in playerInputList)
+        {
+            Destroy(playerInput);
+        }
+        playerInputList.Clear();
     }
 
     public GameObject GetPlayerInput(int playerIndex)

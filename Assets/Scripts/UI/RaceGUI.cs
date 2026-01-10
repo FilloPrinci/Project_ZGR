@@ -385,6 +385,18 @@ public class RaceGUI : MonoBehaviour
 
     public void OnRaceExit()
     {
-        SceneManager.LoadScene(sceneReferences.startScene);
+        if (raceManager != null) {
+            raceManager.ExitRace();
+        }
+
+        if(sceneReferences.startScene != null)
+        {
+            SceneManager.LoadScene(sceneReferences.startScene);
+        }
+        else
+        {
+            Debug.LogError("Start scene not set in SceneReferences!");
+        }
+        
     }
 }
