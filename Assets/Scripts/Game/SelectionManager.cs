@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public enum SelectionType
 {
@@ -23,6 +24,7 @@ public class SelectionManager : MonoBehaviour
 
     private RaceSettings currentRaceSettings;
     private SceneReferences sceneReferences;
+    private GameSettings gameSettings;
     private int veichleSelectedAmount = 0;
 
     private SelectionType[] selectionPhases = new SelectionType[]
@@ -54,6 +56,7 @@ public class SelectionManager : MonoBehaviour
     {
         currentRaceSettings = RaceSettings.Instance;
         sceneReferences = SceneReferences.Instance;
+        gameSettings = GameSettings.Instance;
         currentSelectionPhase = selectionPhases[currentSelectionPhaseIndex];
 
         foreach(GameObject selector in selectorList)
@@ -64,6 +67,18 @@ public class SelectionManager : MonoBehaviour
             }
             else
             {
+                if (gameSettings != null)
+                {
+                    if (gameSettings.inputMode == InputMode.GamepadOnly)
+                    {
+                        selector.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Gamepad");
+                    }
+                    else if (gameSettings.inputMode == InputMode.KeyboardOnly)
+                    {
+                        selector.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Keyboard&Mouse");
+                    }
+                }
+
                 Debug.LogError("[SelectionManager] ERROR: One of the selectors in selectorList is null");
             }
         }
@@ -151,6 +166,11 @@ public class SelectionManager : MonoBehaviour
     }
 
     private void StartVeichleSelection() {
+        if(gameSettings == null)
+        {
+            gameSettings = GameSettings.Instance;
+        }
+
         Debug.Log("[SelectionManager] INFO: Starting veichle selection phase");
 
         if (selectorList.Count == 0)
@@ -165,6 +185,23 @@ public class SelectionManager : MonoBehaviour
                 if (i < selectorList.Count)
                 {
                     selectorList[i].SetActive(true);
+                    if (gameSettings != null)
+                    {
+                        if (gameSettings.inputMode == InputMode.GamepadOnly)
+                        {
+                            Debug.Log("[SelectionManager] INFO: Setting selector " + i + " to Gamepad control scheme");
+                            selectorList[i].GetComponent<PlayerInput>().SwitchCurrentControlScheme("Gamepad", Gamepad.all[i]);
+                        }
+                        else if (gameSettings.inputMode == InputMode.KeyboardOnly)
+                        {
+                            Debug.Log("[SelectionManager] INFO: Setting selector " + i + " to Keyboard&Mouse control scheme");
+                            selectorList[i].GetComponent<PlayerInput>().SwitchCurrentControlScheme("Keyboard&Mouse");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[SelectionManager] WARNING: gameSettings is null");
+                    }
                 }
                 else
                 {

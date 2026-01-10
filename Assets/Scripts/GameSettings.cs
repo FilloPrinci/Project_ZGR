@@ -2,9 +2,9 @@ using UnityEngine;
 
 public enum InputMode
 {
-    KeyboardOnly,
+    Both,
     GamepadOnly,
-    Both
+    KeyboardOnly
 }
 
 public enum FPSLimit 

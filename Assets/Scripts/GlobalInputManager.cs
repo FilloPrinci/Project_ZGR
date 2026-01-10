@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 public class GlobalInputManager : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class GlobalInputManager : MonoBehaviour
     private List<GameObject> playerInputList;
 
     private RaceManager raceManager;
+    private GameSettings gameSettings;
 
     void Awake()
     {
@@ -31,6 +33,7 @@ public class GlobalInputManager : MonoBehaviour
     private void Start()
     {
         raceManager = RaceManager.Instance;
+        gameSettings = GameSettings.Instance;
 
         if (raceManager != null)
         {
@@ -50,6 +53,21 @@ public class GlobalInputManager : MonoBehaviour
             GameObject newPlayerInput = Instantiate(playerInputPrefab);
             playerInputList.Add(newPlayerInput);
             newPlayerInput.GetComponent<PlayerInputHandler>().SetPlayerIndex(i); // Set player index
+            PlayerInput playerInputSettings = newPlayerInput.GetComponent<PlayerInput>();
+            if(playerInputSettings != null)
+            {
+                if(gameSettings != null)
+                {
+                    if(gameSettings.inputMode == InputMode.GamepadOnly)
+                    {
+                        playerInputSettings.SwitchCurrentControlScheme("Gamepad", Gamepad.all[i]);
+                    }
+                    else if(gameSettings.inputMode == InputMode.KeyboardOnly)
+                    {
+                        playerInputSettings.SwitchCurrentControlScheme("Keyboard&Mouse");
+                    }
+                }
+            }
         }
     }
 
