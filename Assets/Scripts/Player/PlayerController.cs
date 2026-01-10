@@ -84,6 +84,8 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 selfColliderStartSize = Vector3.zero;
 
+    private bool pauseMode = false;
+
     public BoxCollider GetCollider()
     {
         if(selfCollider == null)
@@ -149,6 +151,19 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if(raceManager.IsPaused())
+        {
+            pauseMode = true;
+            return;
+        }
+
+        if (pauseMode)
+        {
+            pauseMode = false;
+            Debug.Log("Resuming PlayerController after pause");
+            return;
+        }
+        
         deltaTime = Time.deltaTime;
 
         // collect input
@@ -187,14 +202,14 @@ public class PlayerController : MonoBehaviour
             {
                 if (enginePower < 1f)
                 {
-                    enginePower = ExpDecay(enginePower, 1f, 2, deltaTime);
+                    enginePower = Utils.ExpDecay(enginePower, 1f, 2, deltaTime);
                 }
             }
             else
             {
                 if (enginePower > 0)
                 {
-                    enginePower = ExpDecay(enginePower, 0, 5, deltaTime);
+                    enginePower = Utils.ExpDecay(enginePower, 0, 5, deltaTime);
                 }
             }
 
@@ -225,14 +240,20 @@ public class PlayerController : MonoBehaviour
             {
                 collisionDetected = false;
 
-                if(globalBounceVector != Vector3.zero)
+
+                if (globalBounceVector != Vector3.zero)
                 {
-                    transform.localPosition += globalUpdateMovementVector + globalBounceVector;
-                    globalBounceVector = ExpDecay(globalBounceVector, Vector3.zero, collisionBounceDecelleration, deltaTime);
+                    if(Utils.IsValid(globalUpdateMovementVector) && Utils.IsValid(globalBounceVector))
+                    {
+                        transform.localPosition += globalUpdateMovementVector + globalBounceVector;
+                        globalBounceVector = Utils.ExpDecay(globalBounceVector, Vector3.zero, collisionBounceDecelleration, deltaTime);
+                    }
                 }
                 else
                 {
-                    transform.localPosition += globalUpdateMovementVector;
+                    if (Utils.IsValid(globalUpdateMovementVector)){
+                        transform.localPosition += globalUpdateMovementVector;
+                    }
                 }
             }
 
@@ -607,7 +628,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            currentRotationSpeed = ExpDecay(currentRotationSpeed, targetSpeed, accelleration, time);
+            currentRotationSpeed = Utils.ExpDecay(currentRotationSpeed, targetSpeed, accelleration, time);
         }
         return currentRotationSpeed;
     }
@@ -620,24 +641,11 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            currentSpeed = ExpDecay(currentSpeed, targetSpeed, accelleration, time);
+            currentSpeed = Utils.ExpDecay(currentSpeed, targetSpeed, accelleration, time);
         }
         return currentSpeed;
     }
 
-    float ExpDecay(float a, float b, float decay, float time)
-    {
-        return Mathf.Lerp(a, b, 1 - Mathf.Exp(-decay * time));
-    }
-
-    Vector3 ExpDecay(Vector3 a, Vector3 b, float decay, float deltaTime)
-    {
-        return new Vector3(
-            ExpDecay(a.x, b.x, decay, deltaTime),
-            ExpDecay(a.y, b.y, decay, deltaTime),
-            ExpDecay(a.z, b.z, decay, deltaTime)
-        );
-    }
 
     void StartHoverEngine(float power, float time, bool drawLine)
     {
@@ -696,7 +704,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                enginePower = ExpDecay(enginePower, 1f, 10, time);
+                enginePower = Utils.ExpDecay(enginePower, 1f, 10, time);
             }
             Vector3 desiredPosition = hit.point + hit.normal * hoverHeight * enginePower;
             transform.position = desiredPosition;

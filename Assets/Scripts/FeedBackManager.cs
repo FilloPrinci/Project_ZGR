@@ -42,6 +42,7 @@ public class FeedBackManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         deltaTime = Time.deltaTime;
         if (playerVeichle.activeInHierarchy)
         {

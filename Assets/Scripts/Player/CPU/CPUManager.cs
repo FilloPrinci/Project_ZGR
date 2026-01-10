@@ -51,10 +51,10 @@ public class CPUManager : MonoBehaviour
     List<GameObject> checkPointList;
     private CPUInputHandlerManager cpuInputHandlerManager;
 
-    [SerializeField] private int cpuCount = 1;
+    [SerializeField] private int cpuCount = 0;
 
-    private float updateInterval = 0.1f; // 10 Hz
-    private float timeSinceLastUpdate = 0f;
+    //private float updateInterval = 0.1f; // 10 Hz
+    //private float timeSinceLastUpdate = 0f;
 
     private Coroutine cpuJobCycle;
     #endregion
@@ -79,43 +79,52 @@ public class CPUManager : MonoBehaviour
             return;
         }
 
-        cpuCount = cpuInputHandlerManager.cpuPlayerAmount;
+        cpuCount = cpuInputHandlerManager.GetCPUPlayerAmount();
 
-
-        JOB_IO_cpuAccelerate = new NativeArray<int>(cpuCount, Allocator.Persistent);
-        JOB_IO_cpuSteer = new NativeArray<float>(cpuCount, Allocator.Persistent);
-        JOB_I_cpuTransforms = new Transform[cpuCount];
-        JOB_I_nextRaceLineTransforms = new Transform[cpuCount];
-        JOB_I_cpuInCorner = new NativeArray<bool>(cpuCount, Allocator.Persistent);
-        JOB_I_cpuLevel = new NativeArray<int>(cpuCount, Allocator.Persistent);
-
-        JOB_O_nearestLeftPoints = new Vector3[cpuCount];
-        JOB_O_nearestRightPoints = new Vector3[cpuCount];
-        JOB_O_nearestRaceLinePoints = new Vector3[cpuCount];
-
-        for (int i = 0; i < cpuCount; i++)
+        if(cpuCount == 0)
         {
-            JOB_IO_cpuAccelerate[i] = 1;
-            JOB_IO_cpuSteer[i] = 0f;
-            if(cpuLevel == 0)
-            {
-                JOB_I_cpuLevel[i] = Random.Range(0, 11);
-            }
-            else
-            {
-                JOB_I_cpuLevel[i] = cpuLevel;
-            }
-            
+            Debug.LogWarning("CPUManager: No CPU players found in CPUInputHandlerManager.");
         }
+        else
+        {
+            JOB_IO_cpuAccelerate = new NativeArray<int>(cpuCount, Allocator.Persistent);
+            JOB_IO_cpuSteer = new NativeArray<float>(cpuCount, Allocator.Persistent);
+            JOB_I_cpuTransforms = new Transform[cpuCount];
+            JOB_I_nextRaceLineTransforms = new Transform[cpuCount];
+            JOB_I_cpuInCorner = new NativeArray<bool>(cpuCount, Allocator.Persistent);
+            JOB_I_cpuLevel = new NativeArray<int>(cpuCount, Allocator.Persistent);
 
-        
-        
+            JOB_O_nearestLeftPoints = new Vector3[cpuCount];
+            JOB_O_nearestRightPoints = new Vector3[cpuCount];
+            JOB_O_nearestRaceLinePoints = new Vector3[cpuCount];
+
+            for (int i = 0; i < cpuCount; i++)
+            {
+                JOB_IO_cpuAccelerate[i] = 1;
+                JOB_IO_cpuSteer[i] = 0f;
+                if (cpuLevel == 0)
+                {
+                    JOB_I_cpuLevel[i] = Random.Range(0, 11);
+                }
+                else
+                {
+                    JOB_I_cpuLevel[i] = cpuLevel;
+                }
+
+            }
+        }
 
     }
 
     void Update()
     {
-        if(cpuJobCycle == null)
+
+        if (raceManager == null || !raceManager.IsReady())
+        {
+            Debug.LogWarning("CPUManager: RaceManager is not ready. Cannot update CPU data.");
+            return;
+        }
+        if (cpuJobCycle == null && !raceManager.IsPaused() && cpuCount != 0)
         {
             cpuJobCycle = StartCoroutine(CPUJobCycle());
         }
@@ -208,6 +217,7 @@ public class CPUManager : MonoBehaviour
     #region PRIVATE METHODS
     private void UpdateCPUData()
     {
+
         // Update CPU transforms
         List<GameObject> players = raceManager.GetAllPlayerInstances();
 
@@ -253,7 +263,7 @@ public class CPUManager : MonoBehaviour
 
         if (cpuTransformList.Count != cpuCount && cpuSpeedList.Count != cpuCount)
         {
-            Debug.LogWarning($"CPUManager: Expected {cpuCount} CPU players, but found {cpuTransformList.Count} and {cpuSpeedList.Count}.");
+            Debug.LogWarning($"CPUManager: Expected {cpuCount} CPU players, but found {cpuTransformList.Count} in TransformList and {cpuSpeedList.Count} in speedList.");
         }
         else
         {

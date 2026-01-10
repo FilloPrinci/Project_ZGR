@@ -67,6 +67,7 @@ public class RaceManager : MonoBehaviour
 
 
     private bool isPaused = false;
+    private bool isReady = false;
 
     public RaceData GetRaceData()
     {
@@ -83,6 +84,15 @@ public class RaceManager : MonoBehaviour
         return humanPlayersAmount;
     }
 
+    public bool IsPaused()
+    {
+        return isPaused;
+    }
+
+    public bool IsReady()
+    {
+        return isReady;
+    }
 
     private void OnValidate()
     {
@@ -232,6 +242,8 @@ public class RaceManager : MonoBehaviour
             }
             TriggerRaceEvent(RacePhaseEvent.Start);
         }
+
+        isReady = true;
 
     }
     
@@ -634,17 +646,19 @@ public class RaceManager : MonoBehaviour
     {
         ShowPauseMenuForInputPlayer(playerIndex);
         Time.timeScale = 0f;
+        
     }
 
     public void OnPauseExit()
     {
+        isPaused = false;
         Time.timeScale = 1f;
         HidePauseMenuForAllPlayers();
     }
 
-    public void OnSkip(int playerIndex)
+    public void OnStartButtonPress(int playerIndex)
     {
-        Debug.Log("[RaceManager] : Player" + (playerIndex + 1) + " pressed SKIP button");
+        Debug.Log("[RaceManager] : Player" + (playerIndex + 1) + " pressed START button");
 
         if (currentRacePhase == RacePhase.Presentation)
         {
@@ -653,15 +667,17 @@ public class RaceManager : MonoBehaviour
         }
         else if (currentRacePhase == RacePhase.Race)
         {
-            Debug.Log("[RaceManager] : Pause race");
+            Debug.Log("[RaceManager] : Pause button pressed");
             isPaused = !isPaused;
 
             if (isPaused) {
                 OnPauseEnter(playerIndex);
+                Debug.Log("[RaceManager] : Game paused");
             }
             else
             {
                 OnPauseExit();
+                Debug.Log("[RaceManager] : Game resumed");
             }
         }
         else if (currentRacePhase == RacePhase.Results)
@@ -672,8 +688,11 @@ public class RaceManager : MonoBehaviour
 
     public void ShowPauseMenuForInputPlayer(int playerIndex)
     {
-        if (playerInstanceList[playerIndex].GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
+        PlayerStructure playerStructure = playerInstanceList[playerIndex].GetComponent<PlayerStructure>();
+
+        if (playerStructure.data.playerInputIndex != InputIndex.CPU)
         {
+            Debug.Log("[RaceManager] : Showing pause menu for player " + playerStructure.name);
             RaceGUI playerRaceGui = GetRaceGUIFromPlayerInstance(playerInstanceList[playerIndex]);
             playerRaceGui.SetCanShowPauseMenu(true);
         }

@@ -49,7 +49,7 @@ public class GlobalInputManager : MonoBehaviour
         {
             GameObject newPlayerInput = Instantiate(playerInputPrefab);
             playerInputList.Add(newPlayerInput);
-            newPlayerInput.GetComponent<PlayerInputHandler>().SetPlauerIndex(i); // Set player index
+            newPlayerInput.GetComponent<PlayerInputHandler>().SetPlayerIndex(i); // Set player index
         }
     }
 
