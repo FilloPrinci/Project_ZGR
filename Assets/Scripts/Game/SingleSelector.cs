@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class SingleSelector : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class SingleSelector : MonoBehaviour
     public Transform shownVeichlePosition;
     
     public float scaleFactor = 0.2f;
+    public GameObject selectionCheckIcon;
     private int selectedVeichleIndex = 0;
     private GameObject instantiatedSelectedVeichle;
     private RaceSettings raceSettings;
@@ -60,6 +62,7 @@ public class SingleSelector : MonoBehaviour
     {
         RefreshReferences();
         selectionConfirmed = false;
+        selectionCheckIcon.SetActive(selectionConfirmed);
     }
 
     public void OnSelectNext(InputAction.CallbackContext context)
@@ -122,17 +125,23 @@ public class SingleSelector : MonoBehaviour
     {
         if (isActiveAndEnabled)
         {
-            if (!selectionConfirmed)
+            selectionConfirmed = !selectionConfirmed;
+
+            selectionCheckIcon.SetActive(selectionConfirmed);
+
+            if (selectionConfirmed)
             {
-                selectionConfirmed = true;
                 raceSettings.SetSelectedVeichleForPlayer(playerIndex, GetSelectedVeichlePrefab());
                 selectionManager.OnVeichleSelected();
             }
             else
             {
-                selectionConfirmed = false;
                 selectionManager.OnVeichleUnselect();
             }
+
+
+
+            
         }
         
     }
