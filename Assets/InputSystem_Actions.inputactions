@@ -652,8 +652,8 @@
                 },
                 {
                     "name": "",
-                    "id": "b14301b9-10b8-415f-9907-b8f0600a7cb6",
-                    "path": "<Keyboard>/enter",
+                    "id": "bc10f24b-4e03-4c58-a83f-73bc64c1158d",
+                    "path": "<Gamepad>/start",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -663,11 +663,11 @@
                 },
                 {
                     "name": "",
-                    "id": "bc10f24b-4e03-4c58-a83f-73bc64c1158d",
-                    "path": "<Gamepad>/start",
+                    "id": "6c0b613b-fadc-4226-9a25-22449c630989",
+                    "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard&Mouse",
                     "action": "Start-Pause",
                     "isComposite": false,
                     "isPartOfComposite": false
