@@ -208,8 +208,24 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 07e6211a-bfb1-40d9-b333-5156d9ef2537
     m_ActionName: 'Selection/SelectPrev[/Keyboard/leftArrow]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 404064714297468801}
+        m_TargetAssemblyTypeName: UI_CustomPlayerInput, Assembly-CSharp
+        m_MethodName: Select
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: fc60b987-2058-49b9-8c0e-8032cd50d187
+    m_ActionName: 'CustomUI/Select[/Keyboard/leftArrow,/Keyboard/rightArrow]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard&Mouse
-  m_DefaultActionMap: Selection
+  m_DefaultActionMap: CustomUI
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}

@@ -1,12 +1,33 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class UI_GroupComponent : MonoBehaviour
 {
     public List<UI_Component_3D> UIComponentList;
-    public float GroupSpacing = 1.5f;
+    
     public int ActiveComponentIndex = 0;
+    
+    private List<Vector3> positionList;
+    private List<Vector3> newPositionList;
+    private List<Vector3> currentPositionList;
+
+    private List<float> currentPanelSizeList;
+    private List<float> newPanelSizeList;
+
+    private List<float> currentIconSizeList;
+    private List<float> newIconSizeList;
+
+    private float groupSpacing;
+    private float moveSpeed;
+    private float panelScaleMultiplier;
+    private float panelScaleSpeed;
+    private float iconScaleMultiplier;
+    private float iconScaleSpeed;
+
+    private float deltaTime;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -16,55 +37,80 @@ public class UI_GroupComponent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        for (int i = 0; i < UIComponentList.Count; i++)
-        {
-            UI_Component_3D component = UIComponentList[i];
-            if (i == ActiveComponentIndex)
-            {
-                component.GraphicComponent.IconSize = 1;
-            }
-            else
-            {
-                component.GraphicComponent.IconSize = 0.5f;
-            }
-        }
-
+        deltaTime = Time.deltaTime;
         RefreshGraphics();
+    }
+
+    public void Setup(
+        float groupSpacing,
+        float moveSpeed,
+        float panelScaleMultiplier,
+        float panelScaleSpeed,
+        float iconScaleMultiplier,
+        float iconScaleSpeed
+        )
+    {
+        this.groupSpacing = groupSpacing;
+        this.moveSpeed = moveSpeed;
+        this.panelScaleMultiplier = panelScaleMultiplier;
+        this.panelScaleSpeed = panelScaleSpeed;
+        this.iconScaleMultiplier = iconScaleMultiplier;
+        this.iconScaleSpeed = iconScaleSpeed;
     }
 
     private void RefreshGraphics()
     {
+
         for (int i = 0; i < UIComponentList.Count; i++)
         {
             UI_Component_3D component = UIComponentList[i];
             UI_GraphicComponent graphicComponent = component.GraphicComponent;
             if (graphicComponent != null)
             {
-                if (graphicComponent.GetInstantiatedPanel() != null)
-                {
-                    graphicComponent.GetInstantiatedPanel().transform.position = transform.position + new Vector3(i * GroupSpacing, 0, 0);
-                }
-                if (graphicComponent.GetInstantiatedIcon() != null)
-                {
-                    graphicComponent.GetInstantiatedIcon().transform.position = transform.position + new Vector3(i * GroupSpacing, 0, 0) + graphicComponent.IconOffset;
-                }
+                newPositionList[i] = positionList[i];
 
-                if(ActiveComponentIndex == i)
+
+                currentPositionList[i] = graphicComponent.GetInstantiatedPanel().transform.position;
+                currentPositionList[i] = Utils.ExpDecay(currentPositionList[i], newPositionList[i], moveSpeed, deltaTime);
+
+                // refresh positions
+                graphicComponent.GetInstantiatedPanel().transform.position = currentPositionList[i];
+                graphicComponent.GetInstantiatedIcon().transform.position = currentPositionList[i] + graphicComponent.IconOffset;
+
+                //refresh panel and icon size
+                currentPanelSizeList[i] = Utils.ExpDecay(currentPanelSizeList[i], newPanelSizeList[i], panelScaleSpeed, deltaTime);
+                currentIconSizeList[i] = Utils.ExpDecay(currentIconSizeList[i], newIconSizeList[i], iconScaleSpeed, deltaTime);
+
+                if (ActiveComponentIndex == i)
                 {
-                    graphicComponent.GetInstantiatedIcon().transform.localScale = Vector3.one * 1.0f;
+                    newIconSizeList[i] = iconScaleMultiplier;
+                    newPanelSizeList[i] = panelScaleMultiplier;
                 }
                 else
                 {
-                    graphicComponent.GetInstantiatedIcon().transform.localScale = Vector3.one * 0.5f;
+                    newIconSizeList[i] = 1f;
+                    newPanelSizeList[i] = 1f;
                 }
+
+                graphicComponent.GetInstantiatedPanel().transform.localScale = Vector3.one * currentPanelSizeList[i];
+                graphicComponent.GetInstantiatedIcon().transform.localScale = Vector3.one * currentIconSizeList[i];
             }
         }
+
     }
 
     public void InstantiateGroupGraphics()
     {
         if (UIComponentList != null && UIComponentList.Count > 0)
         {
+            positionList = new List<Vector3>();
+            newPositionList = new List<Vector3>();
+            currentPositionList = new List<Vector3>();
+            currentIconSizeList = new List<float>();
+            newIconSizeList = new List<float>();
+            currentPanelSizeList = new List<float>();
+            newPanelSizeList = new List<float>();
+
             for (int i = 0; i < UIComponentList.Count; i++)
             {
                 UI_Component_3D component = UIComponentList[i];
@@ -72,7 +118,7 @@ public class UI_GroupComponent : MonoBehaviour
 
                 if (graphicComponent != null)
                 {
-                    Vector3 newInstancePosition = transform.position + new Vector3(i * GroupSpacing,0 , 0);
+                    Vector3 newInstancePosition = transform.position + new Vector3(i * groupSpacing,0 , 0);
                     if (graphicComponent.Panel != null)
                     {
                         graphicComponent.SetInstantiatedPanel(Instantiate(graphicComponent.Panel, newInstancePosition, Quaternion.identity, transform));
@@ -82,8 +128,16 @@ public class UI_GroupComponent : MonoBehaviour
                         graphicComponent.SetInstantiatedIcon(Instantiate(graphicComponent.Icon, newInstancePosition + graphicComponent.IconOffset, Quaternion.identity, transform));
                     }
                 }
-            }
 
+                Vector3 position = new Vector3(i * groupSpacing, 0, 0);
+                positionList.Add(position);
+                newPositionList.Add(position);
+                currentPositionList.Add(position);
+                currentIconSizeList.Add(1f);
+                newIconSizeList.Add(1f);
+                currentPanelSizeList.Add(1f);
+                newPanelSizeList.Add(1f);
+            }
         }
         else
         {
@@ -95,7 +149,45 @@ public class UI_GroupComponent : MonoBehaviour
 
     public void SelectRight(int playerIndex)
     {
-        ActiveComponentIndex = (ActiveComponentIndex + 1) % UIComponentList.Count;
+        
+        
+        if(ActiveComponentIndex == positionList.Count - 1)
+        {
+            //don't wrap around
+            
+            return;
+        }
+        else
+        {
+            ActiveComponentIndex++;
+            for (int i = 0; i < positionList.Count; i++)
+            {
+                positionList[i] += new Vector3(-groupSpacing, 0, 0);
+            }
+        }
+
         Debug.Log("Player " + playerIndex + " selected right to component index " + ActiveComponentIndex);
+    }
+
+    public void SelectLeft(int playerIndex)
+    {
+
+
+        if (ActiveComponentIndex == 0)
+        {
+            //don't wrap around
+            
+            return;
+        }
+        else
+        {
+            ActiveComponentIndex--;
+            for (int i = 0; i < positionList.Count; i++)
+            {
+                positionList[i] += new Vector3(+groupSpacing, 0, 0);
+            }
+        }
+
+        Debug.Log("Player " + playerIndex + " selected left to component index " + ActiveComponentIndex);
     }
 }

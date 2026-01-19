@@ -27,11 +27,22 @@ public class UI_CustomPlayerInput : MonoBehaviour
         
     }
 
-    public void SelectRight(InputAction.CallbackContext context)
+    public void Select(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
-            UI_InputManagerInstance.OnSelectRight(playerIndex);
+            float value = context.ReadValue<float>();
+            if (value != 0)
+            {
+                if(value > 0)
+                {
+                    UI_InputManagerInstance.OnSelectRight(playerIndex);
+                }
+                else
+                {
+                    UI_InputManagerInstance.OnSelectLeft(playerIndex);
+                }
+            }
         }
     }
 }

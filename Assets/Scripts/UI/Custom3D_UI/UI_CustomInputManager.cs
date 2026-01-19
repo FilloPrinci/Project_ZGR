@@ -49,4 +49,10 @@ public class UI_CustomInputManager : MonoBehaviour
         Debug.Log("Player " + playerIndex + " selected right");
         UI_3D_Manager.ManageSelectRight(playerIndex);
     }
+
+    public void OnSelectLeft(int playerIndex)
+    {
+        Debug.Log("Player " + playerIndex + " selected left");
+        UI_3D_Manager.ManageSelectLeft(playerIndex);
+    }
 }
