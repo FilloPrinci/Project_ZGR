@@ -8,7 +8,9 @@ public class UI_GroupComponent : MonoBehaviour
     public List<UI_Component_3D> UIComponentList;
     
     public int ActiveComponentIndex = 0;
-    
+
+    private bool selectionConfirmed = false;
+
     private List<Vector3> positionList;
     private List<Vector3> newPositionList;
     private List<Vector3> currentPositionList;
@@ -60,7 +62,6 @@ public class UI_GroupComponent : MonoBehaviour
 
     private void RefreshGraphics()
     {
-
         for (int i = 0; i < UIComponentList.Count; i++)
         {
             UI_Component_3D component = UIComponentList[i];
@@ -96,7 +97,79 @@ public class UI_GroupComponent : MonoBehaviour
                 graphicComponent.GetInstantiatedIcon().transform.localScale = Vector3.one * currentIconSizeList[i];
             }
         }
+    }
 
+    public void ConfirmSelection()
+    {
+        if (!selectionConfirmed)
+        {
+            selectionConfirmed = true;
+            HideUnselectedComponents();
+        }
+        else
+        {
+            Debug.LogWarning("Selection is already confirmed");
+        }
+        
+    }
+
+    public void BackFromSelection()
+    {
+        if (selectionConfirmed)
+        {
+            selectionConfirmed = false;
+            ShowUnselectedComponents();
+        }
+        else
+        {
+            Debug.LogWarning("Selection is not yet confirmed");
+        }
+    }
+
+    public void HideUnselectedComponents()
+    {
+        if (selectionConfirmed)
+        {
+            // hide unselected components
+            for (int i = 0; i < UIComponentList.Count; i++)
+            {
+                if (i != ActiveComponentIndex)
+                {
+                    UI_Component_3D component = UIComponentList[i];
+                    UI_GraphicComponent graphicComponent = component.GraphicComponent;
+
+                    graphicComponent.GetInstantiatedPanel().SetActive(false);
+                    graphicComponent.GetInstantiatedIcon().SetActive(false);
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Tryng to hide unselected componets but selection is not confirmed");
+        }
+    }
+
+    public void ShowUnselectedComponents()
+    {
+        if (!selectionConfirmed)
+        {
+            // show unselected components
+            for (int i = 0; i < UIComponentList.Count; i++)
+            {
+                if (i != ActiveComponentIndex)
+                {
+                    UI_Component_3D component = UIComponentList[i];
+                    UI_GraphicComponent graphicComponent = component.GraphicComponent;
+
+                    graphicComponent.GetInstantiatedPanel().SetActive(true);
+                    graphicComponent.GetInstantiatedIcon().SetActive(true);
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Tryng to show unselected componets but selection is confirmed");
+        }
     }
 
     public void InstantiateGroupGraphics()
