@@ -11,6 +11,10 @@ public class UI_GroupComponent : MonoBehaviour
 
     private bool selectionConfirmed = false;
 
+    private Vector3 position;
+    private Vector3 newPosition;
+    private Vector3 currentPosition;
+
     private List<Vector3> positionList;
     private List<Vector3> newPositionList;
     private List<Vector3> currentPositionList;
@@ -34,6 +38,9 @@ public class UI_GroupComponent : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        position = transform.position;
+        newPosition = transform.position;
+        currentPosition = transform.position;
     }
 
     // Update is called once per frame
@@ -62,6 +69,17 @@ public class UI_GroupComponent : MonoBehaviour
 
     private void RefreshGraphics()
     {
+        if(positionList == null || positionList.Count == 0)
+        {
+            return;
+        }
+
+        newPosition = position;
+        currentPosition = transform.position;
+        currentPosition = Utils.ExpDecay(currentPosition, newPosition, moveSpeed, deltaTime);
+        transform.position = currentPosition;
+
+
         for (int i = 0; i < UIComponentList.Count; i++)
         {
             UI_Component_3D component = UIComponentList[i];
@@ -99,32 +117,7 @@ public class UI_GroupComponent : MonoBehaviour
         }
     }
 
-    public void ConfirmSelection()
-    {
-        if (!selectionConfirmed)
-        {
-            selectionConfirmed = true;
-            HideUnselectedComponents();
-        }
-        else
-        {
-            Debug.LogWarning("Selection is already confirmed");
-        }
-        
-    }
-
-    public void BackFromSelection()
-    {
-        if (selectionConfirmed)
-        {
-            selectionConfirmed = false;
-            ShowUnselectedComponents();
-        }
-        else
-        {
-            Debug.LogWarning("Selection is not yet confirmed");
-        }
-    }
+    
 
     public void HideUnselectedComponents()
     {
@@ -169,6 +162,25 @@ public class UI_GroupComponent : MonoBehaviour
         else
         {
             Debug.LogWarning("Tryng to show unselected componets but selection is confirmed");
+        }
+    }
+
+    public void MoveBack(float amount)
+    {
+        position += transform.forward * amount;
+
+        for (int i = 0; i < positionList.Count; i++)
+        {
+            positionList[i] += transform.forward * amount;
+        }
+    }
+
+    public void MoveForward(float amount)
+    {
+        position -= transform.forward * amount;
+        for (int i = 0; i < positionList.Count; i++)
+        {
+            positionList[i] -= transform.forward * amount;
         }
     }
 
@@ -221,6 +233,33 @@ public class UI_GroupComponent : MonoBehaviour
         
     }
 
+    public void RemoveGroupGraphics()
+    {
+        for (int i = 0; i < UIComponentList.Count; i++)
+        {
+            UI_Component_3D component = UIComponentList[i];
+            UI_GraphicComponent graphicComponent = component.GraphicComponent;
+            if (graphicComponent != null)
+            {
+                if (graphicComponent.GetInstantiatedPanel() != null)
+                {
+                    Destroy(graphicComponent.GetInstantiatedPanel());
+                }
+                if (graphicComponent.GetInstantiatedIcon() != null)
+                {
+                    Destroy(graphicComponent.GetInstantiatedIcon());
+                }
+            }
+        }
+        positionList.Clear();
+        newPositionList.Clear();
+        currentPositionList.Clear();
+        currentIconSizeList.Clear();
+        newIconSizeList.Clear();
+        currentPanelSizeList.Clear();
+        newPanelSizeList.Clear();
+    }
+
     public void SelectRight(int playerIndex)
     {
         
@@ -264,4 +303,32 @@ public class UI_GroupComponent : MonoBehaviour
 
         Debug.Log("Player " + playerIndex + " selected left to component index " + ActiveComponentIndex);
     }
+
+    public void ConfirmSelection(int playerIndex)
+    {
+        if (!selectionConfirmed)
+        {
+            selectionConfirmed = true;
+            HideUnselectedComponents();
+        }
+        else
+        {
+            Debug.LogWarning("Selection is already confirmed");
+        }
+
+    }
+
+    public void BackFromSelection(int playerIndex)
+    {
+        if (selectionConfirmed)
+        {
+            selectionConfirmed = false;
+            ShowUnselectedComponents();
+        }
+        else
+        {
+            Debug.LogWarning("Selection is not yet confirmed");
+        }
+    }
+
 }

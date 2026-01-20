@@ -55,4 +55,16 @@ public class UI_CustomInputManager : MonoBehaviour
         Debug.Log("Player " + playerIndex + " selected left");
         UI_3D_Manager.ManageSelectLeft(playerIndex);
     }
+
+    public void OnConfirmSelection(int playerIndex)
+    {
+        Debug.Log("Player " + playerIndex + " confirmed selection");
+        UI_3D_Manager.ManageConfirmSelection(playerIndex);
+    }
+
+    public void OnCancelSelection(int playerIndex)
+    {
+        Debug.Log("Player " + playerIndex + " canceled selection");
+        UI_3D_Manager.ManageCancelSelection(playerIndex);
+    }
 }

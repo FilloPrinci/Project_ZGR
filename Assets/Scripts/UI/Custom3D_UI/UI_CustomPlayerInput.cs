@@ -45,4 +45,20 @@ public class UI_CustomPlayerInput : MonoBehaviour
             }
         }
     }
+
+    public void ConfirmSelection(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            UI_InputManagerInstance.OnConfirmSelection(playerIndex);
+        }
+    }
+
+    public void CancelSelection(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            UI_InputManagerInstance.OnCancelSelection(playerIndex);
+        }
+    }
 }

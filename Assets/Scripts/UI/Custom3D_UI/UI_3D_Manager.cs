@@ -15,6 +15,9 @@ public class UI_3D_Manager : MonoBehaviour
 {
     public List<UI_GroupComponent> UI_ComponentGroupList;
     public int ActiveUIGroupIndex = 0;
+
+    public float backgroundSpacing = 1f;
+
     public float panelSpacing = 2.0f;
     public float moveSpeed = 5.0f;
     public float panelScaleMultiplier;
@@ -53,8 +56,36 @@ public class UI_3D_Manager : MonoBehaviour
         UI_ComponentGroupList[ActiveUIGroupIndex].SelectLeft(playerIndex);
     }
 
-    public void SelectComponent()
+    public void ManageConfirmSelection(int playerIndex)
     {
+        UI_ComponentGroupList[ActiveUIGroupIndex].ConfirmSelection(playerIndex);
 
+        if (ActiveUIGroupIndex < UI_ComponentGroupList.Count - 1)
+        {
+            ActiveUIGroupIndex++;
+            UI_ComponentGroupList[ActiveUIGroupIndex].Setup(panelSpacing, moveSpeed, panelScaleMultiplier, panelScaleSpeed, iconScaleMultiplier, iconScaleSpeed);
+            UI_ComponentGroupList[ActiveUIGroupIndex].InstantiateGroupGraphics();
+        }
+
+        
+        for (int i = 0; i < ActiveUIGroupIndex; i++)
+        {
+            UI_ComponentGroupList[i].MoveBack(backgroundSpacing);
+        }
+        
+        
+    }
+
+    public void ManageCancelSelection(int playerIndex)
+    {
+        if (ActiveUIGroupIndex > 0)
+        {
+            UI_ComponentGroupList[ActiveUIGroupIndex].RemoveGroupGraphics();
+            ActiveUIGroupIndex--;
+
+            UI_ComponentGroupList[ActiveUIGroupIndex].BackFromSelection(playerIndex);
+            UI_ComponentGroupList[ActiveUIGroupIndex].MoveForward(backgroundSpacing);
+
+        }
     }
 }
