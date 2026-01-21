@@ -153,7 +153,7 @@ MonoBehaviour:
   - {fileID: 675279188}
   - {fileID: 677944416}
   ActiveUIGroupIndex: 0
-  backgroundSpacing: 1
+  backgroundSpacing: 2
   panelSpacing: 1.5
   moveSpeed: 20
   panelScaleMultiplier: 1.4
@@ -363,19 +363,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.965926
+      value: 0.9914449
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.2588186
+      value: -0.13052624
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -383,7 +383,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -30
+      value: -15
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -420,6 +420,14 @@ PrefabInstance:
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[1].GraphicComponent.IconSize
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[0].GraphicComponent.IconOffset.z
+      value: -0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[1].GraphicComponent.IconOffset.z
+      value: -0.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -584,19 +592,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9659259
+      value: 0.9914449
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.25881904
+      value: -0.13052624
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -604,7 +612,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -30
+      value: -15
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z

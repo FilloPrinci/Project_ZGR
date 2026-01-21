@@ -74,12 +74,6 @@ public class UI_GroupComponent : MonoBehaviour
             return;
         }
 
-        newPosition = position;
-        currentPosition = transform.position;
-        currentPosition = Utils.ExpDecay(currentPosition, newPosition, moveSpeed, deltaTime);
-        transform.position = currentPosition;
-
-
         for (int i = 0; i < UIComponentList.Count; i++)
         {
             UI_Component_3D component = UIComponentList[i];
@@ -89,12 +83,12 @@ public class UI_GroupComponent : MonoBehaviour
                 newPositionList[i] = positionList[i];
 
 
-                currentPositionList[i] = graphicComponent.GetInstantiatedPanel().transform.position;
+                currentPositionList[i] = graphicComponent.GetInstantiatedPanel().transform.localPosition;
                 currentPositionList[i] = Utils.ExpDecay(currentPositionList[i], newPositionList[i], moveSpeed, deltaTime);
 
                 // refresh positions
-                graphicComponent.GetInstantiatedPanel().transform.position = currentPositionList[i];
-                graphicComponent.GetInstantiatedIcon().transform.position = currentPositionList[i] + graphicComponent.IconOffset;
+                graphicComponent.GetInstantiatedPanel().transform.localPosition = currentPositionList[i];
+                graphicComponent.GetInstantiatedIcon().transform.localPosition = currentPositionList[i] + Vector3.forward * graphicComponent.IconOffset.z;
 
                 //refresh panel and icon size
                 currentPanelSizeList[i] = Utils.ExpDecay(currentPanelSizeList[i], newPanelSizeList[i], panelScaleSpeed, deltaTime);
@@ -115,6 +109,12 @@ public class UI_GroupComponent : MonoBehaviour
                 graphicComponent.GetInstantiatedIcon().transform.localScale = Vector3.one * currentIconSizeList[i];
             }
         }
+
+        newPosition = position;
+        currentPosition = transform.position;
+        currentPosition = Utils.ExpDecay(currentPosition, newPosition, moveSpeed, deltaTime);
+        transform.position = currentPosition;
+        
     }
 
     
@@ -169,19 +169,24 @@ public class UI_GroupComponent : MonoBehaviour
     {
         position += transform.forward * amount;
 
+        /*
         for (int i = 0; i < positionList.Count; i++)
         {
             positionList[i] += transform.forward * amount;
         }
+        */
     }
 
     public void MoveForward(float amount)
     {
         position -= transform.forward * amount;
+
+        /*
         for (int i = 0; i < positionList.Count; i++)
         {
             positionList[i] -= transform.forward * amount;
         }
+        */
     }
 
     public void InstantiateGroupGraphics()
@@ -201,7 +206,7 @@ public class UI_GroupComponent : MonoBehaviour
                 UI_Component_3D component = UIComponentList[i];
                 UI_GraphicComponent graphicComponent = component.GraphicComponent;
 
-                Vector3 newInstancePosition = transform.right * i * groupSpacing;
+                Vector3 newInstancePosition = Vector3.right * i * groupSpacing;
 
                 if (graphicComponent != null)
                 {
@@ -212,7 +217,7 @@ public class UI_GroupComponent : MonoBehaviour
                     }
                     if (graphicComponent.Icon != null)
                     {
-                        graphicComponent.SetInstantiatedIcon(Instantiate(graphicComponent.Icon, newInstancePosition + graphicComponent.IconOffset, transform.rotation, transform));
+                        graphicComponent.SetInstantiatedIcon(Instantiate(graphicComponent.Icon, newInstancePosition + Vector3.forward * graphicComponent.IconOffset.z, transform.rotation, transform));
                     }
                 }
 
@@ -275,7 +280,7 @@ public class UI_GroupComponent : MonoBehaviour
             ActiveComponentIndex++;
             for (int i = 0; i < positionList.Count; i++)
             {
-                positionList[i] +=  transform.right * -groupSpacing;
+                positionList[i] += Vector3.right * -groupSpacing;
             }
         }
 
@@ -297,7 +302,7 @@ public class UI_GroupComponent : MonoBehaviour
             ActiveComponentIndex--;
             for (int i = 0; i < positionList.Count; i++)
             {
-                positionList[i] += transform.right * groupSpacing;
+                positionList[i] += Vector3.right * groupSpacing;
             }
         }
 
