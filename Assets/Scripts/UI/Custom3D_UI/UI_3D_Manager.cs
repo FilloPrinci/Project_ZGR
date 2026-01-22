@@ -13,8 +13,7 @@ enum SlectionDirection
 
 public class UI_3D_Manager : MonoBehaviour
 {
-    public List<UI_GroupComponent> UI_ComponentGroupList;
-    public int ActiveUIGroupIndex = 0;
+    public UI_GroupComponent Start_UI_GroupComponent;
 
     public float backgroundSpacing = 1f;
 
@@ -27,13 +26,16 @@ public class UI_3D_Manager : MonoBehaviour
 
     public bool debugMode = false;
 
+    private UI_GroupComponent Current_UI_GroupCompoment;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if (UI_ComponentGroupList != null)
+        if (Start_UI_GroupComponent != null)
         {
-            UI_ComponentGroupList[ActiveUIGroupIndex].Setup(panelSpacing, moveSpeed, panelScaleMultiplier, panelScaleSpeed, iconScaleMultiplier, iconScaleSpeed );
-            UI_ComponentGroupList[ActiveUIGroupIndex].InstantiateGroupGraphics();
+            Current_UI_GroupCompoment = Start_UI_GroupComponent;
+            Current_UI_GroupCompoment.Setup(panelSpacing, moveSpeed, panelScaleMultiplier, panelScaleSpeed, iconScaleMultiplier, iconScaleSpeed );
+            Current_UI_GroupCompoment.InstantiateGroupGraphics();
         }
     }
     // Update is called once per frame
@@ -41,51 +43,37 @@ public class UI_3D_Manager : MonoBehaviour
     {
         if(debugMode)
         {
-            UI_ComponentGroupList[ActiveUIGroupIndex].Setup(panelSpacing, moveSpeed, panelScaleMultiplier, panelScaleSpeed, iconScaleMultiplier, iconScaleSpeed);
+            Start_UI_GroupComponent.Setup(panelSpacing, moveSpeed, panelScaleMultiplier, panelScaleSpeed, iconScaleMultiplier, iconScaleSpeed);
         }
         
     }
 
     public void ManageSelectRight(int playerIndex)
     {
-        UI_ComponentGroupList[ActiveUIGroupIndex].SelectRight(playerIndex);
+        Current_UI_GroupCompoment.SelectRight(playerIndex);
     }
 
     public void ManageSelectLeft(int playerIndex)
     {
-        UI_ComponentGroupList[ActiveUIGroupIndex].SelectLeft(playerIndex);
+        Current_UI_GroupCompoment.SelectLeft(playerIndex);
     }
 
     public void ManageConfirmSelection(int playerIndex)
     {
-        UI_ComponentGroupList[ActiveUIGroupIndex].ConfirmSelection(playerIndex);
+        Current_UI_GroupCompoment.ConfirmSelection(playerIndex);
+        Current_UI_GroupCompoment.MoveBack(backgroundSpacing);
 
-        if (ActiveUIGroupIndex < UI_ComponentGroupList.Count - 1)
-        {
-            ActiveUIGroupIndex++;
-            UI_ComponentGroupList[ActiveUIGroupIndex].Setup(panelSpacing, moveSpeed, panelScaleMultiplier, panelScaleSpeed, iconScaleMultiplier, iconScaleSpeed);
-            UI_ComponentGroupList[ActiveUIGroupIndex].InstantiateGroupGraphics();
-        }
+        // TODO: Change Current_UI_GroupCompoment
 
-        
-        for (int i = 0; i < ActiveUIGroupIndex; i++)
-        {
-            UI_ComponentGroupList[i].MoveBack(backgroundSpacing);
-        }
-        
-        
     }
 
     public void ManageCancelSelection(int playerIndex)
     {
-        if (ActiveUIGroupIndex > 0)
-        {
-            UI_ComponentGroupList[ActiveUIGroupIndex].RemoveGroupGraphics();
-            ActiveUIGroupIndex--;
+        Current_UI_GroupCompoment.RemoveGroupGraphics();
 
-            UI_ComponentGroupList[ActiveUIGroupIndex].BackFromSelection(playerIndex);
-            UI_ComponentGroupList[ActiveUIGroupIndex].MoveForward(backgroundSpacing);
+        // TODO: Change Current_UI_GroupCompoment
 
-        }
+        Current_UI_GroupCompoment.BackFromSelection(playerIndex);
+        Current_UI_GroupCompoment.MoveForward(backgroundSpacing);
     }
 }

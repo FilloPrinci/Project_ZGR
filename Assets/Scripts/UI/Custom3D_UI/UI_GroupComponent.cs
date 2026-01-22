@@ -5,8 +5,11 @@ using UnityEngine.Rendering;
 
 public class UI_GroupComponent : MonoBehaviour
 {
+    public string GroupName;
+
     public List<UI_Component_3D> UIComponentList;
-    
+    public UI_GroupComponent prevGroupComponent;
+
     public int ActiveComponentIndex = 0;
 
     private bool selectionConfirmed = false;
@@ -284,7 +287,7 @@ public class UI_GroupComponent : MonoBehaviour
             }
         }
 
-        Debug.Log("Player " + playerIndex + " selected right to component index " + ActiveComponentIndex);
+        SelectComponent();
     }
 
     public void SelectLeft(int playerIndex)
@@ -306,7 +309,16 @@ public class UI_GroupComponent : MonoBehaviour
             }
         }
 
-        Debug.Log("Player " + playerIndex + " selected left to component index " + ActiveComponentIndex);
+        SelectComponent();
+    }
+
+    public void SelectComponent()
+    {
+        UI_Logic_Component logicComponent = UIComponentList[ActiveComponentIndex].LogicComponent;
+        if (logicComponent != null)
+        {
+            logicComponent.OnSelection();
+        }
     }
 
     public void ConfirmSelection(int playerIndex)
@@ -315,6 +327,10 @@ public class UI_GroupComponent : MonoBehaviour
         {
             selectionConfirmed = true;
             HideUnselectedComponents();
+            UI_Logic_Component logicComponent = UIComponentList[ActiveComponentIndex].LogicComponent;
+            if (logicComponent != null) {
+                logicComponent.OnConfirmSelection();
+            }
         }
         else
         {

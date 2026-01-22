@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class UI_CustomInputManager : MonoBehaviour
 {
     public GameObject playerInputPrefab;
+    public bool LogInput = false;
 
     private int maxPlayers = 4;
     private List<GameObject> playerInputManagers;
@@ -44,27 +45,35 @@ public class UI_CustomInputManager : MonoBehaviour
         
     }
 
+    private void LogCustomInput(string message)
+    {
+        if (LogInput)
+        {
+            Debug.Log(message);
+        }
+    }
+
     public void OnSelectRight(int playerIndex)
     {
-        Debug.Log("Player " + playerIndex + " selected right");
+        LogCustomInput("Player " + playerIndex + " selected right");
         UI_3D_Manager.ManageSelectRight(playerIndex);
     }
 
     public void OnSelectLeft(int playerIndex)
     {
-        Debug.Log("Player " + playerIndex + " selected left");
+        LogCustomInput("Player " + playerIndex + " selected left");
         UI_3D_Manager.ManageSelectLeft(playerIndex);
     }
 
     public void OnConfirmSelection(int playerIndex)
     {
-        Debug.Log("Player " + playerIndex + " confirmed selection");
+        LogCustomInput("Player " + playerIndex + " confirmed selection");
         UI_3D_Manager.ManageConfirmSelection(playerIndex);
     }
 
     public void OnCancelSelection(int playerIndex)
     {
-        Debug.Log("Player " + playerIndex + " canceled selection");
+        LogCustomInput("Player " + playerIndex + " canceled selection");
         UI_3D_Manager.ManageCancelSelection(playerIndex);
     }
 }
