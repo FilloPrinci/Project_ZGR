@@ -74,6 +74,6 @@ public class UI_CustomInputManager : MonoBehaviour
     public void OnCancelSelection(int playerIndex)
     {
         LogCustomInput("Player " + playerIndex + " canceled selection");
-        UI_3D_Manager.ManageCancelSelection(playerIndex);
+        UI_3D_Manager.ManageBackSelection(playerIndex);
     }
 }

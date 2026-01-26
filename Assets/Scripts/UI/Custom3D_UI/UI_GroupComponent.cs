@@ -8,7 +8,6 @@ public class UI_GroupComponent : MonoBehaviour
     public string GroupName;
 
     public List<UI_Component_3D> UIComponentList;
-    public UI_GroupComponent prevGroupComponent;
 
     public int ActiveComponentIndex = 0;
 
@@ -239,6 +238,18 @@ public class UI_GroupComponent : MonoBehaviour
             return;
         }
         
+    }
+
+    public void InitializeGroupLogic()
+    {
+        for (int i = 0; i < UIComponentList.Count; i++)
+        {
+            UI_Component_3D component = UIComponentList[i];
+            if (component.LogicComponent != null)
+            {
+                component.LogicComponent.Init();
+            }
+        }
     }
 
     public void RemoveGroupGraphics()
