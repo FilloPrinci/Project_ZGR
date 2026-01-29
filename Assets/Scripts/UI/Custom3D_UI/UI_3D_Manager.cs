@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 
@@ -14,8 +15,15 @@ enum SlectionDirection
 public class UI_3D_Manager : MonoBehaviour
 {
     public static UI_3D_Manager Instance { get; private set; }
-    public UI_GroupComponent Start_UI_GroupComponent;
 
+
+    
+    [Header("Overlay")]
+    public TextMeshProUGUI GroupName;
+    public TextMeshProUGUI SelectionName;
+
+    [Header("Settings")]
+    public UI_GroupComponent Start_UI_GroupComponent;
     public float backgroundSpacing = 1f;
 
     public float panelSpacing = 2.0f;
@@ -54,6 +62,7 @@ public class UI_3D_Manager : MonoBehaviour
             Current_UI_GroupCompoment.InitializeGroupLogic();
 
             UI_GroupComponent_Stack = new List<UI_GroupComponent>();
+            UpdateOverlay();
         }
     }
     // Update is called once per frame
@@ -84,16 +93,19 @@ public class UI_3D_Manager : MonoBehaviour
     public void ManageSelectRight(int playerIndex)
     {
         Current_UI_GroupCompoment.SelectRight(playerIndex);
+        UpdateOverlay();
     }
 
     public void ManageSelectLeft(int playerIndex)
     {
         Current_UI_GroupCompoment.SelectLeft(playerIndex);
+        UpdateOverlay();
     }
 
     public void ManageConfirmSelection(int playerIndex)
     {
         Current_UI_GroupCompoment.ConfirmSelection(playerIndex);
+        UpdateOverlay();
     }
 
     public void ManageBackSelection(int playerIndex)
@@ -117,6 +129,12 @@ public class UI_3D_Manager : MonoBehaviour
             Debug.Log("[ManageBackSelection] can't go back, no UI_Group_Component found in stack ");
         }
 
-              
+        UpdateOverlay();
+    }
+
+    void UpdateOverlay()
+    {
+        GroupName.text = Current_UI_GroupCompoment.GroupName;
+        SelectionName.text = Current_UI_GroupCompoment.GetCurrentSelectionName();
     }
 }

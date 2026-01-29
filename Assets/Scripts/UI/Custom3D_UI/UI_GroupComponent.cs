@@ -363,4 +363,8 @@ public class UI_GroupComponent : MonoBehaviour
         }
     }
 
+    public string GetCurrentSelectionName()
+    {
+        return UIComponentList[ActiveComponentIndex].ComponentName;
+    }
 }
