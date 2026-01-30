@@ -25,7 +25,6 @@ public class UI_3D_Manager : MonoBehaviour
     [Header("Settings")]
     public UI_GroupComponent Start_UI_GroupComponent;
     public float backgroundSpacing = 1f;
-
     public float panelSpacing = 2.0f;
     public float moveSpeed = 5.0f;
     public float panelScaleMultiplier;
@@ -33,10 +32,15 @@ public class UI_3D_Manager : MonoBehaviour
     public float iconScaleMultiplier;
     public float iconScaleSpeed;
 
+    [Header("Veichle Selection")]
+    public GameObject veichleSelectionPrefab;
+    public List<Transform> veichleSelectionPositionList;
+
     public bool debugMode = false;
 
     private UI_GroupComponent Current_UI_GroupCompoment;
     private List<UI_GroupComponent> UI_GroupComponent_Stack;
+    private List<GameObject> veichleSelectorInstanceList;
 
     private void Awake()
     {
@@ -136,5 +140,27 @@ public class UI_3D_Manager : MonoBehaviour
     {
         GroupName.text = Current_UI_GroupCompoment.GroupName;
         SelectionName.text = Current_UI_GroupCompoment.GetCurrentSelectionName();
+    }
+
+    public void StartVeichleSelection(int playersAmount = 1)
+    {
+        // Hide GroupComponent
+        Current_UI_GroupCompoment.MoveBack(backgroundSpacing);
+        UI_GroupComponent_Stack.Add(Current_UI_GroupCompoment);
+
+        // Show Veichle selection
+
+        if (veichleSelectorInstanceList.Count > 0) {
+            veichleSelectorInstanceList.Clear();
+        }
+        else
+        {
+            veichleSelectorInstanceList = new List<GameObject>();
+        }
+        
+        for (int i = 0; i < playersAmount; i++)
+        {
+            veichleSelectorInstanceList.Add(Instantiate(veichleSelectionPrefab, veichleSelectionPositionList[i]));
+        }
     }
 }

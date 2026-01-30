@@ -22,14 +22,14 @@ public class GameSettings : MonoBehaviour
     public static GameSettings Instance { get; private set; }
 
     // Input Settings
-
+    [Header("Input")]
     public InputMode inputMode;
     // TODO: to be implemented
     public bool useCustomMapping = false;
 
 
     // Video Settings
-
+    [Header("Video")]
     public bool showFPS = false;
     public FPSLimit fPSLimit;
     public bool useV_Sync = false;
