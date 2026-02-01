@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Button: UI_Logic_Component
 {
-    private UI_3D_Manager _manager;
+    protected UI_3D_Manager _manager;
 
 
     override

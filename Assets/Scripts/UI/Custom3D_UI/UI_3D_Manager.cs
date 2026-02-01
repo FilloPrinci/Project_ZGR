@@ -15,8 +15,6 @@ enum SlectionDirection
 public class UI_3D_Manager : MonoBehaviour
 {
     public static UI_3D_Manager Instance { get; private set; }
-
-
     
     [Header("Overlay")]
     public TextMeshProUGUI GroupName;
@@ -32,15 +30,29 @@ public class UI_3D_Manager : MonoBehaviour
     public float iconScaleMultiplier;
     public float iconScaleSpeed;
 
+    [Header("Camera")]
+    public GameObject mainCamera;
+    public float cameraMoveSpeed = 5f;
+    public float cameraRotateSpeed = 5f;
+    public Transform cameraDefaultPosition;
+    public Transform cameraVeichleSelectionPosition;
+
+
     [Header("Veichle Selection")]
     public GameObject veichleSelectionPrefab;
     public List<Transform> veichleSelectionPositionList;
+    
 
     public bool debugMode = false;
 
     private UI_GroupComponent Current_UI_GroupCompoment;
     private List<UI_GroupComponent> UI_GroupComponent_Stack;
     private List<GameObject> veichleSelectorInstanceList;
+
+    private RaceSettings _raceSettings;
+
+    private Transform desideredCameraPosition;
+    private float deltaTime;
 
     private void Awake()
     {
@@ -68,15 +80,43 @@ public class UI_3D_Manager : MonoBehaviour
             UI_GroupComponent_Stack = new List<UI_GroupComponent>();
             UpdateOverlay();
         }
+
+        _raceSettings = RaceSettings.Instance;
+        if(_raceSettings == null)
+        {
+            Debug.LogError("[UI_3D_Manager] RaceSettings instance not found!");
+        }
+
+        if(mainCamera != null && cameraDefaultPosition != null)
+        {
+            desideredCameraPosition = cameraDefaultPosition;
+
+            UpdateCameraPosition();
+        }
     }
     // Update is called once per frame
     void Update()
     {
-        if(debugMode)
+        deltaTime = Time.deltaTime;
+
+        if (debugMode)
         {
             Start_UI_GroupComponent.Setup(panelSpacing, moveSpeed, panelScaleMultiplier, panelScaleSpeed, iconScaleMultiplier, iconScaleSpeed);
+        }   
+    }
+
+    private void LateUpdate()
+    {
+        UpdateCameraPosition();
+    }
+
+    private void UpdateCameraPosition()
+    {
+        if(mainCamera != null)
+        {
+            mainCamera.transform.position = Utils.ExpDecay(mainCamera.transform.position, desideredCameraPosition.position, cameraMoveSpeed, deltaTime);
+            mainCamera.transform.rotation = Utils.ExpDecay(mainCamera.transform.rotation, desideredCameraPosition.rotation, cameraRotateSpeed, deltaTime);
         }
-        
     }
 
     public void NavigateTo(UI_GroupComponent nextGroupComponent)
@@ -144,23 +184,50 @@ public class UI_3D_Manager : MonoBehaviour
 
     public void StartVeichleSelection(int playersAmount = 1)
     {
+
+        if(_raceSettings != null)
+        {
+            if(playersAmount <2)
+            {
+                _raceSettings.OnSingleplayerRaceModeSelect();
+                _raceSettings.OnSinglePlayerSelect();
+            }
+            else
+            {
+                _raceSettings.OnMultiplayerRaceModeSelect();
+                _raceSettings.OnMultiplayerAmountSelect(playersAmount);
+            }
+            
+        }
+        else
+        {
+            Debug.LogError("[UI_3D_Manager] RaceSettings instance not found!");
+        }
+
         // Hide GroupComponent
         Current_UI_GroupCompoment.MoveBack(backgroundSpacing);
         UI_GroupComponent_Stack.Add(Current_UI_GroupCompoment);
 
         // Show Veichle selection
 
-        if (veichleSelectorInstanceList.Count > 0) {
-            veichleSelectorInstanceList.Clear();
+        if(veichleSelectorInstanceList == null)
+        {
+            veichleSelectorInstanceList = new List<GameObject>();
         }
         else
         {
-            veichleSelectorInstanceList = new List<GameObject>();
+            if (veichleSelectorInstanceList.Count > 0)
+            {
+                veichleSelectorInstanceList.Clear();
+            }
         }
         
         for (int i = 0; i < playersAmount; i++)
         {
             veichleSelectorInstanceList.Add(Instantiate(veichleSelectionPrefab, veichleSelectionPositionList[i]));
         }
+
+        // Move Camera
+        desideredCameraPosition = cameraVeichleSelectionPosition;
     }
 }

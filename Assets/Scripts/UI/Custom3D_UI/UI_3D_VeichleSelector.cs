@@ -6,6 +6,8 @@ using static UnityEngine.Rendering.RayTracingAccelerationStructure;
 public class UI_3D_VeichleSelector : MonoBehaviour
 {
     public int playerIndex = 0;
+    public float rotationSpeed = 5.0f;
+    public float veichleScale = 0.2f;
     public Transform veichleSpawnPosition;
     public bool selectionCompleted = false;
 
@@ -13,6 +15,8 @@ public class UI_3D_VeichleSelector : MonoBehaviour
     private List<GameObject> availableVeichles;
     private GameObject currentSelectedVeichleInstance;
     private int currentSelectedVeichleIndex = 0;
+
+    private float deltaTime;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -29,6 +33,18 @@ public class UI_3D_VeichleSelector : MonoBehaviour
 
             // spawn / show first veicchle
             currentSelectedVeichleInstance = Instantiate(availableVeichles[currentSelectedVeichleIndex], veichleSpawnPosition);
+            currentSelectedVeichleInstance.transform.localScale = Vector3.one * veichleScale;
+        }
+    }
+
+    private void Update()
+    {
+        deltaTime = Time.deltaTime;
+
+        // rotate veichle
+        if (currentSelectedVeichleInstance != null && !selectionCompleted)
+        {
+            currentSelectedVeichleInstance.transform.Rotate(Vector3.up, rotationSpeed * deltaTime);
         }
     }
 
@@ -36,6 +52,7 @@ public class UI_3D_VeichleSelector : MonoBehaviour
     {
         DestroyImmediate(currentSelectedVeichleInstance);
         currentSelectedVeichleInstance = Instantiate(availableVeichles[currentSelectedVeichleIndex], veichleSpawnPosition);
+        currentSelectedVeichleInstance.transform.localScale = Vector3.one * veichleScale;
     }
 
     public void SelectRight()

@@ -78,6 +78,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIndex: 0
+  rotationSpeed: 50
+  veichleScale: 0.2
   veichleSpawnPosition: {fileID: 1988229309433029797}
   selectionCompleted: 0
 --- !u!1 &2002919901296597830
