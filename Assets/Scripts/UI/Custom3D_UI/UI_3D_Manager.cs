@@ -12,6 +12,13 @@ enum SlectionDirection
     Down,
 }
 
+enum SelectionPhase
+{
+    Menu,
+    Veichle,
+    Track
+}
+
 public class UI_3D_Manager : MonoBehaviour
 {
     public static UI_3D_Manager Instance { get; private set; }
@@ -44,6 +51,8 @@ public class UI_3D_Manager : MonoBehaviour
     
 
     public bool debugMode = false;
+
+    private SelectionPhase selectionPhase = SelectionPhase.Menu;
 
     private UI_GroupComponent Current_UI_GroupCompoment;
     private List<UI_GroupComponent> UI_GroupComponent_Stack;
@@ -136,50 +145,140 @@ public class UI_3D_Manager : MonoBehaviour
 
     public void ManageSelectRight(int playerIndex)
     {
-        Current_UI_GroupCompoment.SelectRight(playerIndex);
-        UpdateOverlay();
+        if (selectionPhase == SelectionPhase.Menu)
+        {
+            if (Current_UI_GroupCompoment != null)
+            {
+                Current_UI_GroupCompoment.SelectRight(playerIndex);
+                UpdateOverlay();
+            }
+        }
+        else if (selectionPhase == SelectionPhase.Veichle) {
+            if (veichleSelectorInstanceList.Count > 0)
+            {
+                GameObject playerVeichleSelector = veichleSelectorInstanceList[playerIndex];
+                if (playerVeichleSelector != null) {
+                    playerVeichleSelector.GetComponent<UI_3D_VeichleSelector>().SelectRight();
+                }
+            }
+        }
+        
+        
     }
 
     public void ManageSelectLeft(int playerIndex)
     {
-        Current_UI_GroupCompoment.SelectLeft(playerIndex);
-        UpdateOverlay();
+        if (selectionPhase == SelectionPhase.Menu)
+        {
+            if (Current_UI_GroupCompoment != null)
+            {
+                Current_UI_GroupCompoment.SelectLeft(playerIndex);
+                UpdateOverlay();
+            }
+        }
+        else if (selectionPhase == SelectionPhase.Veichle)
+        {
+            if (veichleSelectorInstanceList.Count > 0) {
+                GameObject playerVeichleSelector = veichleSelectorInstanceList[playerIndex];
+                if (playerVeichleSelector != null)
+                {
+                    playerVeichleSelector.GetComponent<UI_3D_VeichleSelector>().SelectLeft();
+                }
+            }
+        }
     }
 
     public void ManageConfirmSelection(int playerIndex)
     {
-        Current_UI_GroupCompoment.ConfirmSelection(playerIndex);
-        UpdateOverlay();
+        if (selectionPhase == SelectionPhase.Menu)
+        {
+            if (Current_UI_GroupCompoment != null)
+            {
+                Current_UI_GroupCompoment.ConfirmSelection(playerIndex);
+                UpdateOverlay();
+            }
+        }
+        else if (selectionPhase == SelectionPhase.Veichle)
+        {
+            if (veichleSelectorInstanceList.Count > 0)
+            {
+                GameObject playerVeichleSelector = veichleSelectorInstanceList[playerIndex];
+                if (playerVeichleSelector != null)
+                {
+                    playerVeichleSelector.GetComponent<UI_3D_VeichleSelector>().ConfirmSelection();
+                }
+            }
+        }
     }
 
     public void ManageBackSelection(int playerIndex)
     {
-        if(UI_GroupComponent_Stack.Count != 0)
+        if(selectionPhase == SelectionPhase.Menu)
         {
-            // Remove current group
-            Current_UI_GroupCompoment.RemoveGroupGraphics();
+            if (UI_GroupComponent_Stack.Count != 0)
+            {
+                // Remove current group
+                if(Current_UI_GroupCompoment != null)
+                {
+                    Current_UI_GroupCompoment.RemoveGroupGraphics();
+                }
+                
 
-            // Show last one from stack
-            UI_GroupComponent lastUI_GroupComponent = UI_GroupComponent_Stack[UI_GroupComponent_Stack.Count - 1];
-            Current_UI_GroupCompoment = lastUI_GroupComponent;
-            Current_UI_GroupCompoment.BackFromSelection(playerIndex);
-            Current_UI_GroupCompoment.MoveForward(backgroundSpacing);
+                // Show last one from stack
+                UI_GroupComponent lastUI_GroupComponent = UI_GroupComponent_Stack[UI_GroupComponent_Stack.Count - 1];
+                Current_UI_GroupCompoment = lastUI_GroupComponent;
+                Current_UI_GroupCompoment.BackFromSelection(playerIndex);
+                Current_UI_GroupCompoment.MoveForward(backgroundSpacing);
 
-            // update Stack
-            UI_GroupComponent_Stack.RemoveAt(UI_GroupComponent_Stack.Count - 1);
+                // update Stack
+                UI_GroupComponent_Stack.RemoveAt(UI_GroupComponent_Stack.Count - 1);
+            }
+            else
+            {
+                Debug.Log("[ManageBackSelection] can't go back, no UI_Group_Component found in stack ");
+            }
+
+            UpdateOverlay();
         }
-        else
+        else if (selectionPhase == SelectionPhase.Veichle)
         {
-            Debug.Log("[ManageBackSelection] can't go back, no UI_Group_Component found in stack ");
+            if (veichleSelectorInstanceList.Count > 0)
+            {
+                GameObject playerVeichleSelector = veichleSelectorInstanceList[playerIndex];
+                if (playerVeichleSelector != null)
+                {
+                    playerVeichleSelector.GetComponent<UI_3D_VeichleSelector>().CancelSelection();
+                }
+            }
+        }
+    }
+
+    public void ManageBackFromVeichleSelection(int playerIndex)
+    {
+        if (veichleSelectorInstanceList.Count > 0)
+        {
+            for (int i = 0; i < veichleSelectorInstanceList.Count; i++)
+            {
+                DestroyImmediate(veichleSelectorInstanceList[i]);
+            }
+            selectionPhase = SelectionPhase.Menu;
+            ManageBackSelection(playerIndex);
         }
 
-        UpdateOverlay();
     }
 
     void UpdateOverlay()
     {
-        GroupName.text = Current_UI_GroupCompoment.GroupName;
-        SelectionName.text = Current_UI_GroupCompoment.GetCurrentSelectionName();
+        if (selectionPhase == SelectionPhase.Menu) {
+            GroupName.text = Current_UI_GroupCompoment.GroupName;
+            SelectionName.text = Current_UI_GroupCompoment.GetCurrentSelectionName();
+        }
+        else
+        {
+            GroupName.text = selectionPhase.ToString();
+            SelectionName.text = "";
+        }
+        
     }
 
     public void StartVeichleSelection(int playersAmount = 1)
@@ -207,6 +306,7 @@ public class UI_3D_Manager : MonoBehaviour
         // Hide GroupComponent
         Current_UI_GroupCompoment.MoveBack(backgroundSpacing);
         UI_GroupComponent_Stack.Add(Current_UI_GroupCompoment);
+        Current_UI_GroupCompoment = null;
 
         // Show Veichle selection
 
@@ -224,10 +324,16 @@ public class UI_3D_Manager : MonoBehaviour
         
         for (int i = 0; i < playersAmount; i++)
         {
-            veichleSelectorInstanceList.Add(Instantiate(veichleSelectionPrefab, veichleSelectionPositionList[i]));
+
+            GameObject veichleSelectionInstance = Instantiate(veichleSelectionPrefab, veichleSelectionPositionList[i]);
+            veichleSelectionInstance.GetComponent<UI_3D_VeichleSelector>().SetMainCamera(mainCamera);
+            veichleSelectionInstance.GetComponent<UI_3D_VeichleSelector>().playerIndex = i;
+            veichleSelectorInstanceList.Add(veichleSelectionInstance);
         }
 
         // Move Camera
         desideredCameraPosition = cameraVeichleSelectionPosition;
+
+        selectionPhase = SelectionPhase.Veichle;
     }
 }

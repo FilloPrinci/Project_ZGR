@@ -10,13 +10,21 @@ public class UI_3D_VeichleSelector : MonoBehaviour
     public float veichleScale = 0.2f;
     public Transform veichleSpawnPosition;
     public bool selectionCompleted = false;
+    public GameObject HUD;
+    public GameObject HUD_check;
 
     private RaceSettings _settings;
     private List<GameObject> availableVeichles;
     private GameObject currentSelectedVeichleInstance;
     private int currentSelectedVeichleIndex = 0;
+    private GameObject mainCamera;
 
     private float deltaTime;
+
+    public void SetMainCamera(GameObject mainCamera)
+    {
+        this.mainCamera = mainCamera;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -34,6 +42,11 @@ public class UI_3D_VeichleSelector : MonoBehaviour
             // spawn / show first veicchle
             currentSelectedVeichleInstance = Instantiate(availableVeichles[currentSelectedVeichleIndex], veichleSpawnPosition);
             currentSelectedVeichleInstance.transform.localScale = Vector3.one * veichleScale;
+
+            if (HUD != null) {
+                HUD.transform.position = veichleSpawnPosition.position;
+                HUD_check.SetActive(false);
+            }
         }
     }
 
@@ -46,6 +59,12 @@ public class UI_3D_VeichleSelector : MonoBehaviour
         {
             currentSelectedVeichleInstance.transform.Rotate(Vector3.up, rotationSpeed * deltaTime);
         }
+
+        // make HUD look at camera
+        if (this.mainCamera != null) {
+            HUD.transform.LookAt(this.mainCamera.transform);
+        }
+        
     }
 
     void RefreshVeichleInstance()
@@ -90,6 +109,7 @@ public class UI_3D_VeichleSelector : MonoBehaviour
             selectionCompleted = true;
 
             _settings.SetSelectedVeichleForPlayer(playerIndex, availableVeichles[currentSelectedVeichleIndex]);
+            HUD_check.SetActive(true);
         }
     }
 
@@ -98,10 +118,11 @@ public class UI_3D_VeichleSelector : MonoBehaviour
         if (selectionCompleted)
         {
             selectionCompleted = false;
+            HUD_check.SetActive(false);
         }
         else
         {
-            // TODO: get back to previous menu
+            // TODO call UI_3D_Manager.ManageBackFromVeichleSelection()
         }
     }
 
