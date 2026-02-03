@@ -14,6 +14,7 @@ public class UI_3D_VeichleSelector : MonoBehaviour
     public GameObject HUD_check;
 
     private RaceSettings _settings;
+    private UI_3D_Manager _manager;
     private List<GameObject> availableVeichles;
     private GameObject currentSelectedVeichleInstance;
     private int currentSelectedVeichleIndex = 0;
@@ -30,6 +31,7 @@ public class UI_3D_VeichleSelector : MonoBehaviour
     void Start()
     {
         _settings = RaceSettings.Instance;
+        
 
         if( _settings == null)
         {
@@ -48,6 +50,14 @@ public class UI_3D_VeichleSelector : MonoBehaviour
                 HUD_check.SetActive(false);
             }
         }
+
+        _manager = UI_3D_Manager.Instance;
+
+        if(_manager == null)
+        {
+            Debug.LogError("UI_3D_Manager instance not found!");
+        }
+
     }
 
     private void Update()
@@ -76,30 +86,38 @@ public class UI_3D_VeichleSelector : MonoBehaviour
 
     public void SelectRight()
     {
-        if(currentSelectedVeichleIndex < availableVeichles.Count - 1)
+        if (!selectionCompleted)
         {
-            currentSelectedVeichleIndex++;
-        }
-        else
-        {
-            currentSelectedVeichleIndex = 0;
-        }
+            if (currentSelectedVeichleIndex < availableVeichles.Count - 1)
+            {
+                currentSelectedVeichleIndex++;
+            }
+            else
+            {
+                currentSelectedVeichleIndex = 0;
+            }
 
-        RefreshVeichleInstance();
+            RefreshVeichleInstance();
+        }
+        
     }
 
 
     public void SelectLeft()
     {
-        if (currentSelectedVeichleIndex > 0)
+        if (!selectionCompleted)
         {
-            currentSelectedVeichleIndex--;
-        }
-        else { 
-            currentSelectedVeichleIndex = availableVeichles.Count - 1;
-        }
+            if (currentSelectedVeichleIndex > 0)
+            {
+                currentSelectedVeichleIndex--;
+            }
+            else
+            {
+                currentSelectedVeichleIndex = availableVeichles.Count - 1;
+            }
 
-        RefreshVeichleInstance();
+            RefreshVeichleInstance();
+        }
     }
 
     public void ConfirmSelection()
@@ -108,8 +126,9 @@ public class UI_3D_VeichleSelector : MonoBehaviour
         {
             selectionCompleted = true;
 
-            _settings.SetSelectedVeichleForPlayer(playerIndex, availableVeichles[currentSelectedVeichleIndex]);
+            _settings.OnVeichleSelect(playerIndex, currentSelectedVeichleIndex);
             HUD_check.SetActive(true);
+            _manager.OnVeichleSelectionReady();
         }
     }
 
@@ -122,7 +141,7 @@ public class UI_3D_VeichleSelector : MonoBehaviour
         }
         else
         {
-            // TODO call UI_3D_Manager.ManageBackFromVeichleSelection()
+            _manager.ManageBackFromVeichleSelection(playerIndex);
         }
     }
 

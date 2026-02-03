@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 enum SlectionDirection
@@ -263,6 +264,9 @@ public class UI_3D_Manager : MonoBehaviour
             }
             selectionPhase = SelectionPhase.Menu;
             ManageBackSelection(playerIndex);
+
+            // Move Camera
+            desideredCameraPosition = cameraDefaultPosition;
         }
 
     }
@@ -335,5 +339,29 @@ public class UI_3D_Manager : MonoBehaviour
         desideredCameraPosition = cameraVeichleSelectionPosition;
 
         selectionPhase = SelectionPhase.Veichle;
+    }
+
+    public void OnVeichleSelectionReady()
+    {
+        // check if all players are ready to proceed
+        bool canProceed = true;
+
+        for (int i = 0; i < veichleSelectorInstanceList.Count; i++)
+        {
+
+            if (!veichleSelectorInstanceList[i].GetComponent<UI_3D_VeichleSelector>().selectionCompleted)
+            {
+                canProceed = false;
+            }
+        }
+
+        // if all players are ready
+        if (canProceed)
+        {
+            // TODO: select track
+            // for now let's skip to race start
+            string raceTracSceneName = _raceSettings.GetSelectedRaceTrack();
+            SceneManager.LoadSceneAsync(raceTracSceneName);
+        }
     }
 }
