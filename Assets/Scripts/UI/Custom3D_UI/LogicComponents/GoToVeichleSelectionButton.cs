@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GoToVeichleSelectionButton : Button
 {
-    private int playersAmount = 1;
+    public int playersAmount = 1;
 
     override
     public void OnConfirmSelection()
@@ -11,6 +11,7 @@ public class GoToVeichleSelectionButton : Button
         if (_manager != null)
         {
             _manager.StartVeichleSelection(playersAmount);
+            
         }
     }
 

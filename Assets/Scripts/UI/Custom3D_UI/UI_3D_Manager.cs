@@ -290,7 +290,9 @@ public class UI_3D_Manager : MonoBehaviour
 
         if(_raceSettings != null)
         {
-            if(playersAmount <2)
+            _raceSettings.ResetSettings();
+
+            if (playersAmount <2)
             {
                 _raceSettings.OnSingleplayerRaceModeSelect();
                 _raceSettings.OnSinglePlayerSelect();
@@ -335,8 +337,11 @@ public class UI_3D_Manager : MonoBehaviour
             veichleSelectorInstanceList.Add(veichleSelectionInstance);
         }
 
+        Transform updatedVeichleCameraPosition = cameraVeichleSelectionPosition;
+        updatedVeichleCameraPosition.position = CalculateCameraVeichlePosition(veichleSelectionPositionList[0].position, veichleSelectionPositionList[playersAmount - 1].position);
+
         // Move Camera
-        desideredCameraPosition = cameraVeichleSelectionPosition;
+        desideredCameraPosition = updatedVeichleCameraPosition;
 
         selectionPhase = SelectionPhase.Veichle;
     }
@@ -363,5 +368,13 @@ public class UI_3D_Manager : MonoBehaviour
             string raceTracSceneName = _raceSettings.GetSelectedRaceTrack();
             SceneManager.LoadSceneAsync(raceTracSceneName);
         }
+    }
+
+    private Vector3 CalculateCameraVeichlePosition(Vector3 firstPosition, Vector3 lastPosition)
+    {
+        Vector3 origin = firstPosition;
+        Vector3 avgPosition = (lastPosition - firstPosition) / 2;
+        Vector3 result = new Vector3(cameraVeichleSelectionPosition.position.x + origin.x + avgPosition.x, cameraVeichleSelectionPosition.position.y, cameraVeichleSelectionPosition.position.z);
+        return result;
     }
 }
