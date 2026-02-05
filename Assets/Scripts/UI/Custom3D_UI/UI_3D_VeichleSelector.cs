@@ -68,13 +68,7 @@ public class UI_3D_VeichleSelector : MonoBehaviour
         if (currentSelectedVeichleInstance != null && !selectionCompleted)
         {
             currentSelectedVeichleInstance.transform.Rotate(Vector3.up, rotationSpeed * deltaTime);
-        }
-
-        // make HUD look at camera
-        if (this.mainCamera != null) {
-            HUD.transform.LookAt(this.mainCamera.transform);
-        }
-        
+        }   
     }
 
     void RefreshVeichleInstance()

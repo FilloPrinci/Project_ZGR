@@ -61,7 +61,8 @@ public class UI_3D_Manager : MonoBehaviour
 
     private RaceSettings _raceSettings;
 
-    private Transform desideredCameraPosition;
+    private Vector3 desideredCameraPosition;
+    private Quaternion desideredCameraRotation;
     private float deltaTime;
 
     private void Awake()
@@ -99,7 +100,8 @@ public class UI_3D_Manager : MonoBehaviour
 
         if(mainCamera != null && cameraDefaultPosition != null)
         {
-            desideredCameraPosition = cameraDefaultPosition;
+            desideredCameraPosition = cameraDefaultPosition.position;
+            desideredCameraRotation = cameraDefaultPosition.rotation;
 
             UpdateCameraPosition();
         }
@@ -124,8 +126,8 @@ public class UI_3D_Manager : MonoBehaviour
     {
         if(mainCamera != null)
         {
-            mainCamera.transform.position = Utils.ExpDecay(mainCamera.transform.position, desideredCameraPosition.position, cameraMoveSpeed, deltaTime);
-            mainCamera.transform.rotation = Utils.ExpDecay(mainCamera.transform.rotation, desideredCameraPosition.rotation, cameraRotateSpeed, deltaTime);
+            mainCamera.transform.position = Utils.ExpDecay(mainCamera.transform.position, desideredCameraPosition, cameraMoveSpeed, deltaTime);
+            mainCamera.transform.rotation = Utils.ExpDecay(mainCamera.transform.rotation,desideredCameraRotation, cameraRotateSpeed, deltaTime);
         }
     }
 
@@ -266,7 +268,8 @@ public class UI_3D_Manager : MonoBehaviour
             ManageBackSelection(playerIndex);
 
             // Move Camera
-            desideredCameraPosition = cameraDefaultPosition;
+            desideredCameraPosition = cameraDefaultPosition.position;
+            desideredCameraRotation = cameraDefaultPosition.rotation;
         }
 
     }
@@ -337,11 +340,13 @@ public class UI_3D_Manager : MonoBehaviour
             veichleSelectorInstanceList.Add(veichleSelectionInstance);
         }
 
-        Transform updatedVeichleCameraPosition = cameraVeichleSelectionPosition;
-        updatedVeichleCameraPosition.position = CalculateCameraVeichlePosition(veichleSelectionPositionList[0].position, veichleSelectionPositionList[playersAmount - 1].position);
+       
+        Vector3 updatedVeichleCameraPosition = cameraVeichleSelectionPosition.position;
+        updatedVeichleCameraPosition = CalculateCameraVeichlePosition(veichleSelectionPositionList[0].position, veichleSelectionPositionList[playersAmount - 1].position);
 
         // Move Camera
         desideredCameraPosition = updatedVeichleCameraPosition;
+        desideredCameraRotation = cameraVeichleSelectionPosition.rotation;
 
         selectionPhase = SelectionPhase.Veichle;
     }
