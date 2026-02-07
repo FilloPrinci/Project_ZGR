@@ -3,15 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+public enum GroupScrollAxis
+{
+    Horizontal,
+    Vertical
+}
+
 public class UI_GroupComponent : MonoBehaviour
 {
     public string GroupName;
+    public GroupScrollAxis groupScrollAxis = GroupScrollAxis.Horizontal;
 
     public List<UI_Component_3D> UIComponentList;
 
     public int ActiveComponentIndex = 0;
 
     private bool selectionConfirmed = false;
+    public bool inSubMenu = false;
+
+    private UI_GroupComponent activeGroupSelector;
 
     private Vector3 position;
     private Vector3 newPosition;
@@ -90,7 +100,7 @@ public class UI_GroupComponent : MonoBehaviour
 
                 // refresh positions
                 graphicComponent.GetInstantiatedPanel().transform.localPosition = currentPositionList[i];
-                graphicComponent.GetInstantiatedIcon().transform.localPosition = currentPositionList[i] + Vector3.forward * graphicComponent.IconOffset.z;
+                graphicComponent.GetInstantiatedIcon().transform.localPosition = currentPositionList[i] + graphicComponent.IconOffset;
 
                 //refresh panel and icon size
                 currentPanelSizeList[i] = Utils.ExpDecay(currentPanelSizeList[i], newPanelSizeList[i], panelScaleSpeed, deltaTime);
@@ -98,12 +108,12 @@ public class UI_GroupComponent : MonoBehaviour
 
                 if (ActiveComponentIndex == i)
                 {
-                    newIconSizeList[i] = iconScaleMultiplier;
+                    newIconSizeList[i] = graphicComponent.IconSize * iconScaleMultiplier;
                     newPanelSizeList[i] = panelScaleMultiplier;
                 }
                 else
                 {
-                    newIconSizeList[i] = 1f;
+                    newIconSizeList[i] = graphicComponent.IconSize;
                     newPanelSizeList[i] = 1f;
                 }
 
@@ -191,8 +201,20 @@ public class UI_GroupComponent : MonoBehaviour
         */
     }
 
-    public void InstantiateGroupGraphics()
+    public void InstantiateGroupGraphics(Vector3? newOriginPosition = null)
     {
+        Vector3 originPosition;
+
+        if(newOriginPosition != null)
+        {
+            originPosition = (Vector3)newOriginPosition;
+        }
+        else
+        {
+            originPosition = Vector3.zero;
+        }
+
+
         if (UIComponentList != null && UIComponentList.Count > 0)
         {
             positionList = new List<Vector3>();
@@ -208,11 +230,21 @@ public class UI_GroupComponent : MonoBehaviour
                 UI_Component_3D component = UIComponentList[i];
                 UI_GraphicComponent graphicComponent = component.GraphicComponent;
 
-                Vector3 newInstancePosition = Vector3.right * i * groupSpacing;
+                Vector3 newInstancePosition;
+
+                if (groupScrollAxis == GroupScrollAxis.Horizontal)
+                {
+                    newInstancePosition = originPosition + (Vector3.right * i * groupSpacing);
+                }
+                else
+                {
+                    newInstancePosition = originPosition + (Vector3.down * i * groupSpacing);
+                }
+
 
                 if (graphicComponent != null)
                 {
-                    
+
                     if (graphicComponent.Panel != null)
                     {
                         graphicComponent.SetInstantiatedPanel(Instantiate(graphicComponent.Panel, newInstancePosition, transform.rotation, transform));
@@ -281,9 +313,13 @@ public class UI_GroupComponent : MonoBehaviour
 
     public void SelectRight(int playerIndex)
     {
-        
-        
-        if(ActiveComponentIndex == positionList.Count - 1)
+        if (groupScrollAxis == GroupScrollAxis.Vertical)
+        {
+            Debug.LogWarning("Trying to select right on a vertical group component, this is not allowed");
+            return;
+        }
+
+        if (ActiveComponentIndex == positionList.Count - 1)
         {
             //don't wrap around
             
@@ -303,7 +339,11 @@ public class UI_GroupComponent : MonoBehaviour
 
     public void SelectLeft(int playerIndex)
     {
-
+        if(groupScrollAxis == GroupScrollAxis.Vertical)
+        {
+            Debug.LogWarning("Trying to select left on a vertical group component, this is not allowed");
+            return;
+        }
 
         if (ActiveComponentIndex == 0)
         {
@@ -323,6 +363,70 @@ public class UI_GroupComponent : MonoBehaviour
         SelectComponent();
     }
 
+    public void SelectUp(int playerIndex)
+    {
+        if(activeGroupSelector != null)
+        {
+            activeGroupSelector.SelectUp(playerIndex);
+        }
+        else
+        {
+            if (groupScrollAxis == GroupScrollAxis.Horizontal)
+            {
+                Debug.LogWarning("Trying to select up on a horizontal group component, this is not allowed");
+                return;
+            }
+            Debug.Log("Select up");
+            if (ActiveComponentIndex == 0)
+            {
+                //don't wrap around
+
+                return;
+            }
+            else
+            {
+                ActiveComponentIndex--;
+                for (int i = 0; i < positionList.Count; i++)
+                {
+                    positionList[i] += Vector3.up * -groupSpacing;
+                }
+            }
+
+
+        }
+    }
+
+    public void SelectDown(int playerIndex)
+    {
+        if (activeGroupSelector != null)
+        {
+            activeGroupSelector.SelectDown(playerIndex);
+        }
+        else
+        {
+            if (groupScrollAxis == GroupScrollAxis.Horizontal)
+            {
+                Debug.LogWarning("Trying to select down on a horizontal group component, this is not allowed");
+                return;
+            }
+            Debug.Log("Select down");
+            if (ActiveComponentIndex == positionList.Count - 1)
+            {
+                //don't wrap around
+
+                return;
+            }
+            else
+            {
+                ActiveComponentIndex++;
+                for (int i = 0; i < positionList.Count; i++)
+                {
+                    positionList[i] += Vector3.up * groupSpacing;
+                }
+            }
+        }
+    }
+
     public void SelectComponent()
     {
         UI_Logic_Component logicComponent = UIComponentList[ActiveComponentIndex].LogicComponent;
@@ -338,24 +442,74 @@ public class UI_GroupComponent : MonoBehaviour
         {
             selectionConfirmed = true;
             HideUnselectedComponents();
-            UI_Logic_Component logicComponent = UIComponentList[ActiveComponentIndex].LogicComponent;
-            if (logicComponent != null) {
-                logicComponent.OnConfirmSelection();
+
+            UI_Component_3D selected_UI_Component = UIComponentList[ActiveComponentIndex];
+
+            if(selected_UI_Component.IsSelector() && !inSubMenu)
+            {
+                // show selector group
+                selected_UI_Component.selectorComponent.Setup(
+                    this.groupSpacing / 2,
+                    this.moveSpeed,
+                    this.panelScaleMultiplier,
+                    this.panelScaleSpeed,
+                    this.iconScaleMultiplier,
+                    this.iconScaleSpeed
+                    );
+                selected_UI_Component.selectorComponent.InstantiateGroupGraphics(position + (Vector3.right * groupSpacing));
+                activeGroupSelector = selected_UI_Component.selectorComponent;
+                inSubMenu = true;
+            }
+            else 
+            {
+                // execute logic
+                UI_Logic_Component logicComponent = UIComponentList[ActiveComponentIndex].LogicComponent;
+                if (logicComponent != null)
+                {
+                    logicComponent.OnConfirmSelection();
+                }
             }
         }
         else
         {
-            Debug.LogWarning("Selection is already confirmed");
+            UI_Component_3D selected_UI_Component = UIComponentList[ActiveComponentIndex];
+
+            if (selected_UI_Component.IsSelector() && inSubMenu)
+            {
+                // confirm selection in active subgroup
+                selected_UI_Component.selectorComponent.ConfirmSelection(playerIndex);
+            }
+            else
+            {
+                Debug.LogWarning("Selection is already confirmed");
+            }
         }
 
+    }
+
+    public void BackFromSubMenu(int playerIndex)
+    {
+        if (selectionConfirmed)
+        {
+            UI_Component_3D selected_UI_Component = UIComponentList[ActiveComponentIndex];
+
+            if (selected_UI_Component.IsSelector() && inSubMenu)
+            {
+                // back from active subgroup
+                selected_UI_Component.selectorComponent.RemoveGroupGraphics();
+                activeGroupSelector = null;
+                inSubMenu = false;
+                selectionConfirmed = false;
+            }
+        }
     }
 
     public void BackFromSelection(int playerIndex)
     {
         if (selectionConfirmed)
         {
-            selectionConfirmed = false;
-            ShowUnselectedComponents();
+                selectionConfirmed = false;
+                ShowUnselectedComponents();
         }
         else
         {

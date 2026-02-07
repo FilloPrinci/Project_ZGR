@@ -27,7 +27,7 @@ public class UI_CustomPlayerInput : MonoBehaviour
         
     }
 
-    public void Select(InputAction.CallbackContext context)
+    public void SelectHorizontal(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
@@ -41,6 +41,25 @@ public class UI_CustomPlayerInput : MonoBehaviour
                 else
                 {
                     UI_InputManagerInstance.OnSelectLeft(playerIndex);
+                }
+            }
+        }
+    }
+
+    public void SelectVerticall(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            float value = context.ReadValue<float>();
+            if (value != 0)
+            {
+                if (value > 0)
+                {
+                    UI_InputManagerInstance.OnSelectUp(playerIndex);
+                }
+                else
+                {
+                    UI_InputManagerInstance.OnSelectDown(playerIndex);
                 }
             }
         }

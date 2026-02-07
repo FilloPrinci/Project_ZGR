@@ -60,6 +60,7 @@ public class UI_3D_Manager : MonoBehaviour
     private List<GameObject> veichleSelectorInstanceList;
 
     private RaceSettings _raceSettings;
+    private GameSettings _gameSettings;
 
     private Vector3 desideredCameraPosition;
     private Quaternion desideredCameraRotation;
@@ -98,7 +99,13 @@ public class UI_3D_Manager : MonoBehaviour
             Debug.LogError("[UI_3D_Manager] RaceSettings instance not found!");
         }
 
-        if(mainCamera != null && cameraDefaultPosition != null)
+        _gameSettings = GameSettings.Instance;
+        if(_gameSettings == null)
+        {
+            Debug.LogError("[UI_3D_Manager] GameSettings instance not found!");
+        }
+
+        if (mainCamera != null && cameraDefaultPosition != null)
         {
             desideredCameraPosition = cameraDefaultPosition.position;
             desideredCameraRotation = cameraDefaultPosition.rotation;
@@ -191,6 +198,31 @@ public class UI_3D_Manager : MonoBehaviour
         }
     }
 
+    public void ManageSelectUp(int playerIndex)
+    {
+        if (selectionPhase == SelectionPhase.Menu)
+        {
+            if (Current_UI_GroupCompoment != null)
+            {
+                Current_UI_GroupCompoment.SelectUp(playerIndex);
+                UpdateOverlay();
+            }
+        }
+    }
+
+    public void ManageSelectDown(int playerIndex)
+    {
+        if (selectionPhase == SelectionPhase.Menu)
+        {
+            if (Current_UI_GroupCompoment != null)
+            {
+                Current_UI_GroupCompoment.SelectDown(playerIndex);
+                UpdateOverlay();
+            }
+        }
+    }
+
+
     public void ManageConfirmSelection(int playerIndex)
     {
         if (selectionPhase == SelectionPhase.Menu)
@@ -218,6 +250,16 @@ public class UI_3D_Manager : MonoBehaviour
     {
         if(selectionPhase == SelectionPhase.Menu)
         {
+            if(Current_UI_GroupCompoment != null)
+            {
+                if (Current_UI_GroupCompoment.inSubMenu)
+                {
+                    Current_UI_GroupCompoment.BackFromSubMenu(playerIndex);
+                    UpdateOverlay();
+                    return;
+                }
+            }
+
             if (UI_GroupComponent_Stack.Count != 0)
             {
                 // Remove current group
