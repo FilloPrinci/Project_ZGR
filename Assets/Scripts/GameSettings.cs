@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public enum InputMode
 {
@@ -47,6 +48,12 @@ public class GameSettings : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             LoadSettings();
+
+            if(inputMode == InputMode.GamepadOnly && !IsGamepadAvailable())
+            {
+                Debug.LogWarning("Gamepad mode selected but no gamepads detected. Defaulting to Keyboard.");
+                inputMode = InputMode.KeyboardOnly;
+            }
         }
         else
         {
@@ -58,13 +65,18 @@ public class GameSettings : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     { 
-        ApplySettings();
+        //ApplySettings();
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public bool IsGamepadAvailable()
+    {
+        return Gamepad.all.Count > 0;
     }
 
     public void SaveSettings()
@@ -80,7 +92,7 @@ public class GameSettings : MonoBehaviour
 
     public void LoadSettings()
     {
-        inputMode = (InputMode)PlayerPrefs.GetInt("InputMode", 0);
+        //inputMode = (InputMode)PlayerPrefs.GetInt("InputMode", 0);
         useCustomMapping = PlayerPrefs.GetInt("UseCustomMapping", 0) == 1;
         showFPS = PlayerPrefs.GetInt("ShowFPS", 0) == 1;
         fPSLimit = (FPSLimit)PlayerPrefs.GetInt("FPSLimit", 0);

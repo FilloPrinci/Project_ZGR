@@ -39,10 +39,12 @@ public class UI_CustomInputManager : MonoBehaviour
                 if (_gameSettings.inputMode == InputMode.GamepadOnly)
                 {
                     inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Gamepad", Gamepad.all[i]);
+                    Debug.Log("Player " + i + " assigned to gamepad: " + Gamepad.all[i].displayName);
                 }
                 else if (_gameSettings.inputMode == InputMode.KeyboardOnly)
                 {
-                    inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Keyboard&Mouse");
+                    inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Keyboard&Mouse", Keyboard.current);
+                    Debug.Log("Player " + i + " is using Keyboard");
                 }
 
                 inputManager.GetComponent<UI_CustomPlayerInput>().playerIndex = i;

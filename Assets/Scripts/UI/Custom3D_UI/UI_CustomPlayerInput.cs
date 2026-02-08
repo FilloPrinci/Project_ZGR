@@ -29,8 +29,10 @@ public class UI_CustomPlayerInput : MonoBehaviour
 
     public void SelectHorizontal(InputAction.CallbackContext context)
     {
+
         if (context.performed)
         {
+
             float value = context.ReadValue<float>();
             if (value != 0)
             {
@@ -50,6 +52,7 @@ public class UI_CustomPlayerInput : MonoBehaviour
     {
         if (context.performed)
         {
+
             float value = context.ReadValue<float>();
             if (value != 0)
             {
