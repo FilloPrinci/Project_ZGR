@@ -2007,9 +2007,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1014520105036327642, guid: e4d5218d002e6ba469e08b661dea6809, type: 3}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[0].GraphicComponent.text
+      value: Keyboard
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[1].GraphicComponent.Icon
       value: 
       objectReference: {fileID: 1014520105036327642, guid: e4d5218d002e6ba469e08b661dea6809, type: 3}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[1].GraphicComponent.text
+      value: Controller
+      objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[2].GraphicComponent.Icon
       value: 
@@ -2035,6 +2043,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1425986839947724955, guid: 67cf72e6e06647a47b4e6b73bbe7be45, type: 3}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[0].GraphicComponent.TextGUI
+      value: 
+      objectReference: {fileID: 8369334184204427710, guid: e5b6d52b70db52242a183791bfccd584, type: 3}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[1].GraphicComponent.TextGUI
+      value: 
+      objectReference: {fileID: 8369334184204427710, guid: e5b6d52b70db52242a183791bfccd584, type: 3}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[0].GraphicComponent.IconSize
       value: 0.5
       objectReference: {fileID: 0}
@@ -2059,11 +2075,27 @@ PrefabInstance:
       value: -0.2
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[0].GraphicComponent.TextOffset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[0].GraphicComponent.TextOffset.z
+      value: -0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[1].GraphicComponent.IconOffset.x
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[1].GraphicComponent.IconOffset.z
+      value: -0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[1].GraphicComponent.TextOffset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[1].GraphicComponent.TextOffset.z
       value: -0.2
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}

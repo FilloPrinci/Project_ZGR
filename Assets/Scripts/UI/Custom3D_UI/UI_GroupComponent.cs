@@ -102,6 +102,11 @@ public class UI_GroupComponent : MonoBehaviour
                 graphicComponent.GetInstantiatedPanel().transform.localPosition = currentPositionList[i];
                 graphicComponent.GetInstantiatedIcon().transform.localPosition = currentPositionList[i] + graphicComponent.IconOffset;
 
+                if(graphicComponent.GetInstantiatedText() != null)
+                {
+                    graphicComponent.GetInstantiatedText().transform.localPosition = currentPositionList[i] + graphicComponent.TextOffset;
+                }
+
                 //refresh panel and icon size
                 currentPanelSizeList[i] = Utils.ExpDecay(currentPanelSizeList[i], newPanelSizeList[i], panelScaleSpeed, deltaTime);
                 currentIconSizeList[i] = Utils.ExpDecay(currentIconSizeList[i], newIconSizeList[i], iconScaleSpeed, deltaTime);
@@ -145,6 +150,10 @@ public class UI_GroupComponent : MonoBehaviour
 
                     graphicComponent.GetInstantiatedPanel().SetActive(false);
                     graphicComponent.GetInstantiatedIcon().SetActive(false);
+                    if(graphicComponent.GetInstantiatedText() != null)
+                    {
+                        graphicComponent.GetInstantiatedText().SetActive(false);
+                    }
                 }
             }
         }
@@ -253,6 +262,11 @@ public class UI_GroupComponent : MonoBehaviour
                     {
                         graphicComponent.SetInstantiatedIcon(Instantiate(graphicComponent.Icon, newInstancePosition + Vector3.forward * graphicComponent.IconOffset.z, transform.rotation, transform));
                     }
+                    if(graphicComponent.TextGUI != null)
+                    {
+                        graphicComponent.SetInstantiatedText(Instantiate(graphicComponent.TextGUI, newInstancePosition + graphicComponent.TextOffset, transform.rotation, transform));
+                        graphicComponent.SetTextString(graphicComponent.text);
+                    }
                 }
 
                 positionList.Add(newInstancePosition);
@@ -299,6 +313,10 @@ public class UI_GroupComponent : MonoBehaviour
                 if (graphicComponent.GetInstantiatedIcon() != null)
                 {
                     Destroy(graphicComponent.GetInstantiatedIcon());
+                }
+                if (graphicComponent.GetInstantiatedText() != null)
+                {
+                    Destroy(graphicComponent.GetInstantiatedText());
                 }
             }
         }
