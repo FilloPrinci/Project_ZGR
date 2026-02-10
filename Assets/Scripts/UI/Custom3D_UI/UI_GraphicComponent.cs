@@ -71,7 +71,7 @@ public class UI_GraphicComponent
     {
         if (instantiatedText != null)
         {
-            TextMeshProUGUI textMeshProUGUI = instantiatedText.GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI textMeshProUGUI = instantiatedText.GetComponentInChildren<TextMeshProUGUI>();
             if (textMeshProUGUI != null)
             {
                 textMeshProUGUI.text = text;

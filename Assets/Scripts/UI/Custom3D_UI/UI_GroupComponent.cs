@@ -476,6 +476,7 @@ public class UI_GroupComponent : MonoBehaviour
                     );
                 selected_UI_Component.selectorComponent.InstantiateGroupGraphics(position + (Vector3.right * groupSpacing));
                 activeGroupSelector = selected_UI_Component.selectorComponent;
+                selected_UI_Component.selectorComponent.ResetSelection();
                 inSubMenu = true;
             }
             else 
@@ -486,6 +487,8 @@ public class UI_GroupComponent : MonoBehaviour
                 {
                     logicComponent.OnConfirmSelection();
                 }
+
+                UIComponentList[ActiveComponentIndex].ExecuteAction();
             }
         }
         else
@@ -538,5 +541,11 @@ public class UI_GroupComponent : MonoBehaviour
     public string GetCurrentSelectionName()
     {
         return UIComponentList[ActiveComponentIndex].ComponentName;
+    }
+
+    private void ResetSelection()
+    {
+        selectionConfirmed = false;
+        ActiveComponentIndex = 0;
     }
 }

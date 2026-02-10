@@ -1,5 +1,7 @@
 using UnityEngine;
+using UnityEngine.Events;
 
+[System.Serializable]
 public class Button: UI_Logic_Component
 {
     protected UI_3D_Manager _manager;
@@ -26,7 +28,10 @@ public class Button: UI_Logic_Component
     override
     public void OnSelection()
     {
-
+        if (onConfirm != null)
+        {
+            onConfirm.Invoke();
+        }
     }
 
 }
