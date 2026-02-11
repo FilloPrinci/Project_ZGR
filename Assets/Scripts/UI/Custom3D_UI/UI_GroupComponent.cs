@@ -482,13 +482,19 @@ public class UI_GroupComponent : MonoBehaviour
             else 
             {
                 // execute logic
-                UI_Logic_Component logicComponent = UIComponentList[ActiveComponentIndex].LogicComponent;
-                if (logicComponent != null)
+
+                Debug.Log("Executing logic for" + GroupName);
+
+                if(groupScrollAxis != GroupScrollAxis.Vertical)
                 {
-                    logicComponent.OnConfirmSelection();
+                    UI_Logic_Component logicComponent = UIComponentList[ActiveComponentIndex].LogicComponent;
+                    if (logicComponent != null)
+                    {
+                        logicComponent.OnConfirmSelection();
+                    }
                 }
 
-                UIComponentList[ActiveComponentIndex].ExecuteAction();
+                selected_UI_Component.ExecuteAction();
             }
         }
         else
@@ -510,6 +516,8 @@ public class UI_GroupComponent : MonoBehaviour
 
     public void BackFromSubMenu(int playerIndex)
     {
+        Debug.Log("BackFromSubMenu for" + GroupName);
+
         if (selectionConfirmed)
         {
             UI_Component_3D selected_UI_Component = UIComponentList[ActiveComponentIndex];
@@ -527,6 +535,8 @@ public class UI_GroupComponent : MonoBehaviour
 
     public void BackFromSelection(int playerIndex)
     {
+        Debug.Log("BackFromSelection for" + GroupName);
+
         if (selectionConfirmed)
         {
                 selectionConfirmed = false;

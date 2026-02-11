@@ -26,32 +26,7 @@ public class UI_CustomInputManager : MonoBehaviour
 
         if(UI_3D_Manager != null)
         {
-            playerInputManagers = new List<GameObject>();
-
-            int playersAmount = GetInputAmount();
-            maxPlayers = playersAmount;
-
-            for (int i = 0; i < maxPlayers; i++)
-            {
-                GameObject inputManager = Instantiate(playerInputPrefab, transform);
-                inputManager.name = "PlayerInputManager_" + i;
-
-                if (_gameSettings.inputMode == InputMode.GamepadOnly)
-                {
-                    inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Gamepad", Gamepad.all[i]);
-                    Debug.Log("Player " + i + " assigned to gamepad: " + Gamepad.all[i].displayName);
-                }
-                else if (_gameSettings.inputMode == InputMode.KeyboardOnly)
-                {
-                    inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Keyboard&Mouse", Keyboard.current);
-                    Debug.Log("Player " + i + " is using Keyboard");
-                }
-
-                inputManager.GetComponent<UI_CustomPlayerInput>().playerIndex = i;
-                inputManager.GetComponent<UI_CustomPlayerInput>().UI_InputManager = this.gameObject;
-                inputManager.GetComponent<UI_CustomPlayerInput>().Initialize();
-                playerInputManagers.Add(inputManager);
-            }
+            UpdateInputSettings();
         }
         else
         {
@@ -90,19 +65,43 @@ public class UI_CustomInputManager : MonoBehaviour
 
     public void UpdateInputSettings()
     {
-        if (playerInputManagers != null)
+        if(playerInputManagers == null)
+        {
+            playerInputManagers = new List<GameObject>();
+        }
+        else
         {
             foreach (GameObject inputManager in playerInputManagers)
             {
-                if (_gameSettings.inputMode == InputMode.GamepadOnly)
-                {
-                    inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Gamepad");
-                }
-                else if (_gameSettings.inputMode == InputMode.KeyboardOnly)
-                {
-                    inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Keyboard&Mouse");
-                }
+                DestroyImmediate(inputManager);
             }
+
+            playerInputManagers.Clear();
+        }
+
+        int playersAmount = GetInputAmount();
+        maxPlayers = playersAmount;
+
+        for (int i = 0; i < maxPlayers; i++)
+        {
+            GameObject inputManager = Instantiate(playerInputPrefab, transform);
+            inputManager.name = "PlayerInputManager_" + i;
+
+            if (_gameSettings.inputMode == InputMode.GamepadOnly)
+            {
+                inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Gamepad", Gamepad.all[i]);
+                Debug.Log("Player " + i + " assigned to gamepad: " + Gamepad.all[i].displayName);
+            }
+            else if (_gameSettings.inputMode == InputMode.KeyboardOnly)
+            {
+                inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Keyboard&Mouse", Keyboard.current);
+                Debug.Log("Player " + i + " is using Keyboard");
+            }
+
+            inputManager.GetComponent<UI_CustomPlayerInput>().playerIndex = i;
+            inputManager.GetComponent<UI_CustomPlayerInput>().UI_InputManager = this.gameObject;
+            inputManager.GetComponent<UI_CustomPlayerInput>().Initialize();
+            playerInputManagers.Add(inputManager);
         }
     }
 

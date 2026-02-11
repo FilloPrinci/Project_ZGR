@@ -148,4 +148,16 @@ public class GameSettings : MonoBehaviour
 
         Debug.Log($"Settings Applied: VSync = {QualitySettings.vSyncCount}, Target FPS = {Application.targetFrameRate}");
     }
+
+    public void ApplyInputSettings(UI_CustomInputManager inputManager)
+    {
+        Debug.Log("Applying new input settings...");
+
+        if (inputManager != null) 
+        {
+            inputManager.UpdateInputSettings();
+        }
+
+        Debug.Log("InputSettings applyed (" + inputMode + ")");
+    }
 }
