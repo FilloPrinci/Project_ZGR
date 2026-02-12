@@ -40,7 +40,9 @@ public class LogicActions : MonoBehaviour
 
 
     #region GameSettings
-    
+
+    #region Input
+
     public void SetInputModeGamepad()
     {
         int gamepadAmount = Gamepad.all.Count;
@@ -67,6 +69,20 @@ public class LogicActions : MonoBehaviour
             gameSettings.ApplyInputSettings(uI_CustomInputManager);
         }
     }
+
+    #endregion
+
+    #region Video
+
+    public void SetResolutionHD()
+    {
+        if(gameSettings != null)
+        {
+
+        }
+    }
+
+    #endregion
 
     #endregion
 }

@@ -530,6 +530,8 @@ public class UI_GroupComponent : MonoBehaviour
                 inSubMenu = false;
                 selectionConfirmed = false;
             }
+
+            ShowUnselectedComponents();
         }
     }
 
