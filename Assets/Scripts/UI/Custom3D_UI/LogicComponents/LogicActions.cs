@@ -78,7 +78,95 @@ public class LogicActions : MonoBehaviour
     {
         if(gameSettings != null)
         {
+            gameSettings.ApplyVideoSettings(resolution: Resolutions.HD);
+        }
+    }
 
+    public void SetResolutionFullHD()
+    {
+        if (gameSettings != null)
+        {
+            gameSettings.ApplyVideoSettings(resolution: Resolutions.Full_HD);
+        }
+    }
+
+    public void SetResolutionQHD()
+    {
+        if (gameSettings != null)
+        {
+            gameSettings.ApplyVideoSettings(resolution: Resolutions.QHD);
+        }
+    }
+
+    public void SetResolutionUHD()
+    {
+        if (gameSettings != null)
+        {
+            gameSettings.ApplyVideoSettings(resolution: Resolutions.UHD);
+        }
+    }
+
+    public void SetFramerateUnlock()
+    {
+        if (gameSettings != null)
+        {
+            gameSettings.ApplyVideoSettings(fps_settings: FPS_Settings.free);
+        }
+    }
+
+    public void SetFramerateVSync()
+    {
+        if (gameSettings != null)
+        {
+            gameSettings.ApplyVideoSettings(fps_settings: FPS_Settings.VSync);
+        }
+    }
+
+    public void SetFramerate120()
+    {
+        if (gameSettings != null)
+        {
+            gameSettings.ApplyVideoSettings(fps_settings: FPS_Settings.Hz120);
+        }
+    }
+
+    public void SetFramerate60()
+    {
+        if (gameSettings != null)
+        {
+            gameSettings.ApplyVideoSettings(fps_settings: FPS_Settings.Hz60);
+        }
+    }
+
+    public void SetFramerate30()
+    {
+        if (gameSettings != null)
+        {
+            gameSettings.ApplyVideoSettings(fps_settings: FPS_Settings.Hz30);
+        }
+    }
+
+    public void SetQualityLow()
+    {
+        if (gameSettings != null)
+        {
+            gameSettings.ApplyVideoSettings(qualitySettings: QualityLevel.Low);
+        }
+    }
+
+    public void SetQualityMedium()
+    {
+        if (gameSettings != null)
+        {
+            gameSettings.ApplyVideoSettings(qualitySettings: QualityLevel.Medium);
+        }
+    }
+
+    public void SetQualityHigh()
+    {
+        if (gameSettings != null)
+        {
+            gameSettings.ApplyVideoSettings(qualitySettings: QualityLevel.High);
         }
     }
 
