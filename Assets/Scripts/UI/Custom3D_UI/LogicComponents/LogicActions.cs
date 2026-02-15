@@ -38,6 +38,10 @@ public class LogicActions : MonoBehaviour
         Debug.Log("TEST");
     }
 
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
 
     #region GameSettings
 
@@ -78,7 +82,8 @@ public class LogicActions : MonoBehaviour
     {
         if(gameSettings != null)
         {
-            gameSettings.ApplyVideoSettings(resolution: Resolutions.HD);
+            gameSettings.resolution = Resolutions.HD;
+            gameSettings.ApplyVideoSettings();
         }
     }
 
@@ -86,7 +91,8 @@ public class LogicActions : MonoBehaviour
     {
         if (gameSettings != null)
         {
-            gameSettings.ApplyVideoSettings(resolution: Resolutions.Full_HD);
+            gameSettings.resolution = Resolutions.Full_HD;
+            gameSettings.ApplyVideoSettings();
         }
     }
 
@@ -94,7 +100,8 @@ public class LogicActions : MonoBehaviour
     {
         if (gameSettings != null)
         {
-            gameSettings.ApplyVideoSettings(resolution: Resolutions.QHD);
+            gameSettings.resolution = Resolutions.QHD;
+            gameSettings.ApplyVideoSettings();
         }
     }
 
@@ -102,7 +109,8 @@ public class LogicActions : MonoBehaviour
     {
         if (gameSettings != null)
         {
-            gameSettings.ApplyVideoSettings(resolution: Resolutions.UHD);
+            gameSettings.resolution = Resolutions.UHD;
+            gameSettings.ApplyVideoSettings();
         }
     }
 
@@ -110,7 +118,8 @@ public class LogicActions : MonoBehaviour
     {
         if (gameSettings != null)
         {
-            gameSettings.ApplyVideoSettings(fps_settings: FPS_Settings.free);
+            gameSettings.fps_settings = FPS_Settings.free;
+            gameSettings.ApplyVideoSettings();
         }
     }
 
@@ -118,7 +127,8 @@ public class LogicActions : MonoBehaviour
     {
         if (gameSettings != null)
         {
-            gameSettings.ApplyVideoSettings(fps_settings: FPS_Settings.VSync);
+            gameSettings.fps_settings = FPS_Settings.VSync;
+            gameSettings.ApplyVideoSettings();
         }
     }
 
@@ -126,7 +136,8 @@ public class LogicActions : MonoBehaviour
     {
         if (gameSettings != null)
         {
-            gameSettings.ApplyVideoSettings(fps_settings: FPS_Settings.Hz120);
+            gameSettings.fps_settings = FPS_Settings.Hz120;
+            gameSettings.ApplyVideoSettings();
         }
     }
 
@@ -134,7 +145,8 @@ public class LogicActions : MonoBehaviour
     {
         if (gameSettings != null)
         {
-            gameSettings.ApplyVideoSettings(fps_settings: FPS_Settings.Hz60);
+            gameSettings.fps_settings = FPS_Settings.Hz60;
+            gameSettings.ApplyVideoSettings();
         }
     }
 
@@ -142,7 +154,8 @@ public class LogicActions : MonoBehaviour
     {
         if (gameSettings != null)
         {
-            gameSettings.ApplyVideoSettings(fps_settings: FPS_Settings.Hz30);
+            gameSettings.fps_settings = FPS_Settings.Hz30;
+            gameSettings.ApplyVideoSettings();
         }
     }
 
@@ -150,7 +163,8 @@ public class LogicActions : MonoBehaviour
     {
         if (gameSettings != null)
         {
-            gameSettings.ApplyVideoSettings(qualitySettings: QualityLevel.Low);
+            gameSettings.qualitySettings = QualityLevel.Low;
+            gameSettings.ApplyVideoSettings();
         }
     }
 
@@ -158,7 +172,8 @@ public class LogicActions : MonoBehaviour
     {
         if (gameSettings != null)
         {
-            gameSettings.ApplyVideoSettings(qualitySettings: QualityLevel.Medium);
+            gameSettings.qualitySettings = QualityLevel.Medium;
+            gameSettings.ApplyVideoSettings();
         }
     }
 
@@ -166,7 +181,8 @@ public class LogicActions : MonoBehaviour
     {
         if (gameSettings != null)
         {
-            gameSettings.ApplyVideoSettings(qualitySettings: QualityLevel.High);
+            gameSettings.qualitySettings = QualityLevel.High;
+            gameSettings.ApplyVideoSettings();
         }
     }
 

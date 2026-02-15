@@ -77,6 +77,7 @@ public class GameSettings : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             LoadSettings();
+            ApplyVideoSettings();
 
             if (inputMode == InputMode.GamepadOnly && !IsGamepadAvailable())
             {
@@ -112,9 +113,10 @@ public class GameSettings : MonoBehaviour
     {
         PlayerPrefs.SetInt("InputMode", (int)inputMode);
         PlayerPrefs.SetInt("UseCustomMapping", useCustomMapping ? 1 : 0);
-        PlayerPrefs.SetInt("ShowFPS", showFPS ? 1 : 0);
-        PlayerPrefs.SetInt("FPSLimit", (int)fPSLimit);
-        PlayerPrefs.SetInt("UseVSync", useV_Sync ? 1 : 0);
+
+        PlayerPrefs.SetInt("Resolution", (int)resolution);
+        PlayerPrefs.SetInt("FPS_Settings", (int)fps_settings);
+        PlayerPrefs.SetInt("QualitySettings", (int)qualitySettings);
 
         PlayerPrefs.Save(); // Salva su disco
     }
@@ -124,10 +126,14 @@ public class GameSettings : MonoBehaviour
         //inputMode = (InputMode)PlayerPrefs.GetInt("InputMode", 0);
         useCustomMapping = PlayerPrefs.GetInt("UseCustomMapping", 0) == 1;
         showFPS = PlayerPrefs.GetInt("ShowFPS", 0) == 1;
-        fPSLimit = (FPSLimit)PlayerPrefs.GetInt("FPSLimit", 0);
-        useV_Sync = PlayerPrefs.GetInt("UseVSync", 0) == 1;
+        inputMode = (InputMode)PlayerPrefs.GetInt("InputMode", 0);
+
+        resolution = (Resolutions)PlayerPrefs.GetInt("Resolution", 0);
+        fps_settings = (FPS_Settings)PlayerPrefs.GetInt("FPS_Settings", 0);
+        qualitySettings = (QualityLevel)PlayerPrefs.GetInt("QualitySettings", 0);
     }
 
+    [Obsolete("Use ApplyVideoSettings instead for video settings and ApplyInputSettings for input settings.")]
     public void ApplySettings()
     {
         // Apply V-Sync
@@ -188,26 +194,19 @@ public class GameSettings : MonoBehaviour
         }
 
         Debug.Log("InputSettings applyed (" + inputMode + ")");
+
+       SaveSettings();
     }
 
-    public void ApplyVideoSettings(Resolutions? resolution = null, FPS_Settings? fps_settings = null, QualityLevel? qualitySettings = null)
+    public void ApplyVideoSettings()
     {
-        if (resolution == null)
-        {
-            resolution = this.resolution;
-            
-        }
 
-        Vector2 resolutionInfo = ResolutionFromEnum(resolution);
+        Vector2 resolutionInfo = ResolutionFromEnum(this.resolution);
 
         Screen.SetResolution((int)resolutionInfo.x, (int)resolutionInfo.y, Screen.fullScreenMode, 30);
 
-        if (fps_settings == null)
-        {
-            fps_settings = this.fps_settings;
-        }
 
-        int framerate = RefreshRateFromEnum(fps_settings);
+        int framerate = RefreshRateFromEnum(this.fps_settings);
 
         if(framerate == 0)
         {
@@ -226,17 +225,13 @@ public class GameSettings : MonoBehaviour
             }
         }
 
-        if(qualitySettings == null)
-        {
-            qualitySettings = this.qualitySettings;
-        }
-
-        QualitySettings.SetQualityLevel((int)qualitySettings.Value, true);
+        QualitySettings.SetQualityLevel((int)this.qualitySettings, true);
+        SaveSettings();
 
     }
 
 
-    private Vector2 ResolutionFromEnum(Resolutions? resolution)
+    private Vector2 ResolutionFromEnum(Resolutions resolution)
     {
         if(resolution == Resolutions.HD)
         {
@@ -257,7 +252,7 @@ public class GameSettings : MonoBehaviour
         }
     }
 
-    private int RefreshRateFromEnum(FPS_Settings? fps_settings) {
+    private int RefreshRateFromEnum(FPS_Settings fps_settings) {
         if (fps_settings == FPS_Settings.free)
         {
             return -1;
