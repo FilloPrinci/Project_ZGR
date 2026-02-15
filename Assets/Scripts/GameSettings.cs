@@ -128,9 +128,12 @@ public class GameSettings : MonoBehaviour
         showFPS = PlayerPrefs.GetInt("ShowFPS", 0) == 1;
         inputMode = (InputMode)PlayerPrefs.GetInt("InputMode", 0);
 
-        resolution = (Resolutions)PlayerPrefs.GetInt("Resolution", 0);
-        fps_settings = (FPS_Settings)PlayerPrefs.GetInt("FPS_Settings", 0);
-        qualitySettings = (QualityLevel)PlayerPrefs.GetInt("QualitySettings", 0);
+        // default is Full HD
+        resolution = (Resolutions)PlayerPrefs.GetInt("Resolution", 1);
+        // default is VSync
+        fps_settings = (FPS_Settings)PlayerPrefs.GetInt("FPS_Settings", 1);
+        // default is High
+        qualitySettings = (QualityLevel)PlayerPrefs.GetInt("QualitySettings", 2);
     }
 
     [Obsolete("Use ApplyVideoSettings instead for video settings and ApplyInputSettings for input settings.")]

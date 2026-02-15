@@ -1899,9 +1899,9 @@ MonoBehaviour:
   showFPS: 0
   fPSLimit: 0
   useV_Sync: 0
-  resolution: 0
+  resolution: 1
   fps_settings: 0
-  qualitySettings: 0
+  qualitySettings: 2
 --- !u!114 &1293620010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1914,7 +1914,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49032929539067749a7af9b15051420e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startScene: 
+  startScene: CustomUI_System
   raceScene: 
   sceneNameList: []
   raceTrackSceneList:

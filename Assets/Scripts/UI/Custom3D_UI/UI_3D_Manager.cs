@@ -112,6 +112,11 @@ public class UI_3D_Manager : MonoBehaviour
 
             UpdateCameraPosition();
         }
+
+        if (Time.timeScale != 1f)
+        {
+            Time.timeScale = 1f; // Ensure time scale is reset to normal
+        }
     }
     // Update is called once per frame
     void Update()
