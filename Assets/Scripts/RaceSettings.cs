@@ -7,13 +7,16 @@ public class RaceSettings : MonoBehaviour
 {
     public static RaceSettings Instance { get; private set; }
 
+    [Header("Players")]
     public int inputPlayersAmount = 1;
     public int totalPlayersAmount = 10;
-    public int laps = 3;
-    
     public List<PlayerData> cpuPlayerDataList;
     public List<GameObject> veichlePrefabList;
     public int defaultVeichleIndex = 0;
+    
+
+    [Header("Race")]
+    public int laps = 3;
     public int defaultRaceTrackIndex = 0;
 
     private SceneReferences sceneReferences;

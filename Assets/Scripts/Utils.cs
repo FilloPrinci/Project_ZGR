@@ -19,6 +19,24 @@ public static class Utils
         );
     }
 
+    public static Quaternion ExpDecay(Quaternion a, Quaternion b, float decay, float deltaTime)
+    {
+        if (deltaTime < 0)
+        {
+            return a;
+        }
+        if (decay <= 0)
+        {
+            return b;
+        }
+        return new Quaternion(
+            ExpDecay(a.x, b.x, decay, deltaTime),
+            ExpDecay(a.y, b.y, decay, deltaTime),
+            ExpDecay(a.z, b.z, decay, deltaTime),
+            ExpDecay(a.w, b.w, decay, deltaTime)
+            ); 
+    }
+
     public static float ExpDecay(float a, float b, float decay, float time)
     {
         if (time < 0)

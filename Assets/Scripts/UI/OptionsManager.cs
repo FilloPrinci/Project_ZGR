@@ -63,7 +63,7 @@ public class OptionsManager : MonoBehaviour
     public void SetResolution(int resolutionIndex)
     {
         Resolution res = resolutions[resolutionIndex];
-        Screen.SetResolution(res.width, res.height, Screen.fullScreenMode, res.refreshRate);
+        Screen.SetResolution(res.width, height: res.height, fullscreenMode: Screen.fullScreenMode, preferredRefreshRate: res.refreshRate);
 
         PlayerPrefs.SetInt("ResolutionIndex", resolutionIndex);
         PlayerPrefs.Save();
