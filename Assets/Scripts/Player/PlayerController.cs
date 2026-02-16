@@ -928,6 +928,9 @@ public class PlayerController : MonoBehaviour
 
         // update input
         playerInputHandler = CPUInputHandlerManager.Instance.GetCPUInput(playerData.cpuIndex);
+
+        //update camera
+        feedBackManager.TriggerEndRaceCameraView();
     }
 
     public bool GetAccelerateInput()

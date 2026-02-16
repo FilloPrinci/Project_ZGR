@@ -2,6 +2,12 @@
 using System.Collections;
 using UnityEngine;
 
+public enum CameraPositionMode
+{
+    Race,
+    RaceEnd
+}
+
 public class FeedBackManager : MonoBehaviour
 {
     private GameObject playerVeichle;
@@ -14,6 +20,8 @@ public class FeedBackManager : MonoBehaviour
     [Header("Camera Shake Settings")]
     public float shakeDuration = 0.5f;
     public float shakeMagnitude = 0.2f;
+
+    public CameraPositionMode cameraPositionMode = CameraPositionMode.Race;
 
     private Coroutine shakeCoroutine;
     private Vector3 originalCamPos;
@@ -49,6 +57,15 @@ public class FeedBackManager : MonoBehaviour
             SteerFeedBack(steeringAmount);
             EngineFeedback();
         }
+
+        if (cameraPositionMode == CameraPositionMode.Race) {
+            SteerFeedBack(steeringAmount);
+        }else if(cameraPositionMode == CameraPositionMode.RaceEnd)
+        {
+            veichleAnchors.cameraPivot.position = veichleAnchors.OutRace_CameraPivot.position;
+            veichleAnchors.cameraPivot.rotation = veichleAnchors.OutRace_CameraPivot.rotation;
+        }
+
              
     }
 
@@ -103,6 +120,16 @@ public class FeedBackManager : MonoBehaviour
                 
             }
         }
+    }
+
+    public void TriggerEndRaceCameraView()
+    {
+        if(veichleAnchors != null)
+        {
+            cameraPositionMode = CameraPositionMode.RaceEnd;
+            
+        }
+        
     }
 
     private void SteerFeedBack(float amount)

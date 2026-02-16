@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &426394568140593981
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1535664055381434503}
+  m_Layer: 0
+  m_Name: Out-Race_CameraPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1535664055381434503
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 426394568140593981}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.99785894, z: -0.065403156, w: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3894135735151701788}
+  m_LocalEulerAnglesHint: {x: 7.5, y: 180, z: 0}
 --- !u!1 &768688260628926773
 GameObject:
   m_ObjectHideFlags: 0
@@ -64,6 +95,7 @@ Transform:
   - {fileID: 2219794733225416725}
   - {fileID: 1916218743630015881}
   - {fileID: 7350459749009944183}
+  - {fileID: 1535664055381434503}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9175970223712425277
@@ -82,6 +114,7 @@ MonoBehaviour:
   cameraPivot: {fileID: 2219794733225416725}
   Normal_cameraPivot: {fileID: 1916218743630015881}
   Turbo_cameraPivot: {fileID: 7350459749009944183}
+  OutRace_CameraPivot: {fileID: 1535664055381434503}
 --- !u!1 &4830152694235476529
 GameObject:
   m_ObjectHideFlags: 0
