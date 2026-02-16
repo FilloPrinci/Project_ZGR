@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 244379351776454432}
   serializedVersion: 2
   m_LocalRotation: {x: 0.707107, y: -0, z: -0, w: 0.7071066}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -213,6 +213,7 @@ MonoBehaviour:
   tiltSmoothSpeed: 10
   shakeDuration: 0.5
   shakeMagnitude: 0.2
+  cameraPositionMode: 0
 --- !u!65 &1331134543065289110
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -246,6 +247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc628e7541ef645428be1777acd47e97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerIndex: 0
 --- !u!114 &3130506183759778273
 MonoBehaviour:
   m_ObjectHideFlags: 0
