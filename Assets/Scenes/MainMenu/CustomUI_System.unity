@@ -1864,6 +1864,7 @@ MonoBehaviour:
   veichlePrefabList:
   - {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
   - {fileID: 4699924895700797138, guid: a3bb4ad6c635fd44dac73aa2e5772f91, type: 3}
+  - {fileID: 4699924895700797138, guid: 267da2944cbf0b044896309ba451fb34, type: 3}
   defaultVeichleIndex: 0
   laps: 3
   defaultRaceTrackIndex: 0
