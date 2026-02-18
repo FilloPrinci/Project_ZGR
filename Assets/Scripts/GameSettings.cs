@@ -87,7 +87,7 @@ public class GameSettings : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Duplicate GameSettings detected. Destroying extra instance.");
+            Debug.LogWarning("Duplicate GameSettings detected. Destroying extra instance.");
             Destroy(gameObject); // Assicura che ci sia solo un GameSettings
         }
     }

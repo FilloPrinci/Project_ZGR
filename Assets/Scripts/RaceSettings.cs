@@ -34,7 +34,7 @@ public class RaceSettings : MonoBehaviour
                     }
         else
         {
-            Debug.LogError("Duplicate RaceSettings detected. Destroying extra instance.");
+            Debug.LogWarning("Duplicate RaceSettings detected. Destroying extra instance.");
             Destroy(gameObject); // Assicura che ci sia solo un RaceSettings
         }
     }

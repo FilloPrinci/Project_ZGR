@@ -45,6 +45,7 @@ public class FeedBackManager : MonoBehaviour
         steeringAmount = 0;
 
         veichleAnchors = playerController.GetVeichleAnchors();
+        cameraPositionMode = CameraPositionMode.Race;
     }
 
     // Update is called once per frame
@@ -54,12 +55,14 @@ public class FeedBackManager : MonoBehaviour
         deltaTime = Time.deltaTime;
         if (playerVeichle.activeInHierarchy)
         {
-            SteerFeedBack(steeringAmount);
             EngineFeedback();
         }
 
         if (cameraPositionMode == CameraPositionMode.Race) {
-            SteerFeedBack(steeringAmount);
+            if (playerVeichle.activeInHierarchy)
+            {
+                SteerFeedBack(steeringAmount);
+            }
         }else if(cameraPositionMode == CameraPositionMode.RaceEnd)
         {
             veichleAnchors.cameraPivot.position = veichleAnchors.OutRace_CameraPivot.position;

@@ -22,7 +22,7 @@ public class SceneReferences : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Duplicate SceneReferences detected. Destroying extra instance.");
+            Debug.LogWarning("Duplicate SceneReferences detected. Destroying extra instance.");
             Destroy(gameObject); // Assicura che ci sia solo un SceneReferences
         }
     }
