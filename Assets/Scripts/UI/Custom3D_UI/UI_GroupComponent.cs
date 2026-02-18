@@ -77,6 +77,8 @@ public class UI_GroupComponent : MonoBehaviour
         this.panelScaleSpeed = panelScaleSpeed;
         this.iconScaleMultiplier = iconScaleMultiplier;
         this.iconScaleSpeed = iconScaleSpeed;
+
+        ResetSelection();
     }
 
     private void RefreshGraphics()

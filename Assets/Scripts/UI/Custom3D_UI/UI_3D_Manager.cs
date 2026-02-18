@@ -51,8 +51,6 @@ public class UI_3D_Manager : MonoBehaviour
     public List<Transform> veichleSelectionPositionList;
     
 
-    public bool debugMode = false;
-
     private SelectionPhase selectionPhase = SelectionPhase.Menu;
 
     private UI_GroupComponent Current_UI_GroupCompoment;
@@ -121,12 +119,7 @@ public class UI_3D_Manager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        deltaTime = Time.deltaTime;
-
-        if (debugMode)
-        {
-            Start_UI_GroupComponent.Setup(panelSpacing, moveSpeed, panelScaleMultiplier, panelScaleSpeed, iconScaleMultiplier, iconScaleSpeed);
-        }   
+        deltaTime = Time.deltaTime;  
     }
 
     private void LateUpdate()
