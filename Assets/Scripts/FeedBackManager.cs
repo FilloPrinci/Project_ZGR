@@ -35,6 +35,7 @@ public class FeedBackManager : MonoBehaviour
     private PlayerController playerController;
 
     private float currentEnginePower = 0f;
+    private bool onTurbo = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -74,14 +75,22 @@ public class FeedBackManager : MonoBehaviour
 
     void EngineFeedback()
     {
-        if (playerController.GetAccelerateInput())
+        if (!onTurbo)
         {
-            currentEnginePower = Mathf.Lerp(currentEnginePower, 1f, deltaTime * 2f);
+            if (playerController.GetAccelerateInput())
+            {
+                currentEnginePower = Mathf.Lerp(currentEnginePower, 1f, deltaTime * 2f);
+            }
+            else
+            {
+                currentEnginePower = Mathf.Lerp(currentEnginePower, 0f, deltaTime * 2f);
+            }
         }
         else
         {
-            currentEnginePower = Mathf.Lerp(currentEnginePower, 0f, deltaTime * 2f);
+            currentEnginePower = 2f;
         }
+        
 
         playerVeichle.GetComponent<VeichleEffects>().particlePower = 0.5f * currentEnginePower;
 
@@ -104,7 +113,9 @@ public class FeedBackManager : MonoBehaviour
     }
 
     public void TurboFeedBack(bool onTurbo) {
-        if(veichleAnchors != null)
+        this.onTurbo = onTurbo;
+
+        if (veichleAnchors != null)
         {
             if (onTurbo)
             {

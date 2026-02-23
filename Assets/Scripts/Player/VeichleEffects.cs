@@ -5,6 +5,8 @@ using UnityEngine;
 public class VeichleEffects : MonoBehaviour
 {
     public GameObject particleEffect;
+    public EngineFeedback engineFeedback;
+    public EngineFeedback engineFeedback_2;
     public float particlePower = 0f;
     private List<ParticleSystem> particleEffectList = new List<ParticleSystem>();
 
@@ -36,7 +38,21 @@ public class VeichleEffects : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-           ManageParticleSystems();
+        ManageParticleSystems();
+        ManageBoosterEffect();
+    }
+
+    void ManageBoosterEffect()
+    {
+        if (engineFeedback != null)
+        {
+            engineFeedback.currentEnginePower = particlePower;
+        }
+
+        if(engineFeedback_2 != null)
+        {
+            engineFeedback_2.currentEnginePower = particlePower;
+        }
     }
 
     void ManageParticleSystems()

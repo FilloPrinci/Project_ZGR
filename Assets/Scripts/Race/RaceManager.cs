@@ -56,6 +56,9 @@ public class RaceManager : MonoBehaviour
     public int maxLaps;
     public  List<GameObject> avaiableVeichleList;
 
+    [Header("Audio parameters")]
+    public AudioSource sountrackAudioSource;
+
     private int currentLap;
     private RacePhase currentRacePhase;
     private RacePhaseEvent lastRacePhaseEvent;
@@ -408,9 +411,48 @@ public class RaceManager : MonoBehaviour
 
     private void OnRaceStart()
     {
+        if(sountrackAudioSource != null)
+        {
+            sountrackAudioSource.Stop();
+            sountrackAudioSource.Play();
+        }
+            
+
         HideCountdownForAllPlayers();
         raceData.StartRace();
         StartCoroutine(UpdateRankingCoroutine());
+    }
+
+    private void OnRaceEnd()
+    {
+        if (sountrackAudioSource != null)
+        {
+            sountrackAudioSource.Stop();
+        }
+
+        raceData.playerRaceDataList.Sort((a, b) => a.position.CompareTo(b.position));
+
+        Debug.Log("the winner is : " + raceData.playerRaceDataList[0].playerData.name + " (player index : " + (int)raceData.playerRaceDataList[0].playerData.playerInputIndex + " )");
+
+        foreach (PlayerRaceData playerRaceData in raceData.playerRaceDataList)
+        {
+            if (playerRaceData.playerData.playerInputIndex != InputIndex.CPU)
+            {
+                ShowResultForPlayer(playerRaceData);
+
+
+                // finish race for all playuers
+                foreach (GameObject playerInstance in playerInstanceList)
+                {
+                    if (playerInstance.GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
+                    {
+                        PlayerStructure playerStructure = playerInstance.GetComponent<PlayerStructure>();
+                        playerStructure.OnRaceEndPhase((int)playerRaceData.playerData.playerInputIndex);
+                    }
+                }
+                break;
+            }
+        }
     }
 
     private void ManageRace(RaceMode raceMode)
@@ -613,29 +655,10 @@ public class RaceManager : MonoBehaviour
             case RacePhaseEvent.RaceEnd:
                 currentRacePhase = RacePhase.Results;
 
-                raceData.playerRaceDataList.Sort((a, b) => a.position.CompareTo(b.position));
+                OnRaceEnd();
+                
 
-                Debug.Log("the winner is : " + raceData.playerRaceDataList[0].playerData.name + " (player index : " + (int)raceData.playerRaceDataList[0].playerData.playerInputIndex  + " )");
-
-                foreach(PlayerRaceData playerRaceData in raceData.playerRaceDataList)
-                {
-                    if(playerRaceData.playerData.playerInputIndex != InputIndex.CPU)
-                    {
-                        ShowResultForPlayer(playerRaceData);
-
-
-                        // finish race for all playuers
-                        foreach (GameObject playerInstance in playerInstanceList)
-                        {
-                            if (playerInstance.GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
-                            {
-                                PlayerStructure playerStructure = playerInstance.GetComponent<PlayerStructure>();
-                                playerStructure.OnRaceEndPhase((int)playerRaceData.playerData.playerInputIndex);
-                            }
-                        }
-                        break;
-                    }
-                }               
+                           
 
                 
                 break;

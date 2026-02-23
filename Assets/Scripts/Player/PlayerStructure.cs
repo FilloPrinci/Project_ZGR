@@ -65,6 +65,9 @@ public class PlayerStructure : MonoBehaviour
         var controller = cameraObject.AddComponent<CameraController>();
         controller.cameraDesiredPosition = anchor;
 
+        // Audio
+        var audioListener = cameraObject.AddComponent<AudioListener>();
+
         cameraObject.SetActive(false);
         return cameraObject;
     }
