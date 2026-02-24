@@ -65,8 +65,9 @@ public class PlayerStructure : MonoBehaviour
         var controller = cameraObject.AddComponent<CameraController>();
         controller.cameraDesiredPosition = anchor;
 
-        // Audio
-        var audioListener = cameraObject.AddComponent<AudioListener>();
+        // Audio (added to the main game object, not the camera)
+        var audioListener = gameObject.AddComponent<AudioListener>();
+        audioListener.enabled = false;
 
         cameraObject.SetActive(false);
         return cameraObject;
@@ -74,6 +75,8 @@ public class PlayerStructure : MonoBehaviour
 
     public void ActivatePlayerCamera(CameraMode mode)
     {
+        gameObject.GetComponent<AudioListener>().enabled = true;
+
         Debug.Log("Activating camera for player: " + data.name + " in mode: " + mode.ToString());
 
         Camera cam = playerCamera.GetComponent<Camera>();

@@ -411,6 +411,11 @@ public class RaceManager : MonoBehaviour
 
     private void OnRaceStart()
     {
+        AudioListener presentationCameraAudioListener = mainCamera.GetComponent<AudioListener>();
+            if (presentationCameraAudioListener != null) {
+            Destroy(presentationCameraAudioListener);
+        }
+
         if(sountrackAudioSource != null)
         {
             sountrackAudioSource.Stop();

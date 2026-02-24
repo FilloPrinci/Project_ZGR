@@ -149,7 +149,7 @@ Material:
     - _SrcBlend: 5
     - _SrcBlendAlpha: 1
     - _Surface: 1
-    - _VSpeed: 10
+    - _VSpeed: 7.5
     - _WorkflowMode: 1
     - _ZTest: 4
     - _ZWrite: 0
