@@ -136,6 +136,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: EngineAudioSource
       objectReference: {fileID: 0}
+    - target: {fileID: 4753113342831256547, guid: ea89830ca59c62148b38c886b0119fbc, type: 3}
+      propertyPath: DopplerLevel
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

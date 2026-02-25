@@ -53,7 +53,8 @@ MonoBehaviour:
   currentEnginePower: 0
   boostMode: 0
   engineAudioSource: {fileID: 0}
-  baseAudioVolume: 0.1
+  baseAudioVolume: 0.01
+  engineAudioVolume: 0.25
 --- !u!1001 &4500545119664248356
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -18,6 +18,7 @@ public class EngineFeedback : MonoBehaviour
     [Header("Audio Effects")]
     public AudioSource engineAudioSource;
     public float baseAudioVolume = 1f; // Base volume for the engine sound
+    public float engineAudioVolume = 0.5f;
 
     private float baseAudioPitch = 1f; // Base pitch for the engine sound
     private float desideredAudioPitch = 1f; // Desired pitch based on engine power
@@ -52,6 +53,11 @@ public class EngineFeedback : MonoBehaviour
 
         GetEffectsReady();
 
+        
+    }
+
+    private void LateUpdate()
+    {
         ApplyScale();
         ApplyAudioEffects();
     }
@@ -113,7 +119,7 @@ public class EngineFeedback : MonoBehaviour
             engineAudioSource.pitch = desideredAudioPitch;
 
             float currentAudioVolume = engineAudioSource.volume;
-            desideredAudioVolume = baseAudioVolume + currentEnginePower; // Adjust volume based on boost mode and engine power
+            desideredAudioVolume = baseAudioVolume + (currentEnginePower * engineAudioVolume); // Adjust volume based on boost mode and engine power
             desideredAudioVolume = Mathf.Lerp(currentAudioVolume, desideredAudioVolume, deltaTime * 5f); // Smoothly interpolate volume
 
             engineAudioSource.volume = desideredAudioVolume;
