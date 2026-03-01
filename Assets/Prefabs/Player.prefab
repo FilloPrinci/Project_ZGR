@@ -69,6 +69,7 @@ GameObject:
   - component: {fileID: 7834776545252078584}
   - component: {fileID: 7242950170658541357}
   - component: {fileID: 2753818033003460965}
+  - component: {fileID: 3114235918088769195}
   - component: {fileID: 1331134543065289110}
   - component: {fileID: 1649203415823695494}
   - component: {fileID: 3130506183759778273}
@@ -114,7 +115,7 @@ MonoBehaviour:
   canvasPrefab: {fileID: 8332201281868801339, guid: 210cef8cc7b01664f8ebf5becf555cf9, type: 3}
   data:
     name: Player1
-    veichlePrefab: {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
+    veichlePrefab: {fileID: 4699924895700797138, guid: 267da2944cbf0b044896309ba451fb34, type: 3}
     playerInputIndex: 0
     cpuIndex: 15
   playerCamera: {fileID: 0}
@@ -141,7 +142,7 @@ MonoBehaviour:
   playerSpeedCollisionFactor: 0.99
   obstacleSpeedCollisionFactor: 0.25
   normalBounceCollistionFactor: 1
-  playerBounceCollisionFactor: 0.25
+  playerBounceCollisionFactor: 0.5
   obstacleBounceCollisionFactor: 1.5
   maxSpeedKmH: 320
   maxRotationSpeed: 160
@@ -179,6 +180,7 @@ MonoBehaviour:
     cpuIndex: 0
   playerStats: {fileID: 7834776545252078584}
   playerStructure: {fileID: 0}
+  playerSoundManager: {fileID: 3114235918088769195}
   hoverHeight: 0.4
   startHoverHeight: 0.275
   maxSpeed: 100
@@ -188,7 +190,7 @@ MonoBehaviour:
   bounceFactor: 1
   autoBrakeDecelleration: 1
   brakeDecelleration: 2.5
-  collisionBounceDecelleration: 7.5
+  collisionBounceDecelleration: 15
   hoverRaycastMask:
     serializedVersion: 2
     m_Bits: 3
@@ -214,6 +216,19 @@ MonoBehaviour:
   shakeDuration: 0.5
   shakeMagnitude: 0.2
   cameraPositionMode: 0
+--- !u!114 &3114235918088769195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4423116904176109930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb0ff943206bb124e956f82243dc815a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  humanPlayer: 0
 --- !u!65 &1331134543065289110
 BoxCollider:
   m_ObjectHideFlags: 0

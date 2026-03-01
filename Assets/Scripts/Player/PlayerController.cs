@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Security.Cryptography;
@@ -20,6 +21,7 @@ public class PlayerController : MonoBehaviour
     private GameObject veichleModelInstance;
     public PlayerStats playerStats;
     public PlayerStructure playerStructure;
+    public PlayerSoundManager playerSoundManager;
 
     public float hoverHeight = 0.5f;
     public float startHoverHeight = 0.3f;
@@ -58,7 +60,7 @@ public class PlayerController : MonoBehaviour
     private float deltaTime;
 
     private bool collisionDetected = false;
-    private Vector3 lastCollisionDirection = Vector3.zero;
+    private Vector3 playerCollisionDirection = Vector3.zero;
 
     // Visual interpolation values
     private Vector3 previousPosition;
@@ -85,6 +87,12 @@ public class PlayerController : MonoBehaviour
     private Vector3 selfColliderStartSize = Vector3.zero;
 
     private bool pauseMode = false;
+    private PlayerCollisionInfo playerCollisionInfo;
+    private PlayerCollisionInfo trackCollisionInfo;
+
+    private Vector3 exitVector = Vector3.zero;
+    private Vector3 localBounceVector = Vector3.zero;
+    private Vector3 localExitVector = Vector3.zero;
 
     public BoxCollider GetCollider()
     {
@@ -94,6 +102,38 @@ public class PlayerController : MonoBehaviour
         }
 
         return selfCollider;
+    }
+
+    public void SetPlayerCollisionInfo(PlayerCollisionInfo playerCollisionInfo)
+    {
+        this.playerCollisionInfo = playerCollisionInfo;
+    }
+
+    public void SetTrackCollisionInfo(PlayerCollisionInfo trackCollisionInfo)
+    {
+        this.trackCollisionInfo = trackCollisionInfo;
+    }
+
+    public void ClearPlayerCollisionInfo()
+    {
+        playerCollisionInfo = null;
+    }
+
+    private void OnValidate()
+    {
+        if(playerSoundManager == null)
+        {
+            Debug.LogWarning("PlayerSoundManager reference is missing in PlayerController. Attempting to find it on the same GameObject.");
+        }
+        else
+        {
+            
+        }
+    }
+
+    private bool IsHuman()
+    {
+        return playerData.playerInputIndex != InputIndex.CPU;
     }
 
     private void Start()
@@ -147,6 +187,10 @@ public class PlayerController : MonoBehaviour
         {
             speedCoroutine = StartCoroutine(UpdatePositionsForSpeed(5));
         }*/
+
+        playerSoundManager.SetVeichleSoundEffects(playerStructure.GetSoundEffects());
+        playerSoundManager.humanPlayer = IsHuman();
+
     }
 
     private void Update()
@@ -226,39 +270,77 @@ public class PlayerController : MonoBehaviour
             forwardAmount *= deltaTime;
 
             // check if collides
-            Vector3 exitVector = CheckFastCollision(forwardAmount, debugMode);
-            if (exitVector != Vector3.zero)
+            if (collisionDetected)
+            {
+                if (lastCollisionType == CollisionTypeEnum.Normal)
+                {
+                    // reset collision flag
+                    collisionDetected = false;
+                }
+            }
+
+
+
+            if (trackCollisionInfo != null && trackCollisionInfo.isColliding)
             {
                 collisionDetected = true;
                 lastCollisionType = CollisionTypeEnum.Normal;
-                globalBounceVector = OnUpadteCollisionDetected(exitVector, deltaTime);
-                globalUpdateMovementVector = globalBounceVector;
-                Debug.DrawLine(transform.position, transform.position + exitVector, Color.white, 0, false);
-                transform.position += exitVector;
+                // calculate exit vector from collision info
+                exitVector = trackCollisionInfo.collisionNormal * trackCollisionInfo.penetrationDepth;
+                //exitVector.y = 0; // ignore vertical component for bounce
+
+            }
+            else if(playerCollisionInfo != null && playerCollisionInfo.isColliding)
+            {
+                collisionDetected = true;
+                lastCollisionType = CollisionTypeEnum.Player;
+
+                // calculate exit vector from collision info
+                exitVector = playerCollisionInfo.collisionNormal * playerCollisionInfo.penetrationDepth;
             }
             else
             {
                 collisionDetected = false;
+                lastCollisionType = CollisionTypeEnum.None;
+            }
 
+            if (collisionDetected)
+            {
+                playerSoundManager.PlayCollisionEffect();
 
-                if (globalBounceVector != Vector3.zero)
+                // manage collision
+                globalBounceVector = OnUpadteCollisionDetected(exitVector, deltaTime);
+                //globalUpdateMovementVector = globalBounceVector;
+                Debug.DrawLine(transform.position, transform.position + exitVector, Color.red, 0, false);
+
+                // bounce vector in local coordinates
+                localBounceVector = transform.InverseTransformDirection(globalBounceVector);
+                localExitVector = transform.InverseTransformDirection(exitVector);
+
+                // block player from entering the wall by moving it out of the collision
+                //transform.position += exitVector;
+
+            }
+            else if (localBounceVector.magnitude > 0)
+            {
+                localExitVector = Vector3.zero;
+
+                if (localBounceVector.magnitude > 0.05)
                 {
-                    if(Utils.IsValid(globalUpdateMovementVector) && Utils.IsValid(globalBounceVector))
-                    {
-                        transform.localPosition += globalUpdateMovementVector + globalBounceVector;
-                        globalBounceVector = Utils.ExpDecay(globalBounceVector, Vector3.zero, collisionBounceDecelleration, deltaTime);
-                    }
+                    localBounceVector = Utils.ExpDecay(localBounceVector, Vector3.zero, collisionBounceDecelleration, deltaTime);
                 }
                 else
                 {
-                    if (Utils.IsValid(globalUpdateMovementVector)){
-                        transform.localPosition += globalUpdateMovementVector;
-                    }
+                    localBounceVector = Vector3.zero;
                 }
             }
 
+            ApplyVectorsToLocalPosition(globalUpdateMovementVector, localBounceVector, localExitVector);
+
             // manage hover and gravity
             ApplyGravityAndHover(deltaTime, debugMode);
+
+            
         }
 
         // Store previous and current transforms for interpolation
@@ -275,11 +357,26 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    private void ApplyVectorsToLocalPosition(Vector3 localMovement, Vector3 localBounce, Vector3 localExitVector)
+    {
+        localBounce.y = 0; // Ensure no vertical movement is applied from bounce vector
+        localExitVector.y = 0; // Ensure no vertical movement is applied from exit vector
+
+        Vector3 rotatedLocalBounce = transform.rotation * localBounce;
+        Vector3 rotatedLocalExitVector = transform.rotation * localExitVector;
+
+
+        Vector3 totalLocalMovement = localMovement + rotatedLocalBounce + rotatedLocalExitVector;
+
+        transform.localPosition += totalLocalMovement;
+    }
+
     private void LateUpdate()
     {
         InterpolateVeichlePivotRotation();
         //InterpolateVeichlePivotPosition();
         veichlePivot.position = currentPosition;
+
     }
 
     private void FixedUpdate()
@@ -369,19 +466,25 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    Vector3 CheckFastCollision(float forwardAmount, bool debug)
+    [Obsolete]
+    Vector3 CheckBorderFastCollision(float forwardAmount, bool debug)
     {
         if (trackMainCollider == null || selfCollider == null)
             return Vector3.zero;
 
-        if(forwardAmount != 0)
+        if (forwardAmount != 0)
         {
+            selfCollider.size = new Vector3(
+                selfColliderStartSize.x,
+                selfColliderStartSize.y,
+                selfColliderStartSize.z + forwardAmount
+            );
 
-            selfCollider.size = new Vector3(selfColliderStartSize.x, selfColliderStartSize.y, selfColliderStartSize.z + forwardAmount);
-            selfCollider.center = new Vector3(selfCollider.center.x, selfCollider.center.y, forwardAmount / 2);
-
-
-            //selfCollider.center = transform.forward * selfColliderLocalPosition.z;
+            selfCollider.center = new Vector3(
+                selfCollider.center.x,
+                selfCollider.center.y,
+                forwardAmount / 2
+            );
         }
 
         Vector3 direction;
@@ -397,29 +500,31 @@ public class PlayerController : MonoBehaviour
         {
             if (debug)
             {
-                // Visualize the exit direction
                 Debug.DrawLine(transform.position, transform.position + direction * distance, Color.red, 0f, false);
             }
-            
 
-            Vector3 localDir = transform.InverseTransformDirection(direction * distance);
-            localDir.y = 0f;
-            float len = localDir.magnitude;
-            localDir.Normalize();
-            localDir *= distance; // original lenght
-
-            // Convert back to world space
-            Vector3 worldDirXZ = transform.TransformDirection(localDir);
-
-            return worldDirXZ;
+            return CalculateExitVector(direction, distance);
         }
         else
         {
             Debug.DrawRay(transform.position, Vector3.up * 0.3f, Color.green, 0f, false);
             return Vector3.zero;
         }
+    }
 
-        
+    private Vector3 CalculateExitVector(Vector3 penetrationDirection, float penetrationDistance)
+    {
+        // Convert penetration vector to local space
+        Vector3 localDir = transform.InverseTransformDirection(penetrationDirection * penetrationDistance);
+
+        // Ignore Y axis
+        localDir.y = 0f;
+
+        // Rebuild vector keeping original penetration distance
+        localDir = localDir.normalized * penetrationDistance;
+
+        // Convert back to world space
+        return transform.TransformDirection(localDir);
     }
 
     void InterpolateVeichlePivotRotation()
@@ -435,32 +540,6 @@ public class PlayerController : MonoBehaviour
         veichlePivot.rotation = smoothedRotation;
     }
 
-    void InterpolateVeichlePivotPosition()
-    {
-
-        // Posizione: mantieni XZ precisi (presa da currentPosition), smussa solo Y in spazio locale del pivot
-        Vector3 targetPos = currentPosition;
-
-        // Current pos in locale del pivot
-        Vector3 localCurrent = veichlePivot.InverseTransformPoint(veichlePivot.position);
-        Vector3 localTarget = veichlePivot.InverseTransformPoint(targetPos);
-
-        // Smoothing esponenziale solo sulla Y
-        float posT = 1f - Mathf.Exp(-pivotPositionDecay * deltaTime);
-        localCurrent.y = Mathf.Lerp(localCurrent.y, localTarget.y, posT);
-
-        // Mantieni X e Z del target (in world) — per evitare slittamenti, converti XZ direttamente
-        // Ricostruisci posizione world partendo dalla XZ target e dalla Y smussata (in locale)
-        Vector3 worldXZ = new Vector3(targetPos.x, 0f, targetPos.z);
-        Vector3 reconstructed = veichlePivot.TransformPoint(new Vector3(localCurrent.x, localCurrent.y, localCurrent.z));
-
-        // Sostituisci XZ con quelli target per sicurezza (evita drift)
-        reconstructed.x = worldXZ.x;
-        reconstructed.z = worldXZ.z;
-
-        veichlePivot.position = reconstructed;
-    }
-
     void Bounce(float time)
     {
         float currentCollisionSpeed = Speed(collisionVelocity, time);
@@ -473,7 +552,7 @@ public class PlayerController : MonoBehaviour
         float collistionBounceFactor = 1f;
         float damageFactor = 1f;
 
-        Vector3 collisionVector = Vector3.zero;
+        Vector3 bounceVector = Vector3.zero;
 
         if (playerStats != null)
         {
@@ -507,21 +586,22 @@ public class PlayerController : MonoBehaviour
 
         }
 
-        globalUpdateMovementVector *= collistionMovementFactor;
-
         if (collisionExitDirection != Vector3.zero)
         {
             float currentSpeed = Speed(globalUpdateMovementVector, time);
             float finalBounceForce = Mathf.Max(currentSpeed * collistionBounceFactor * bounceFactor, 1f);
 
-            collisionVector = collisionExitDirection.normalized * finalBounceForce * time;
+            bounceVector = collisionExitDirection.normalized * finalBounceForce * time;
         }
+
+        globalUpdateMovementVector *= collistionMovementFactor;
 
         feedBackManager.TriggerCameraShake();
 
-        return collisionVector;
+        return bounceVector;
     }
 
+    [Obsolete]
     void Collide(float time)
     {
         float collistionMovementFactor = 1f;
@@ -563,12 +643,12 @@ public class PlayerController : MonoBehaviour
         normalMovementVelocity = normalMovementVelocity * collistionMovementFactor;
         
 
-        if (lastCollisionDirection != Vector3.zero)
+        if (playerCollisionDirection != Vector3.zero)
         {
             float currentSpeed = Speed(normalMovementVelocity, time);
             float finalBounceForce = Mathf.Max(currentSpeed * collistionBounceFactor * bounceFactor, 1f);
 
-            collisionVelocity = lastCollisionDirection.normalized * finalBounceForce * fixedDeltaTime;
+            collisionVelocity = playerCollisionDirection.normalized * finalBounceForce * fixedDeltaTime;
         }
 
         feedBackManager.TriggerCameraShake();
@@ -606,6 +686,7 @@ public class PlayerController : MonoBehaviour
             return movement;
     }
 
+    [Obsolete]
     void HandleMovement(float time)
     {
         float currentSpeed = Speed(normalMovementVelocity, time);
@@ -718,6 +799,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    [Obsolete]
     private bool ShouldHandleCollision(Collider other)
     {
         bool handleCollision = true;
@@ -739,6 +821,7 @@ public class PlayerController : MonoBehaviour
     {
         if(specialCollision(other))
         {
+            /*
             if(other.tag.Equals("Player"))
             {
                 lastCollisionType = CollisionTypeEnum.Player;
@@ -753,6 +836,7 @@ public class PlayerController : MonoBehaviour
             //lastCollisionDirection = calculateCollisionDirection(other);
             Vector3 exitVector = calculateCollisionDirection(other);
             globalBounceVector = OnUpadteCollisionDetected(exitVector, deltaTime);
+            */
         }
         else if (other.tag.Equals("Checkpoint"))
         {
@@ -786,6 +870,7 @@ public class PlayerController : MonoBehaviour
     {
         if (specialCollision(other))
         {
+            /*
             if (other.tag.Equals("Player"))
             {
                 lastCollisionType = CollisionTypeEnum.Player;
@@ -801,6 +886,7 @@ public class PlayerController : MonoBehaviour
 
             collisionDetected = true;
             lastCollisionDirection = calculateCollisionDirection(other);
+            */
         }
         else if (other.tag.Equals("Zone"))
         {
@@ -840,13 +926,6 @@ public class PlayerController : MonoBehaviour
             collisionDetected = false;
             lastCollisionDirection = Vector3.zero;
         }*/
-    }
-
-    public void onOtherPlayerCollisionDetected(Collider other)
-    {
-        lastCollisionType = CollisionTypeEnum.Player;
-        collisionDetected = true;
-        lastCollisionDirection = calculateCollisionDirection(other);
     }
 
     private Vector3 calculateCollisionDirection(Collider otherCollider)

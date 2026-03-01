@@ -21,6 +21,7 @@ public class PlayerStructure : MonoBehaviour
 
     private GameObject canvasInstance;
     private GameObject pivotInstance;
+    private VeichleSoundEffects soundEffects;
 
     public GameObject GetCanvasInstance()
     {
@@ -39,12 +40,16 @@ public class PlayerStructure : MonoBehaviour
             canvasInstance = Instantiate(canvasPrefab);
             canvasInstance.GetComponent<RaceGUI>().currentPlayer = gameObject;
             playerCamera = SpawnCamera(pivotInstance.GetComponent<VeichleAnchors>().cameraPivot);
+            soundEffects = pivotInstance.GetComponent<VeichleSoundEffects>();
             canvasInstance.GetComponent<Canvas>().worldCamera = playerCamera.GetComponent<Camera>();
             canvasInstance.GetComponent<Canvas>().planeDistance = 0.5f;
             canvasInstance.SetActive(false);
         }
+    }
 
-        
+    public VeichleSoundEffects GetSoundEffects()
+    {
+        return soundEffects;
     }
 
     GameObject SpawnCamera(Transform anchor) {
@@ -66,7 +71,7 @@ public class PlayerStructure : MonoBehaviour
         controller.cameraDesiredPosition = anchor;
 
         // Audio (added to the main game object, not the camera)
-        var audioListener = gameObject.AddComponent<AudioListener>();
+        var audioListener = pivotInstance.AddComponent<AudioListener>();
         audioListener.enabled = false;
 
         cameraObject.SetActive(false);
@@ -75,7 +80,7 @@ public class PlayerStructure : MonoBehaviour
 
     public void ActivatePlayerCamera(CameraMode mode)
     {
-        gameObject.GetComponent<AudioListener>().enabled = true;
+        pivotInstance.GetComponent<AudioListener>().enabled = true;
 
         Debug.Log("Activating camera for player: " + data.name + " in mode: " + mode.ToString());
 

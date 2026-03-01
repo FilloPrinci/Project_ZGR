@@ -555,7 +555,7 @@ public class RaceManager : MonoBehaviour
         }
         else
         {
-            Debug.Log($"[RaceManager] : Player {playerID} hit wrong checkpoint. Expected {currentPlayerRaceData.nextCheckpointIndex}, got {Array.IndexOf(checkPointList.ToArray(), checkPointGameObject.transform.parent?.gameObject)}");
+            //Debug.Log($"[RaceManager] : Player {playerID} hit wrong checkpoint. Expected {currentPlayerRaceData.nextCheckpointIndex}, got {Array.IndexOf(checkPointList.ToArray(), checkPointGameObject.transform.parent?.gameObject)}");
         }
 
     }
