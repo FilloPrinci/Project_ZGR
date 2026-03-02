@@ -374,157 +374,8 @@ public class PlayerController : MonoBehaviour
     private void LateUpdate()
     {
         InterpolateVeichlePivotRotation();
-        //InterpolateVeichlePivotPosition();
         veichlePivot.position = currentPosition;
 
-    }
-
-    private void FixedUpdate()
-    {
-
-
-        //fixedDeltaTime = Time.fixedDeltaTime;
-        
-
-        /*
-        
-
-        if (playerStats != null)
-        {
-            maxSpeed = playerStats.CurrentMaxSpeed;
-            accelleration = playerStats.CurrentAcceleration;
-            rotationMaxSpeed = playerStats.CurrentRotationSpeed;
-            rotationAccelleration = playerStats.CurrentRotationAcceleration;
-        }
-
-        if(raceManager.GetCurrentRacePhase() == RacePhase.Presentation)
-        {
-            // place the veichle
-            StartHoverEngine(enginePower);
-        }
-        else if (raceManager.GetCurrentRacePhase() == RacePhase.CountDown)
-        {
-            // hold still and start engine
-            StartHoverEngine(enginePower);
-
-            if (accelerateInput)
-            {
-                if (enginePower < 1f)
-                {
-                    enginePower = ExpDecay(enginePower, 1f, 2, fixedDeltaTime);
-                }
-            }
-            else
-            {
-                if (enginePower > 0.25f)
-                {
-                    enginePower = ExpDecay(enginePower, 0.25f, 5, fixedDeltaTime);
-                }
-            }
-
-            
-                
-
-        }
-        else if (raceManager.GetCurrentRacePhase() == RacePhase.Race || raceManager.GetCurrentRacePhase() == RacePhase.Results)
-        {
-            // can race on the track
-            HandleSteering();
-
-            if (!collisionDetected)
-            {
-                if (collisionVelocity != Vector3.zero)
-                {
-                    Bounce();
-                }
-                HandleMovement();
-            }
-            else
-            {
-                Collide();
-            }
-
-            transform.position += (normalMovementVelocity + collisionVelocity);
-
-            
-
-            if (lastCollisionDirection != Vector3.zero)
-            {
-                Debug.DrawRay(transform.position, lastCollisionDirection * 3f, Color.red, 0, false);
-            }
-
-            ApplyGravityAndHover();
-        }
-
-        // Store previous and current transforms for interpolation
-        previousPosition = currentPosition;
-        previousRotation = currentRotation;
-        currentPosition = transform.position;
-        currentRotation = transform.rotation;
-
-        */
-
-    }
-
-    [Obsolete]
-    Vector3 CheckBorderFastCollision(float forwardAmount, bool debug)
-    {
-        if (trackMainCollider == null || selfCollider == null)
-            return Vector3.zero;
-
-        if (forwardAmount != 0)
-        {
-            selfCollider.size = new Vector3(
-                selfColliderStartSize.x,
-                selfColliderStartSize.y,
-                selfColliderStartSize.z + forwardAmount
-            );
-
-            selfCollider.center = new Vector3(
-                selfCollider.center.x,
-                selfCollider.center.y,
-                forwardAmount / 2
-            );
-        }
-
-        Vector3 direction;
-        float distance;
-
-        bool isOverlapping = Physics.ComputePenetration(
-            selfCollider, transform.position, transform.rotation,
-            trackMainCollider, trackMainCollider.transform.position, trackMainCollider.transform.rotation,
-            out direction, out distance
-        );
-
-        if (isOverlapping)
-        {
-            if (debug)
-            {
-                Debug.DrawLine(transform.position, transform.position + direction * distance, Color.red, 0f, false);
-            }
-
-            return CalculateExitVector(direction, distance);
-        }
-        else
-        {
-            Debug.DrawRay(transform.position, Vector3.up * 0.3f, Color.green, 0f, false);
-            return Vector3.zero;
-        }
-    }
-
-    private Vector3 CalculateExitVector(Vector3 penetrationDirection, float penetrationDistance)
-    {
-        // Convert penetration vector to local space
-        Vector3 localDir = transform.InverseTransformDirection(penetrationDirection * penetrationDistance);
-
-        // Ignore Y axis
-        localDir.y = 0f;
-
-        // Rebuild vector keeping original penetration distance
-        localDir = localDir.normalized * penetrationDistance;
-
-        // Convert back to world space
-        return transform.TransformDirection(localDir);
     }
 
     void InterpolateVeichlePivotRotation()
@@ -538,12 +389,6 @@ public class PlayerController : MonoBehaviour
         Quaternion smoothedRotation = Quaternion.Slerp(currentRotationQuat, targetRotationQuat, t);
     
         veichlePivot.rotation = smoothedRotation;
-    }
-
-    void Bounce(float time)
-    {
-        float currentCollisionSpeed = Speed(collisionVelocity, time);
-        collisionVelocity = collisionVelocity.normalized * AccellerateSpeed(0, collisionBounceDecelleration, currentCollisionSpeed, time) * time;
     }
 
     Vector3 OnUpadteCollisionDetected(Vector3 collisionExitDirection, float time)
@@ -601,59 +446,6 @@ public class PlayerController : MonoBehaviour
         return bounceVector;
     }
 
-    [Obsolete]
-    void Collide(float time)
-    {
-        float collistionMovementFactor = 1f;
-        float collistionBounceFactor = 1f;
-        float damageFactor = 1f;
-
-        if (playerStats != null)
-        {
-            
-
-            if (lastCollisionType == CollisionTypeEnum.Player)
-            {
-                collistionMovementFactor = playerStats.playerSpeedCollisionFactor;
-                damageFactor = playerStats.playerDamageFactor;
-                collistionBounceFactor = playerStats.playerBounceCollisionFactor;
-            }
-            else if (lastCollisionType == CollisionTypeEnum.Obstacle)
-            {
-                collistionMovementFactor = playerStats.obstacleSpeedCollisionFactor;
-                damageFactor = playerStats.obstacleDamageFactor;
-                collistionBounceFactor = playerStats.obstacleBounceCollisionFactor;
-            }
-            else if (lastCollisionType == CollisionTypeEnum.Normal)
-            {
-                collistionMovementFactor = playerStats.normalSpeedCollistionFactor;
-                damageFactor = playerStats.normalDamageFactor;
-                collistionBounceFactor = playerStats.normalBounceCollistionFactor;
-            }
-
-            // recive damage
-            playerStats.OnDamage(damageFactor);
-            if (playerStructure != null)
-            {
-                playerStructure.UpdatePlayerGUI(playerStats);
-            }
-
-        }
-
-        normalMovementVelocity = normalMovementVelocity * collistionMovementFactor;
-        
-
-        if (playerCollisionDirection != Vector3.zero)
-        {
-            float currentSpeed = Speed(normalMovementVelocity, time);
-            float finalBounceForce = Mathf.Max(currentSpeed * collistionBounceFactor * bounceFactor, 1f);
-
-            collisionVelocity = playerCollisionDirection.normalized * finalBounceForce * fixedDeltaTime;
-        }
-
-        feedBackManager.TriggerCameraShake();
-    }
-
     void HandleSteering(float time)
     {
 
@@ -684,21 +476,6 @@ public class PlayerController : MonoBehaviour
         }
 
             return movement;
-    }
-
-    [Obsolete]
-    void HandleMovement(float time)
-    {
-        float currentSpeed = Speed(normalMovementVelocity, time);
-
-        if (accelerateInput)
-        {
-            normalMovementVelocity = transform.forward * AccellerateSpeed(maxSpeed, accelleration, currentSpeed, fixedDeltaTime) * fixedDeltaTime;
-        }
-        else
-        {
-            normalMovementVelocity = transform.forward * AccellerateSpeed(0, autoBrakeDecelleration, currentSpeed, fixedDeltaTime) * fixedDeltaTime;
-        }
     }
 
     float AccellerateRotationSpeed(float targetSpeed, float accelleration, float time)
@@ -799,46 +576,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    [Obsolete]
-    private bool ShouldHandleCollision(Collider other)
-    {
-        bool handleCollision = true;
-
-        if (other.tag.Equals("Checkpoint") || other.tag.Equals("Item") || other.tag.Equals("Zone"))
-        {
-            handleCollision = false;
-        }
-
-        return handleCollision;
-    }
-
-    private bool specialCollision(Collider collider)
-    {
-        return collider.tag.Equals("Player") || collider.tag.Equals("Obstacle");
-    }
-
     private void OnTriggerEnter(Collider other)
     {
-        if(specialCollision(other))
-        {
-            /*
-            if(other.tag.Equals("Player"))
-            {
-                lastCollisionType = CollisionTypeEnum.Player;
-            }
-            else if (other.tag.Equals("Obstacle"))
-            {
-                lastCollisionType = CollisionTypeEnum.Obstacle;
-            }
-
-            collisionDetected = true;
-
-            //lastCollisionDirection = calculateCollisionDirection(other);
-            Vector3 exitVector = calculateCollisionDirection(other);
-            globalBounceVector = OnUpadteCollisionDetected(exitVector, deltaTime);
-            */
-        }
-        else if (other.tag.Equals("Checkpoint"))
+        if (other.tag.Equals("Checkpoint"))
         {
             // Checkpoint reached
             raceManager.OnCheckpoint(playerData.name, other.gameObject);
@@ -868,27 +608,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (specialCollision(other))
-        {
-            /*
-            if (other.tag.Equals("Player"))
-            {
-                lastCollisionType = CollisionTypeEnum.Player;
-            }
-            else if (other.tag.Equals("Obstacle"))
-            {
-                lastCollisionType = CollisionTypeEnum.Obstacle;
-            }
-            else
-            {
-                lastCollisionType = CollisionTypeEnum.Normal;
-            }
-
-            collisionDetected = true;
-            lastCollisionDirection = calculateCollisionDirection(other);
-            */
-        }
-        else if (other.tag.Equals("Zone"))
+        if (other.tag.Equals("Zone"))
         {
             ZoneData zoneData = other.GetComponent<ZoneData>();
 
@@ -926,52 +646,6 @@ public class PlayerController : MonoBehaviour
             collisionDetected = false;
             lastCollisionDirection = Vector3.zero;
         }*/
-    }
-
-    private Vector3 calculateCollisionDirection(Collider otherCollider)
-    {
-        Vector3 worldDirection;
-
-        if (otherCollider is BoxCollider || otherCollider is SphereCollider || otherCollider is CapsuleCollider ||
-            (otherCollider is MeshCollider meshCol && meshCol.convex))
-        {
-            Vector3 contactPoint = otherCollider.ClosestPoint(transform.position);
-            worldDirection = (transform.position - contactPoint).normalized;
-        }
-        else
-        {
-            Vector3 direction;
-            float distance;
-
-            bool isOverlapping = Physics.ComputePenetration(
-                GetComponent<Collider>(), transform.position, transform.rotation,
-                otherCollider, otherCollider.transform.position, otherCollider.transform.rotation,
-                out direction, out distance
-            );
-
-            if (isOverlapping)
-            {
-
-                worldDirection = direction;
-            }
-            else
-            {
-                Vector3 fallbackContact = otherCollider.bounds.ClosestPoint(transform.position);
-                worldDirection = (transform.position - fallbackContact).normalized;
-            }
-        }
-
-        // Convert the direction from world space to local space
-        Vector3 localDir = transform.InverseTransformDirection(worldDirection);
-
-        // Ignore the Y axis to keep only the XZ plane
-        localDir.y = 0f;
-
-        // Normalize to prevent distortion after removing Y
-        localDir.Normalize();
-
-        // Convert back to world space if you want to apply it globally
-        return transform.TransformDirection(localDir);
     }
 
     float Speed(Vector3 vector, float time)
