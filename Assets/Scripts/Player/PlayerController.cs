@@ -94,46 +94,18 @@ public class PlayerController : MonoBehaviour
     private Vector3 localBounceVector = Vector3.zero;
     private Vector3 localExitVector = Vector3.zero;
 
-    public BoxCollider GetCollider()
-    {
-        if(selfCollider == null)
-        {
-            selfCollider = GetComponent<BoxCollider>();
-        }
-
-        return selfCollider;
-    }
-
-    public void SetPlayerCollisionInfo(PlayerCollisionInfo playerCollisionInfo)
-    {
-        this.playerCollisionInfo = playerCollisionInfo;
-    }
-
-    public void SetTrackCollisionInfo(PlayerCollisionInfo trackCollisionInfo)
-    {
-        this.trackCollisionInfo = trackCollisionInfo;
-    }
-
-    public void ClearPlayerCollisionInfo()
-    {
-        playerCollisionInfo = null;
-    }
+    #region Unity Standard Methods
 
     private void OnValidate()
     {
-        if(playerSoundManager == null)
+        if (playerSoundManager == null)
         {
             Debug.LogWarning("PlayerSoundManager reference is missing in PlayerController. Attempting to find it on the same GameObject.");
         }
         else
         {
-            
-        }
-    }
 
-    private bool IsHuman()
-    {
-        return playerData.playerInputIndex != InputIndex.CPU;
+        }
     }
 
     private void Start()
@@ -142,7 +114,7 @@ public class PlayerController : MonoBehaviour
         feedBackManager = GetComponent<FeedBackManager>();
         globalInputManager = GlobalInputManager.Instance;
         raceManager = RaceManager.Instance;
-        
+
         if (globalInputManager == null)
         {
             Debug.LogError("GlobalInputManager is not available in the scene. Make sure an GlobalInputManager exists.");
@@ -151,7 +123,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if(playerData.playerInputIndex != InputIndex.CPU && !autoDrive)
+            if (playerData.playerInputIndex != InputIndex.CPU && !autoDrive)
             {
                 playerInputHandler = globalInputManager.GetPlayerInput((int)playerData.playerInputIndex).GetComponent<PlayerInputHandler>();
             }
@@ -173,13 +145,14 @@ public class PlayerController : MonoBehaviour
             veichlePivot.rotation = transform.rotation;
         }
 
-        if(raceManager != null)
+        if (raceManager != null)
         {
             trackMainCollider = raceManager.trackMainCollider;
         }
 
         selfCollider = GetComponent<BoxCollider>();
-        if (selfCollider != null) {
+        if (selfCollider != null)
+        {
             selfColliderStartSize = selfCollider.size;
         }
 
@@ -195,7 +168,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if(raceManager.IsPaused())
+        if (raceManager.IsPaused())
         {
             pauseMode = true;
             return;
@@ -207,7 +180,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Resuming PlayerController after pause");
             return;
         }
-        
+
         deltaTime = Time.deltaTime;
 
         // collect input
@@ -290,7 +263,7 @@ public class PlayerController : MonoBehaviour
                 //exitVector.y = 0; // ignore vertical component for bounce
 
             }
-            else if(playerCollisionInfo != null && playerCollisionInfo.isColliding)
+            else if (playerCollisionInfo != null && playerCollisionInfo.isColliding)
             {
                 collisionDetected = true;
                 lastCollisionType = CollisionTypeEnum.Player;
@@ -340,7 +313,7 @@ public class PlayerController : MonoBehaviour
             // manage hover and gravity
             ApplyGravityAndHover(deltaTime, debugMode);
 
-            
+
         }
 
         // Store previous and current transforms for interpolation
@@ -357,6 +330,175 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    private void LateUpdate()
+    {
+        InterpolateVeichlePivotRotation();
+        veichlePivot.position = currentPosition;
+
+    }
+
+    #endregion
+
+    #region Unity Physix
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag.Equals("Checkpoint"))
+        {
+            // Checkpoint reached
+            raceManager.OnCheckpoint(playerData.name, other.gameObject);
+        }
+        else if (other.tag.Equals("Item"))
+        {
+            ItemData itemData = other.GetComponent<ItemData>();
+            if (playerStats != null && itemData != null)
+            {
+                if (itemData.Type == ItemType.Turbo)
+                {
+                    playerStats.StartTurbo();
+                }
+                else
+                {
+                    playerStats.OnItemAcquired(itemData.Type);
+                    if (playerStructure != null)
+                    {
+                        playerStructure.UpdatePlayerGUI(playerStats);
+                    }
+
+                }
+            }
+            else
+            {
+                Debug.LogError("access to item data failed");
+            }
+        }
+
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.tag.Equals("Zone"))
+        {
+            ZoneData zoneData = other.GetComponent<ZoneData>();
+
+            if (zoneData != null)
+            {
+                if (playerStats != null && zoneData != null)
+                {
+                    if (zoneData.Type == ZoneType.Recharge)
+                    {
+                        float currentSpeed = GetCurrentSpeed();
+                        playerStats.OnEnergyRechargeBySpeed(Time.fixedDeltaTime, currentSpeed);
+                        if (playerStructure != null)
+                        {
+                            playerStructure.UpdatePlayerGUI(playerStats);
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.LogError("access to zoneData failed");
+                }
+            }
+
+
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        /*
+        if (ShouldHandleCollision(other))
+        {
+            
+            lastCollisionType = CollisionTypeEnum.None;
+
+            collisionDetected = false;
+            lastCollisionDirection = Vector3.zero;
+        }*/
+    }
+
+    #endregion
+
+    #region public attributes methods
+
+    public BoxCollider GetCollider()
+    {
+        if(selfCollider == null)
+        {
+            selfCollider = GetComponent<BoxCollider>();
+        }
+
+        return selfCollider;
+    }
+
+    public void SetPlayerCollisionInfo(PlayerCollisionInfo playerCollisionInfo)
+    {
+        this.playerCollisionInfo = playerCollisionInfo;
+    }
+
+    public void SetTrackCollisionInfo(PlayerCollisionInfo trackCollisionInfo)
+    {
+        this.trackCollisionInfo = trackCollisionInfo;
+    }
+
+    public void ClearPlayerCollisionInfo()
+    {
+        playerCollisionInfo = null;
+    }
+
+    #endregion
+
+    #region public methods
+
+    public bool IsHuman()
+    {
+        return playerData.playerInputIndex != InputIndex.CPU;
+    }
+
+    public float GetCurrentSpeed()
+    {
+        return globalUpdateSpeed;
+    }
+
+    public float GetMaxSpeed()
+    {
+        return maxSpeed;
+    }
+
+    public GameObject GetVeichleModel()
+    {
+        return veichleModelInstance;
+    }
+
+    public VeichleAnchors GetVeichleAnchors()
+    {
+        return veichlePivot.gameObject.GetComponent<VeichleAnchors>();
+    }
+
+    public void EndRace()
+    {
+        if (!autoDrive)
+        {
+            autoDrive = true;
+        }
+
+        // update input
+        playerInputHandler = CPUInputHandlerManager.Instance.GetCPUInput(playerData.cpuIndex);
+
+        //update camera
+        feedBackManager.TriggerEndRaceCameraView();
+    }
+
+    public bool GetAccelerateInput()
+    {
+        return accelerateInput;
+    }
+
+    #endregion
+
+    #region private methods
+
     private void ApplyVectorsToLocalPosition(Vector3 localMovement, Vector3 localBounce, Vector3 localExitVector)
     {
         localBounce.y = 0; // Ensure no vertical movement is applied from bounce vector
@@ -371,27 +513,20 @@ public class PlayerController : MonoBehaviour
         transform.localPosition += totalLocalMovement;
     }
 
-    private void LateUpdate()
+    private void InterpolateVeichlePivotRotation()
     {
-        InterpolateVeichlePivotRotation();
-        veichlePivot.position = currentPosition;
 
-    }
-
-    void InterpolateVeichlePivotRotation()
-    {
-    
         // Smooth rotation using exponential decay on Quaternions
         Quaternion currentRotationQuat = veichlePivot.rotation;
         Quaternion targetRotationQuat = currentRotation;
-    
+
         float t = 1f - Mathf.Exp(-pivotRotationDecay * deltaTime);
         Quaternion smoothedRotation = Quaternion.Slerp(currentRotationQuat, targetRotationQuat, t);
-    
+
         veichlePivot.rotation = smoothedRotation;
     }
 
-    Vector3 OnUpadteCollisionDetected(Vector3 collisionExitDirection, float time)
+    private Vector3 OnUpadteCollisionDetected(Vector3 collisionExitDirection, float time)
     {
         float collistionMovementFactor = 1f;
         float collistionBounceFactor = 1f;
@@ -446,7 +581,7 @@ public class PlayerController : MonoBehaviour
         return bounceVector;
     }
 
-    void HandleSteering(float time)
+    private void HandleSteering(float time)
     {
 
         if (steerInput != 0)
@@ -461,7 +596,7 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(0, rotationVelocity * time, 0, Space.Self);
     }
 
-    Vector3 CalculateLocalMovement(float time)
+    private Vector3 CalculateLocalMovement(float time)
     {
         Vector3 movement = Vector3.zero;
         float currentSpeed = globalUpdateMovementVector.magnitude / time;
@@ -475,10 +610,10 @@ public class PlayerController : MonoBehaviour
             movement = transform.forward * AccellerateSpeed(0, autoBrakeDecelleration, currentSpeed, time) * time;
         }
 
-            return movement;
+        return movement;
     }
 
-    float AccellerateRotationSpeed(float targetSpeed, float accelleration, float time)
+    private float AccellerateRotationSpeed(float targetSpeed, float accelleration, float time)
     {
         if (Mathf.Abs(targetSpeed - currentRotationSpeed) < 0.1f)
         {
@@ -491,7 +626,7 @@ public class PlayerController : MonoBehaviour
         return currentRotationSpeed;
     }
 
-    float AccellerateSpeed(float targetSpeed, float accelleration, float currentSpeed, float time)
+    private float AccellerateSpeed(float targetSpeed, float accelleration, float currentSpeed, float time)
     {
         if (Mathf.Abs(targetSpeed - currentSpeed) < 0.1f)
         {
@@ -504,8 +639,7 @@ public class PlayerController : MonoBehaviour
         return currentSpeed;
     }
 
-
-    void StartHoverEngine(float power, float time, bool drawLine)
+    private void StartHoverEngine(float power, float time, bool drawLine)
     {
         float gravityFallbackSpeed = 10f;
 
@@ -536,7 +670,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void ApplyGravityAndHover(float time, bool drawLine)
+    private void ApplyGravityAndHover(float time, bool drawLine)
     {
         float gravityFallbackSpeed = 10f;
         Vector3 rayOrigin = transform.position + transform.up;
@@ -548,7 +682,7 @@ public class PlayerController : MonoBehaviour
         {
             Debug.DrawLine(rayOrigin, rayOrigin - transform.up * hoverHeight * 4f, Color.blue, 0f, false);
         }
-        
+
         if (Physics.Raycast(rayOrigin, -transform.up, out hit, hoverHeight * 4f, hoverRaycastMask))
         {
             if (drawLine)
@@ -576,119 +710,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.tag.Equals("Checkpoint"))
-        {
-            // Checkpoint reached
-            raceManager.OnCheckpoint(playerData.name, other.gameObject);
-        }else if (other.tag.Equals("Item"))
-        {
-            ItemData itemData = other.GetComponent<ItemData>();
-            if (playerStats != null && itemData != null) {
-                if (itemData.Type == ItemType.Turbo) {
-                    playerStats.StartTurbo();
-                }
-                else
-                {
-                    playerStats.OnItemAcquired(itemData.Type);
-                    if (playerStructure != null) {
-                        playerStructure.UpdatePlayerGUI(playerStats);
-                    }
-
-                }
-            }
-            else
-            {
-                Debug.LogError("access to item data failed");
-            }
-        }
-        
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.tag.Equals("Zone"))
-        {
-            ZoneData zoneData = other.GetComponent<ZoneData>();
-
-            if (zoneData != null) {
-                if (playerStats != null && zoneData != null)
-                {
-                    if (zoneData.Type == ZoneType.Recharge)
-                    {
-                        float currentSpeed = GetCurrentSpeed();
-                        playerStats.OnEnergyRechargeBySpeed(Time.fixedDeltaTime, currentSpeed);
-                        if (playerStructure != null)
-                        {
-                            playerStructure.UpdatePlayerGUI(playerStats);
-                        }
-                    }
-                }
-                else
-                {
-                    Debug.LogError("access to zoneData failed");
-                }
-            }
-
-            
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        /*
-        if (ShouldHandleCollision(other))
-        {
-            
-            lastCollisionType = CollisionTypeEnum.None;
-
-            collisionDetected = false;
-            lastCollisionDirection = Vector3.zero;
-        }*/
-    }
-
-    float Speed(Vector3 vector, float time)
+    private float Speed(Vector3 vector, float time)
     {
         return vector.magnitude / time;
     }
-    public float GetCurrentSpeed()
-    {
-        return globalUpdateSpeed;
-    }
 
-    public float GetMaxSpeed()
-    {
-        return maxSpeed;
-    }
-
-    public GameObject GetVeichleModel()
-    {
-        return veichleModelInstance;
-    }
-
-    public VeichleAnchors GetVeichleAnchors()
-    {
-        return veichlePivot.gameObject.GetComponent<VeichleAnchors>();
-    }
-
-    public void EndRace()
-    {
-        if (!autoDrive)
-        {
-            autoDrive = true;
-        }
-
-        // update input
-        playerInputHandler = CPUInputHandlerManager.Instance.GetCPUInput(playerData.cpuIndex);
-
-        //update camera
-        feedBackManager.TriggerEndRaceCameraView();
-    }
-
-    public bool GetAccelerateInput()
-    {
-        return accelerateInput;
-    }
-
+    #endregion
 }
