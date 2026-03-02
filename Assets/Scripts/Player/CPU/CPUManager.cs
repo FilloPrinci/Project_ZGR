@@ -357,7 +357,7 @@ public class CPUManager : MonoBehaviour
             otherVeichleSafeDistance = otherVeichleSafeDistance
         };
 
-        JobHandle handle = job.Schedule(cpuCount, 4);
+        JobHandle handle = job.Schedule(cpuCount, 10);
         handle.Complete();
         /*
         if (instancedPlayersList != null)
