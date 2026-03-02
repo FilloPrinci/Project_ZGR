@@ -183,26 +183,9 @@ public class PlayerController : MonoBehaviour
 
         deltaTime = Time.deltaTime;
 
-        // collect input
-        if (raceManager.GetCurrentRacePhase() == RacePhase.CountDown || raceManager.GetCurrentRacePhase() == RacePhase.Race || raceManager.GetCurrentRacePhase() == RacePhase.Results)
-        {
-            steerInput = playerInputHandler.SteerInput;
-            accelerateInput = playerInputHandler.AccelerateInput;
-        }
-        else
-        {
-            steerInput = 0;
-            accelerateInput = false;
-        }
+        CollectInput();
 
-        // update player stats
-        if (playerStats != null)
-        {
-            maxSpeed = playerStats.CurrentMaxSpeed;
-            accelleration = playerStats.CurrentAcceleration;
-            rotationMaxSpeed = playerStats.CurrentRotationSpeed;
-            rotationAccelleration = playerStats.CurrentRotationAcceleration;
-        }
+        UpdatePlayerStats();
 
         // manage race steps
         if (raceManager.GetCurrentRacePhase() == RacePhase.Presentation)
@@ -233,101 +216,12 @@ public class PlayerController : MonoBehaviour
         }
         else if (raceManager.GetCurrentRacePhase() == RacePhase.Race || raceManager.GetCurrentRacePhase() == RacePhase.Results)
         {
-            // can race on the track
-            HandleSteering(deltaTime);
-            globalUpdateMovementVector = CalculateLocalMovement(deltaTime);
-
-            Vector3 updateDifference = currentPosition - previousPosition;
-            float forwardAmount = Vector3.Dot(updateDifference, transform.forward);
-
-            forwardAmount *= deltaTime;
-
-            // check if collides
-            if (collisionDetected)
-            {
-                if (lastCollisionType == CollisionTypeEnum.Normal)
-                {
-                    // reset collision flag
-                    collisionDetected = false;
-                }
-            }
-
-
-
-            if (trackCollisionInfo != null && trackCollisionInfo.isColliding)
-            {
-                collisionDetected = true;
-                lastCollisionType = CollisionTypeEnum.Normal;
-                // calculate exit vector from collision info
-                exitVector = trackCollisionInfo.collisionNormal * trackCollisionInfo.penetrationDepth;
-                //exitVector.y = 0; // ignore vertical component for bounce
-
-            }
-            else if (playerCollisionInfo != null && playerCollisionInfo.isColliding)
-            {
-                collisionDetected = true;
-                lastCollisionType = CollisionTypeEnum.Player;
-
-                // calculate exit vector from collision info
-                exitVector = playerCollisionInfo.collisionNormal * playerCollisionInfo.penetrationDepth;
-            }
-            else
-            {
-                collisionDetected = false;
-                lastCollisionType = CollisionTypeEnum.None;
-            }
-
-            if (collisionDetected)
-            {
-                playerSoundManager.PlayCollisionEffect();
-
-                // manage collision
-                globalBounceVector = OnUpadteCollisionDetected(exitVector, deltaTime);
-                //globalUpdateMovementVector = globalBounceVector;
-                Debug.DrawLine(transform.position, transform.position + exitVector, Color.red, 0, false);
-
-                // bounce vector in local coordinates
-                localBounceVector = transform.InverseTransformDirection(globalBounceVector);
-                localExitVector = transform.InverseTransformDirection(exitVector);
-
-                // block player from entering the wall by moving it out of the collision
-                //transform.position += exitVector;
-
-            }
-            else if (localBounceVector.magnitude > 0)
-            {
-                localExitVector = Vector3.zero;
-
-                if (localBounceVector.magnitude > 0.05)
-                {
-                    localBounceVector = Utils.ExpDecay(localBounceVector, Vector3.zero, collisionBounceDecelleration, deltaTime);
-                }
-                else
-                {
-                    localBounceVector = Vector3.zero;
-                }
-            }
-
-            ApplyVectorsToLocalPosition(globalUpdateMovementVector, localBounceVector, localExitVector);
-
-            // manage hover and gravity
-            ApplyGravityAndHover(deltaTime, debugMode);
-
-
+            Race();
         }
 
-        // Store previous and current transforms for interpolation
-        previousPosition = currentPosition;
-        previousRotation = currentRotation;
-        currentPosition = transform.position;
-        currentRotation = transform.rotation;
+        UpdatePrevAndCurrentTransforms();
 
-        // manage feedback
-        feedBackManager.SetSteeringFeedBackAmount(steerInput);
-        feedBackManager.TurboFeedBack(playerStats.onTurbo);
-
-        globalUpdateSpeed = Speed(globalUpdateMovementVector, deltaTime);
-
+        OnUpdateFeedback();
     }
 
     private void LateUpdate()
@@ -498,6 +392,132 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region private methods
+
+    private void UpdatePrevAndCurrentTransforms()
+    {
+        // Store previous and current transforms for interpolation
+        previousPosition = currentPosition;
+        previousRotation = currentRotation;
+        currentPosition = transform.position;
+        currentRotation = transform.rotation;
+
+        globalUpdateSpeed = Speed(globalUpdateMovementVector, deltaTime);
+    }
+
+    private void OnUpdateFeedback()
+    {
+        // manage feedback
+        feedBackManager.SetSteeringFeedBackAmount(steerInput);
+        feedBackManager.TurboFeedBack(playerStats.onTurbo);
+    }
+
+    private void CollectInput()
+    {
+        // collect input
+        if (raceManager.GetCurrentRacePhase() == RacePhase.CountDown || raceManager.GetCurrentRacePhase() == RacePhase.Race || raceManager.GetCurrentRacePhase() == RacePhase.Results)
+        {
+            steerInput = playerInputHandler.SteerInput;
+            accelerateInput = playerInputHandler.AccelerateInput;
+        }
+        else
+        {
+            steerInput = 0;
+            accelerateInput = false;
+        }
+    }
+
+    private void UpdatePlayerStats()
+    {
+        // update player stats
+        if (playerStats != null)
+        {
+            maxSpeed = playerStats.CurrentMaxSpeed;
+            accelleration = playerStats.CurrentAcceleration;
+            rotationMaxSpeed = playerStats.CurrentRotationSpeed;
+            rotationAccelleration = playerStats.CurrentRotationAcceleration;
+        }
+    }
+
+    private void Race()
+    {
+        // can race on the track
+        HandleSteering(deltaTime);
+        globalUpdateMovementVector = CalculateLocalMovement(deltaTime);
+
+        Vector3 updateDifference = currentPosition - previousPosition;
+        float forwardAmount = Vector3.Dot(updateDifference, transform.forward);
+
+        forwardAmount *= deltaTime;
+
+        // check if collides
+        if (collisionDetected)
+        {
+            if (lastCollisionType == CollisionTypeEnum.Normal)
+            {
+                // reset collision flag
+                collisionDetected = false;
+            }
+        }
+
+        if (trackCollisionInfo != null && trackCollisionInfo.isColliding)
+        {
+            collisionDetected = true;
+            lastCollisionType = CollisionTypeEnum.Normal;
+            // calculate exit vector from collision info
+            exitVector = trackCollisionInfo.collisionNormal * trackCollisionInfo.penetrationDepth;
+            //exitVector.y = 0; // ignore vertical component for bounce
+
+        }
+        else if (playerCollisionInfo != null && playerCollisionInfo.isColliding)
+        {
+            collisionDetected = true;
+            lastCollisionType = CollisionTypeEnum.Player;
+
+            // calculate exit vector from collision info
+            exitVector = playerCollisionInfo.collisionNormal * playerCollisionInfo.penetrationDepth;
+        }
+        else
+        {
+            collisionDetected = false;
+            lastCollisionType = CollisionTypeEnum.None;
+        }
+
+        if (collisionDetected)
+        {
+            playerSoundManager.PlayCollisionEffect();
+
+            // manage collision
+            globalBounceVector = OnUpadteCollisionDetected(exitVector, deltaTime);
+            //globalUpdateMovementVector = globalBounceVector;
+            Debug.DrawLine(transform.position, transform.position + exitVector, Color.red, 0, false);
+
+            // bounce vector in local coordinates
+            localBounceVector = transform.InverseTransformDirection(globalBounceVector);
+            localExitVector = transform.InverseTransformDirection(exitVector);
+
+            // block player from entering the wall by moving it out of the collision
+            //transform.position += exitVector;
+
+        }
+        else if (localBounceVector.magnitude > 0)
+        {
+            localExitVector = Vector3.zero;
+
+            if (localBounceVector.magnitude > 0.05)
+            {
+                localBounceVector = Utils.ExpDecay(localBounceVector, Vector3.zero, collisionBounceDecelleration, deltaTime);
+            }
+            else
+            {
+                localBounceVector = Vector3.zero;
+            }
+        }
+
+        ApplyVectorsToLocalPosition(globalUpdateMovementVector, localBounceVector, localExitVector);
+
+        // manage hover and gravity
+        ApplyGravityAndHover(deltaTime, debugMode);
+    }
 
     private void ApplyVectorsToLocalPosition(Vector3 localMovement, Vector3 localBounce, Vector3 localExitVector)
     {
