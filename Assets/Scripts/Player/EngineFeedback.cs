@@ -15,27 +15,12 @@ public class EngineFeedback : MonoBehaviour
     public bool boostMode = false;
     private float desideredEffectScale = 1f;
 
-    [Header("Audio Effects")]
-    public AudioSource engineAudioSource;
-    public float baseAudioVolume = 1f; // Base volume for the engine sound
-    public float engineAudioVolume = 0.5f;
-
-    private float baseAudioPitch = 1f; // Base pitch for the engine sound
-    private float desideredAudioPitch = 1f; // Desired pitch based on engine power
-    private float desideredAudioVolume = 1f; // Desired volume based on engine power
 
     private float deltaTime;
 
     private void Awake()
     {
-        if (engineAudioSource != null)
-        {
-            float randomPitch = Random.Range(0.01f, 0.1f);
 
-            baseAudioPitch += randomPitch;
-
-            engineAudioSource.volume = baseAudioVolume;
-        }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -59,7 +44,6 @@ public class EngineFeedback : MonoBehaviour
     private void LateUpdate()
     {
         ApplyScale();
-        ApplyAudioEffects();
     }
 
     void GetEffectsReady()
@@ -85,18 +69,7 @@ public class EngineFeedback : MonoBehaviour
             desideredEffectScale = maxEffectScale;
         }
 
-        // Audio Effects
-
-        if (!boostMode)
-        {
-            desideredAudioPitch = Mathf.Lerp(baseAudioPitch, baseAudioPitch * 2f, currentEnginePower); // Adjust the pitch range as needed
-            desideredAudioVolume = Mathf.Lerp(baseAudioVolume * 0.5f, baseAudioVolume, currentEnginePower); // Adjust volume based on engine power
-        }
-        else
-        {
-            desideredAudioPitch = baseAudioPitch * 2f; // Max pitch in boost mode
-            desideredAudioVolume = baseAudioVolume; // Max volume in boost mode
-        }
+        
     }
 
     private void ApplyScale()
@@ -108,22 +81,5 @@ public class EngineFeedback : MonoBehaviour
         engineEffectModel.transform.localScale = new Vector3(1, newScale, 1);
     }
 
-    private void ApplyAudioEffects()
-    {
-        if(engineAudioSource != null)
-        {
-            float currentAudioPitch = engineAudioSource.pitch;
-            desideredAudioPitch = baseAudioPitch + currentEnginePower; // Adjust pitch based on boost mode and engine power
-            desideredAudioPitch = Mathf.Lerp(currentAudioPitch, desideredAudioPitch, deltaTime * 5f); // Smoothly interpolate pitch
-
-            engineAudioSource.pitch = desideredAudioPitch;
-
-            float currentAudioVolume = engineAudioSource.volume;
-            desideredAudioVolume = baseAudioVolume + (currentEnginePower * engineAudioVolume); // Adjust volume based on boost mode and engine power
-            desideredAudioVolume = Mathf.Lerp(currentAudioVolume, desideredAudioVolume, deltaTime * 5f); // Smoothly interpolate volume
-
-            engineAudioSource.volume = desideredAudioVolume;
-        }
-    }
 
 }

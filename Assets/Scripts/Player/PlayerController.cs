@@ -161,8 +161,8 @@ public class PlayerController : MonoBehaviour
             speedCoroutine = StartCoroutine(UpdatePositionsForSpeed(5));
         }*/
 
-        playerSoundManager.SetVeichleSoundEffects(playerStructure.GetSoundEffects());
-        playerSoundManager.humanPlayer = IsHuman();
+        playerSoundManager.Setup(IsHuman(), playerStructure.GetSoundEffects());
+
 
     }
 
