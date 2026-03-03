@@ -30,12 +30,16 @@ public class PlayerSoundManager : MonoBehaviour
         this.isHuman = isHuman;
         this.soundEffects = soundEffects;
 
-        engineAudioSource = soundEffects.engineEffect.audioSource;
+        if (this.soundEffects != null) {
+            engineAudioSource = soundEffects.engineEffect.audioSource;
 
-        if (isHuman && soundEffects != null)
-        {
-            CustomAudioEffect collisionAudioEffect = soundEffects.collisionEffect;
+            if (isHuman)
+            {
+                CustomAudioEffect collisionAudioEffect = soundEffects.collisionEffect;
+            }
         }
+
+
     }
 
 
@@ -62,35 +66,33 @@ public class PlayerSoundManager : MonoBehaviour
 
         if (engineAudioSource != null)
         {
-            float desideredAudioPitch = 1f; // Desired pitch based on engine power
-            float desideredAudioVolume = 1f; // Desired volume based on engine power
             float baseAudioPitch = soundEffects.engineEffect.basePitch; // Base pitch for the engine sound
             float baseAudioVolume = soundEffects.engineEffect.baseVolume; // Base volume for the engine sound
             float engineAudioVolume = soundEffects.engineEffect.volumeFactor; // Volume factor for the engine sound
 
             if (!boostMode)
             {
-                desideredAudioPitch = Mathf.Lerp(baseAudioPitch, baseAudioPitch * 2f, currentEnginePower); // Adjust the pitch range as needed
-                desideredAudioVolume = Mathf.Lerp(baseAudioVolume * 0.5f, baseAudioVolume, currentEnginePower); // Adjust volume based on engine power
+                soundEffects.engineEffect.desideredPitch = Mathf.Lerp(baseAudioPitch, baseAudioPitch * 2f, currentEnginePower); // Adjust the pitch range as needed
+                soundEffects.engineEffect.desideredVolume = Mathf.Lerp(baseAudioVolume * 0.5f, baseAudioVolume, currentEnginePower); // Adjust volume based on engine power
             }
             else
             {
-                desideredAudioPitch = baseAudioPitch * 2f; // Max pitch in boost mode
-                desideredAudioVolume = baseAudioVolume; // Max volume in boost mode
+                soundEffects.engineEffect.desideredPitch = baseAudioPitch * 2f; // Max pitch in boost mode
+                soundEffects.engineEffect.desideredVolume = baseAudioVolume; // Max volume in boost mode
             }
 
 
             float currentAudioPitch = engineAudioSource.pitch;
-            desideredAudioPitch = baseAudioPitch + currentEnginePower; // Adjust pitch based on boost mode and engine power
-            desideredAudioPitch = Mathf.Lerp(currentAudioPitch, desideredAudioPitch, deltaTime * 5f); // Smoothly interpolate pitch
+            soundEffects.engineEffect.desideredPitch = baseAudioPitch + currentEnginePower; // Adjust pitch based on boost mode and engine power
+            soundEffects.engineEffect.desideredPitch = Mathf.Lerp(currentAudioPitch, soundEffects.engineEffect.desideredPitch, deltaTime * 5f); // Smoothly interpolate pitch
 
-            engineAudioSource.pitch = desideredAudioPitch;
+            engineAudioSource.pitch = soundEffects.engineEffect.desideredPitch;
 
             float currentAudioVolume = engineAudioSource.volume;
-            desideredAudioVolume = baseAudioVolume + (currentEnginePower * engineAudioVolume); // Adjust volume based on boost mode and engine power
-            desideredAudioVolume = Mathf.Lerp(currentAudioVolume, desideredAudioVolume, deltaTime * 5f); // Smoothly interpolate volume
+            soundEffects.engineEffect.desideredVolume = baseAudioVolume + (currentEnginePower * engineAudioVolume); // Adjust volume based on boost mode and engine power
+            soundEffects.engineEffect.desideredVolume = Mathf.Lerp(currentAudioVolume, soundEffects.engineEffect.desideredVolume, deltaTime * 5f); // Smoothly interpolate volume
 
-            engineAudioSource.volume = desideredAudioVolume;
+            engineAudioSource.volume = soundEffects.engineEffect.desideredVolume;
         }
     }
 }

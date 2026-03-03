@@ -10,14 +10,6 @@ public class VeichleEffects : MonoBehaviour
     public float particlePower = 0f;
     private List<ParticleSystem> particleEffectList = new List<ParticleSystem>();
 
-    private void OnValidate()
-    {
-        if(engineAudioSource != null)
-        {
-            engineFeedback.engineAudioSource = engineAudioSource;
-        }
-    }
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

@@ -162,8 +162,6 @@ public class PlayerController : MonoBehaviour
         }*/
 
         playerSoundManager.Setup(IsHuman(), playerStructure.GetSoundEffects());
-
-
     }
 
     private void Update()
@@ -409,6 +407,9 @@ public class PlayerController : MonoBehaviour
         // manage feedback
         feedBackManager.SetSteeringFeedBackAmount(steerInput);
         feedBackManager.TurboFeedBack(playerStats.onTurbo);
+
+        // manage audio feedback
+        playerSoundManager.UpdateEngineEffect(playerStats.onTurbo, feedBackManager.GetCurrentEnginePower() / 2);
     }
 
     private void CollectInput()

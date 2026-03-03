@@ -83,12 +83,12 @@ AudioSource:
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 64
-  DopplerLevel: 5
+  DopplerLevel: 3
   MinDistance: 0.5
-  MaxDistance: 100
+  MaxDistance: 150
   Pan2D: 0
   rolloffMode: 2
-  BypassEffects: 1
+  BypassEffects: 0
   BypassListenerEffects: 1
   BypassReverbZones: 1
   rolloffCustomCurve:
@@ -280,10 +280,16 @@ MonoBehaviour:
     audioSource: {fileID: 7672058964035011353}
     basePitch: 1
     baseVolume: 0.5
+    volumeFactor: 1
+    desideredPitch: 1
+    desideredVolume: 1
   engineEffect:
     audioSource: {fileID: 137701037368330721}
     basePitch: 1
-    baseVolume: 1
+    baseVolume: 0.01
+    volumeFactor: 0.2
+    desideredPitch: 1
+    desideredVolume: 1
 --- !u!1 &4830152694235476529
 GameObject:
   m_ObjectHideFlags: 0

@@ -96,6 +96,11 @@ public class FeedBackManager : MonoBehaviour
 
     }
 
+    public float GetCurrentEnginePower()
+    {
+        return currentEnginePower;
+    }
+
     public void SetSteeringFeedBackAmount(float newAmount) { 
         steeringAmount = newAmount;  
     }
