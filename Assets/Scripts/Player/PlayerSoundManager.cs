@@ -33,21 +33,21 @@ public class PlayerSoundManager : MonoBehaviour
         if (this.soundEffects != null) {
             engineAudioSource = soundEffects.engineEffect.audioSource;
 
-            if (isHuman)
+            if (!isHuman)
             {
-                CustomAudioEffect collisionAudioEffect = soundEffects.collisionEffect;
+                soundEffects.engineEffect.basePitch += Random.Range(-0.5f, 0.5f);
+                soundEffects.engineEffect.baseVolume *= 0.5f;
             }
         }
-
 
     }
 
 
-    public void PlayCollisionEffect()
+    public void PlayCollisionEffect(float impactPower = 1f)
     {
-        if(soundEffects!= null && isHuman)
+        if(soundEffects != null && isHuman)
         {
-            //Debug.Log("PlayerSoundManager: Collision detected, playing sound effect.");
+            Debug.Log("PlayerSoundManager: Collision detected, playing sound effect.");
             // play collision sound effect (only for human players)
 
             CustomAudioEffect collisionAudioEffect = soundEffects.collisionEffect;
@@ -55,7 +55,7 @@ public class PlayerSoundManager : MonoBehaviour
             collisionAudioEffect.audioSource.Stop();
             collisionAudioEffect.audioSource.time = 0f; // reset audio to the beginning
             collisionAudioEffect.audioSource.pitch = collisionAudioEffect.basePitch + Random.Range(0.0f, 1f); // add some random pitch variation for more realism
-            collisionAudioEffect.audioSource.volume = collisionAudioEffect.baseVolume; // set volume to a reasonable level
+            collisionAudioEffect.audioSource.volume = collisionAudioEffect.baseVolume * impactPower; // set volume to a reasonable level
             collisionAudioEffect.audioSource.Play();
         }
         

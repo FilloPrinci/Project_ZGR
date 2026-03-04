@@ -485,7 +485,7 @@ public class PlayerController : MonoBehaviour
 
         if (collisionDetected)
         {
-            playerSoundManager.PlayCollisionEffect();
+            playerSoundManager.PlayCollisionEffect(impactPower: GetCurrentSpeed() / maxSpeed);
 
             // manage collision
             globalBounceVector = OnUpadteCollisionDetected(exitVector, deltaTime);

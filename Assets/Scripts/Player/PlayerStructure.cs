@@ -40,11 +40,13 @@ public class PlayerStructure : MonoBehaviour
             canvasInstance = Instantiate(canvasPrefab);
             canvasInstance.GetComponent<RaceGUI>().currentPlayer = gameObject;
             playerCamera = SpawnCamera(pivotInstance.GetComponent<VeichleAnchors>().cameraPivot);
-            soundEffects = pivotInstance.GetComponent<VeichleSoundEffects>();
+            
             canvasInstance.GetComponent<Canvas>().worldCamera = playerCamera.GetComponent<Camera>();
             canvasInstance.GetComponent<Canvas>().planeDistance = 0.5f;
             canvasInstance.SetActive(false);
         }
+
+        soundEffects = pivotInstance.GetComponent<VeichleSoundEffects>();
     }
 
     public VeichleSoundEffects GetSoundEffects()
