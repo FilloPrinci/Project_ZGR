@@ -327,11 +327,34 @@ public class PlayerController : MonoBehaviour
     public void SetPlayerCollisionInfo(PlayerCollisionInfo playerCollisionInfo)
     {
         this.playerCollisionInfo = playerCollisionInfo;
+
+        if (playerCollisionInfo != null && playerCollisionInfo.isColliding)
+        {
+            collisionDetected = true;
+            lastCollisionType = CollisionTypeEnum.Player;
+
+            // calculate exit vector from collision info
+            exitVector = playerCollisionInfo.collisionNormal * playerCollisionInfo.penetrationDepth;
+
+            playerSoundManager.PlayCollisionEffect(impactPower: GetCurrentSpeed() / maxSpeed);
+        }
     }
 
     public void SetTrackCollisionInfo(PlayerCollisionInfo trackCollisionInfo)
     {
         this.trackCollisionInfo = trackCollisionInfo;
+
+        if (trackCollisionInfo != null && trackCollisionInfo.isColliding)
+        {
+            collisionDetected = true;
+            lastCollisionType = CollisionTypeEnum.Normal;
+            // calculate exit vector from collision info
+            exitVector = trackCollisionInfo.collisionNormal * trackCollisionInfo.penetrationDepth;
+            //exitVector.y = 0; // ignore vertical component for bounce
+
+            playerSoundManager.PlayCollisionEffect(impactPower: GetCurrentSpeed() / maxSpeed);
+
+        }
     }
 
     public void ClearPlayerCollisionInfo()
@@ -450,16 +473,8 @@ public class PlayerController : MonoBehaviour
 
         forwardAmount *= deltaTime;
 
-        // check if collides
-        if (collisionDetected)
-        {
-            if (lastCollisionType == CollisionTypeEnum.Normal)
-            {
-                // reset collision flag
-                collisionDetected = false;
-            }
-        }
 
+        /*
         if (trackCollisionInfo != null && trackCollisionInfo.isColliding)
         {
             collisionDetected = true;
@@ -467,6 +482,8 @@ public class PlayerController : MonoBehaviour
             // calculate exit vector from collision info
             exitVector = trackCollisionInfo.collisionNormal * trackCollisionInfo.penetrationDepth;
             //exitVector.y = 0; // ignore vertical component for bounce
+
+            playerSoundManager.PlayCollisionEffect(impactPower: GetCurrentSpeed() / maxSpeed);
 
         }
         else if (playerCollisionInfo != null && playerCollisionInfo.isColliding)
@@ -476,17 +493,18 @@ public class PlayerController : MonoBehaviour
 
             // calculate exit vector from collision info
             exitVector = playerCollisionInfo.collisionNormal * playerCollisionInfo.penetrationDepth;
+
+            playerSoundManager.PlayCollisionEffect(impactPower: GetCurrentSpeed() / maxSpeed);
         }
         else
         {
             collisionDetected = false;
             lastCollisionType = CollisionTypeEnum.None;
         }
+        */
 
         if (collisionDetected)
         {
-            playerSoundManager.PlayCollisionEffect(impactPower: GetCurrentSpeed() / maxSpeed);
-
             // manage collision
             globalBounceVector = OnUpadteCollisionDetected(exitVector, deltaTime);
             //globalUpdateMovementVector = globalBounceVector;
@@ -498,6 +516,10 @@ public class PlayerController : MonoBehaviour
 
             // block player from entering the wall by moving it out of the collision
             //transform.position += exitVector;
+
+            // reset collision flag
+            collisionDetected = false;
+            lastCollisionType = CollisionTypeEnum.None;
 
         }
         else if (localBounceVector.magnitude > 0)

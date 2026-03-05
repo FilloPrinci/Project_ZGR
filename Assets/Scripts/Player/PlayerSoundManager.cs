@@ -37,6 +37,8 @@ public class PlayerSoundManager : MonoBehaviour
             {
                 soundEffects.engineEffect.basePitch += Random.Range(-0.5f, 0.5f);
                 soundEffects.engineEffect.baseVolume *= 0.5f;
+                soundEffects.engineEffect.volumeFactor *= 0.5f;
+                soundEffects.collisionEffect.baseVolume *= 0.75f;
             }
         }
 
@@ -45,7 +47,7 @@ public class PlayerSoundManager : MonoBehaviour
 
     public void PlayCollisionEffect(float impactPower = 1f)
     {
-        if(soundEffects != null && isHuman)
+        if(soundEffects != null)
         {
             Debug.Log("PlayerSoundManager: Collision detected, playing sound effect.");
             // play collision sound effect (only for human players)
