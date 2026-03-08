@@ -45,6 +45,8 @@ public class UI_3D_Manager : MonoBehaviour
     public Transform cameraDefaultPosition;
     public Transform cameraVeichleSelectionPosition;
 
+    [Header("Audio")]
+    public MenuSoundManager menuSoundManager;
 
     [Header("Veichle Selection")]
     public GameObject veichleSelectionPrefab;
@@ -136,6 +138,30 @@ public class UI_3D_Manager : MonoBehaviour
         }
     }
 
+    private void PlaySelectionSound()
+    {
+        if (menuSoundManager != null)
+        {
+            menuSoundManager.PlaySelectionEffect();
+        }
+    }
+
+    private void PlayConfirmSound()
+    {
+        if (menuSoundManager != null)
+        {
+            menuSoundManager.PlayConfirmEffect();
+        }
+    }
+
+    private void PlayCancelSound()
+    {
+        if (menuSoundManager != null)
+        {
+            menuSoundManager.PlayBackEffect();
+        }
+    }
+
     public void NavigateTo(UI_GroupComponent nextGroupComponent)
     {
         Debug.Log("[NavigateTo] " + nextGroupComponent.name);
@@ -153,6 +179,9 @@ public class UI_3D_Manager : MonoBehaviour
 
     public void ManageSelectRight(int playerIndex)
     {
+
+        PlaySelectionSound();
+
         if (selectionPhase == SelectionPhase.Menu)
         {
             if (Current_UI_GroupCompoment != null)
@@ -167,6 +196,7 @@ public class UI_3D_Manager : MonoBehaviour
                 GameObject playerVeichleSelector = veichleSelectorInstanceList[playerIndex];
                 if (playerVeichleSelector != null) {
                     playerVeichleSelector.GetComponent<UI_3D_VeichleSelector>().SelectRight();
+                    
                 }
             }
         }
@@ -176,6 +206,8 @@ public class UI_3D_Manager : MonoBehaviour
 
     public void ManageSelectLeft(int playerIndex)
     {
+        PlaySelectionSound();
+
         if (selectionPhase == SelectionPhase.Menu)
         {
             if (Current_UI_GroupCompoment != null)
@@ -198,6 +230,8 @@ public class UI_3D_Manager : MonoBehaviour
 
     public void ManageSelectUp(int playerIndex)
     {
+        PlaySelectionSound();
+
         if (selectionPhase == SelectionPhase.Menu)
         {
             if (Current_UI_GroupCompoment != null)
@@ -210,6 +244,8 @@ public class UI_3D_Manager : MonoBehaviour
 
     public void ManageSelectDown(int playerIndex)
     {
+        PlaySelectionSound();
+
         if (selectionPhase == SelectionPhase.Menu)
         {
             if (Current_UI_GroupCompoment != null)
@@ -223,6 +259,8 @@ public class UI_3D_Manager : MonoBehaviour
 
     public void ManageConfirmSelection(int playerIndex)
     {
+        PlayConfirmSound();
+
         if (selectionPhase == SelectionPhase.Menu)
         {
             if (Current_UI_GroupCompoment != null)
@@ -246,6 +284,8 @@ public class UI_3D_Manager : MonoBehaviour
 
     public void ManageBackSelection(int playerIndex)
     {
+        PlayCancelSound();
+
         if(selectionPhase == SelectionPhase.Menu)
         {
             if(Current_UI_GroupCompoment != null)

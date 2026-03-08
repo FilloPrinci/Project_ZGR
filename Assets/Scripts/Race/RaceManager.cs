@@ -59,9 +59,7 @@ public class RaceManager : MonoBehaviour
     [Header("Audio parameters")]
     public AudioSource sountrackAudioSource;
 
-    private int currentLap;
     private RacePhase currentRacePhase;
-    private RacePhaseEvent lastRacePhaseEvent;
     private List<GameObject> playerInstanceList;
     private List<int> sectorList;
     private RaceData raceData;
@@ -153,10 +151,7 @@ public class RaceManager : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
-    {
-        currentLap = 0;
-
-        
+    {       
 
         for (int i = 0; i < playerDataList.Count; i++)
         {
@@ -217,7 +212,6 @@ public class RaceManager : MonoBehaviour
 
 
                         addPlayerInstances();
-                        lastRacePhaseEvent = RacePhaseEvent.Start;
                         break;
                     case RaceMode.TimeTrial:
 
@@ -225,21 +219,17 @@ public class RaceManager : MonoBehaviour
 
                         playerInstanceList.Add(newTimeTrialPlayer);
 
-                        lastRacePhaseEvent = RacePhaseEvent.Start;
                         break;
                     case RaceMode.RaceSingleplayer:
 
                         addPlayerInstances();
 
-                        lastRacePhaseEvent = RacePhaseEvent.Start;
 
                         break;
                     case RaceMode.RaceMultiplayer:
 
                         addPlayerInstances();
 
-
-                        lastRacePhaseEvent = RacePhaseEvent.Start;
                         break;
                 }
             }
