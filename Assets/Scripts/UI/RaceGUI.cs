@@ -2,9 +2,9 @@ using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 
 public class RaceGUI : MonoBehaviour
@@ -16,6 +16,7 @@ public class RaceGUI : MonoBehaviour
     public GameObject speedometerPanel;
     public GameObject statsPanel;
     public GameObject positionResultPanel;
+    public GameObject currentPositionPanel;
 
     [Header("Texts")]
     public TextMeshProUGUI raceDataText;
@@ -23,6 +24,7 @@ public class RaceGUI : MonoBehaviour
     public TextMeshProUGUI countdownText;
     public TextMeshProUGUI speedometerText;
     public TextMeshProUGUI positionResultText;
+    public TextMeshProUGUI currentPositionText;
 
     [Header("GameObjects")]
     public GameObject currentPlayer;
@@ -160,6 +162,7 @@ public class RaceGUI : MonoBehaviour
             if (!raceDataPanel.activeInHierarchy)
             {
                 raceDataPanel.SetActive(true);
+                currentPositionPanel.SetActive(true);
             }
 
             PlayerRaceData currentPlayerRaceData = raceManager.GetRaceData().GetPlayerRaceDataByID(currentPlayerData.name);
@@ -186,10 +189,26 @@ public class RaceGUI : MonoBehaviour
             finalString += bestLapTime;
 
             raceDataText.text = finalString;
+
+            string currentPosition = "--";
+            currentPositionText.color = Color.grey;
+
+            if (currentPlayerRaceData.position != 0){
+                currentPosition = currentPlayerRaceData.position.ToString();
+                currentPositionText.color = Color.white;
+
+                if (currentPlayerRaceData.position == 1) {
+                    currentPositionText.color = Color.yellow;
+                }
+
+            }
+
+            currentPositionText.text = currentPosition;
         }
         else
         {
             raceDataPanel.SetActive(false);
+            currentPositionPanel.SetActive(false);
         }
 
         
