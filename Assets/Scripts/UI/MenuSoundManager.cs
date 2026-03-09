@@ -15,6 +15,7 @@ public class MenuSoundManager : MonoBehaviour
             soundEffects.selectionEffect.audioSource.volume = soundEffects.selectionEffect.baseVolume;
             soundEffects.confirmEffect.audioSource.volume = soundEffects.confirmEffect.baseVolume;
             soundEffects.backEffect.audioSource.volume = soundEffects.backEffect.baseVolume;
+
         }
     }
 
