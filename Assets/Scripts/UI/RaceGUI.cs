@@ -312,6 +312,10 @@ public class RaceGUI : MonoBehaviour
 
         positionResultText.text = positionString;
         positionResultText.color = resultPositionColor;
+
+        canShowSpeedometer = false;
+        canShowRaceDataLines = false;
+        canShowStats = false;
     }
 
     public void SetCanShowCountdown(bool canShowCountdown)

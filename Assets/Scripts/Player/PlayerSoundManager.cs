@@ -9,7 +9,18 @@ public class PlayerSoundManager : MonoBehaviour
     private AudioSource engineAudioSource;
     private bool boostMode = false;
     private float currentEnginePower = 0f;
+    private RaceManager raceManager;
 
+
+    private void Start()
+    {
+        raceManager = RaceManager.Instance;
+
+        if(raceManager == null)
+        {
+            Debug.LogWarning("PlayerSoundManager: RaceManager instance not found. Please ensure that a RaceManager is present in the scene.");
+        }
+    }
 
     private void LateUpdate()
     {
@@ -30,6 +41,13 @@ public class PlayerSoundManager : MonoBehaviour
         this.isHuman = isHuman;
         this.soundEffects = soundEffects;
 
+        int humanPlayersAmount = 1; // Default to 1 if raceManager is not available
+
+        if (raceManager != null)
+        {
+            humanPlayersAmount = raceManager.GetHumanPlayersAmount();
+        }
+
         if (this.soundEffects != null) {
             engineAudioSource = soundEffects.engineEffect.audioSource;
 
@@ -39,6 +57,27 @@ public class PlayerSoundManager : MonoBehaviour
                 soundEffects.engineEffect.baseVolume *= 0.5f;
                 soundEffects.engineEffect.volumeFactor *= 0.5f;
                 soundEffects.collisionEffect.baseVolume *= 0.75f;
+
+                if(humanPlayersAmount > 1)
+                {
+                    soundEffects.engineEffect.audioSource.spatialBlend = 0.5f; // Set spatial blend to 1 for AI players (3D sound) if there are multiple human players
+                    soundEffects.collisionEffect.audioSource.spatialBlend = 0.5f; // Set spatial blend to 1 for AI players (3D sound) if there are multiple human players
+                    soundEffects.engineEffect.baseVolume *= 0.5f;
+                    soundEffects.engineEffect.volumeFactor *= 0.5f;
+                    soundEffects.collisionEffect.baseVolume *= 0.5f;
+                    soundEffects.collisionEffect.audioSource.maxDistance = 0f; // Set max distance to 0 for human players to ensure consistent volume regardless of distance
+                    soundEffects.engineEffect.audioSource.maxDistance = 0f; // Set max distance to 0 for human players to ensure consistent volume regardless of distance
+                }
+            }
+            else
+            { 
+                soundEffects.collisionEffect.audioSource.spatialBlend = 0f; // Set spatial blend to 0 for human players (2D sound)
+                soundEffects.collisionEffect.audioSource.maxDistance = 0f; // Set max distance to 0 for human players to ensure consistent volume regardless of distance
+                soundEffects.engineEffect.audioSource.spatialBlend = 0f; // Set spatial blend to 0 for human players (2D sound)
+                soundEffects.engineEffect.audioSource.maxDistance = 0f; // Set max distance to 0 for human players to ensure consistent volume regardless of distance
+                soundEffects.collisionEffect.baseVolume *= 1 / humanPlayersAmount; // Adjust collision sound volume based on the number of human players to prevent overwhelming audio
+                soundEffects.engineEffect.baseVolume *= 1 / humanPlayersAmount; // Adjust collision sound volume based on the number of human players to prevent overwhelming audio
+                
             }
         }
 
@@ -49,16 +88,14 @@ public class PlayerSoundManager : MonoBehaviour
     {
         if(soundEffects != null)
         {
-            Debug.Log("PlayerSoundManager: Collision detected, playing sound effect.");
             // play collision sound effect (only for human players)
 
             CustomAudioEffect collisionAudioEffect = soundEffects.collisionEffect;
 
-            collisionAudioEffect.audioSource.Stop();
-            collisionAudioEffect.audioSource.time = 0f; // reset audio to the beginning
             collisionAudioEffect.audioSource.pitch = collisionAudioEffect.basePitch + Random.Range(0.0f, 1f); // add some random pitch variation for more realism
-            collisionAudioEffect.audioSource.volume = collisionAudioEffect.baseVolume * impactPower; // set volume to a reasonable level
-            collisionAudioEffect.audioSource.Play();
+
+
+            collisionAudioEffect.audioSource.PlayOneShot(collisionAudioEffect.audioSource.clip, collisionAudioEffect.baseVolume * impactPower); // play the collision sound with adjusted volume based on impact power
         }
         
     }

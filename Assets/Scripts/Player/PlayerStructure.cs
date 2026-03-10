@@ -82,13 +82,19 @@ public class PlayerStructure : MonoBehaviour
 
     public void ActivatePlayerCamera(CameraMode mode)
     {
-        pivotInstance.GetComponent<AudioListener>().enabled = true;
+        
+        
 
         Debug.Log("Activating camera for player: " + data.name + " in mode: " + mode.ToString());
 
         Camera cam = playerCamera.GetComponent<Camera>();
 
         int playerIndex = (int)data.playerInputIndex;
+
+        if(playerIndex == 0)
+        {
+            pivotInstance.GetComponent<AudioListener>().enabled = true; // Enable audio for the first player only
+        }
 
         switch (mode)
         {
