@@ -3616,6 +3616,9 @@ MonoBehaviour:
   currentPlayer: {fileID: 0}
   pauseMenuSelectionStart: {fileID: 3147318336307635106}
   resultMenuSelectionStart: {fileID: 5364405784762977043}
+  goldColor: {r: 1, g: 0.8, b: 0.36862746, a: 1}
+  silverColor: {r: 0.8584906, g: 0.8584906, b: 0.8584906, a: 1}
+  bronzeColor: {r: 0.4433962, g: 0.35441607, b: 0.24052154, a: 1}
   finishLabel: {fileID: 2942627275064163757}
   energyBar: {fileID: 7699265287688139780}
   itemPanelList:
