@@ -31,6 +31,11 @@ public class RaceGUI : MonoBehaviour
     public GameObject pauseMenuSelectionStart;
     public GameObject resultMenuSelectionStart;
 
+    [Header("Colors")]
+    public Color goldColor;
+    public Color silverColor;
+    public Color bronzeColor;
+
     public GameObject finishLabel;
     public RectTransform energyBar;
 
@@ -173,15 +178,7 @@ public class RaceGUI : MonoBehaviour
 
 
             string finalString = "";
-            /*
-            List<string> lines = raceManager.GetRaceData().GetRaceDataAsLines();
-            foreach (string line in lines) { 
-                finalString += line;
-                finalString += "\n";
-            }*/
 
-            finalString += positionLine;
-            finalString += "\n";
             finalString += currentLap;
             finalString += "\n";
             finalString += currentTime;
@@ -191,19 +188,22 @@ public class RaceGUI : MonoBehaviour
             raceDataText.text = finalString;
 
             string currentPosition = "--";
-            currentPositionText.color = Color.grey;
+            Color textColor = Color.grey;
 
             if (currentPlayerRaceData.position != 0){
                 currentPosition = currentPlayerRaceData.position.ToString();
-                currentPositionText.color = Color.white;
 
                 if (currentPlayerRaceData.position == 1) {
-                    currentPositionText.color = Color.yellow;
+                    textColor = goldColor;
+                }else if(currentPlayerRaceData.position == 2){
+                    textColor = silverColor;
+                }else if (currentPlayerRaceData.position == 3){
+                    textColor = bronzeColor;
                 }
-
             }
 
             currentPositionText.text = currentPosition;
+            currentPositionText.color = textColor;
         }
         else
         {
@@ -295,7 +295,23 @@ public class RaceGUI : MonoBehaviour
         PlayerRaceData currentPlayerRaceData = raceManager.GetRaceData().GetFinalPlayerRaceDataByID(currentPlayerData.name);
         string positionString = "" + currentPlayerRaceData.position;
 
+        Color resultPositionColor = Color.grey;
+
+        if (currentPlayerRaceData.position == 1)
+        {
+            resultPositionColor = goldColor;
+        }
+        else if (currentPlayerRaceData.position == 2)
+        {
+            resultPositionColor = silverColor;
+        }
+        else if (currentPlayerRaceData.position == 3)
+        {
+            resultPositionColor = bronzeColor;
+        }
+
         positionResultText.text = positionString;
+        positionResultText.color = resultPositionColor;
     }
 
     public void SetCanShowCountdown(bool canShowCountdown)
