@@ -57,14 +57,10 @@ public class FeedBackManager : MonoBehaviour
         if (playerVeichle.activeInHierarchy)
         {
             EngineFeedback();
+            SteerFeedBack(steeringAmount);
         }
 
-        if (cameraPositionMode == CameraPositionMode.Race) {
-            if (playerVeichle.activeInHierarchy)
-            {
-                SteerFeedBack(steeringAmount);
-            }
-        }else if(cameraPositionMode == CameraPositionMode.RaceEnd)
+        if(cameraPositionMode == CameraPositionMode.RaceEnd)
         {
             veichleAnchors.cameraPivot.position = veichleAnchors.OutRace_CameraPivot.position;
             veichleAnchors.cameraPivot.rotation = veichleAnchors.OutRace_CameraPivot.rotation;

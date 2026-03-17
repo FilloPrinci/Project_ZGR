@@ -9,6 +9,8 @@ public class UI_3D_VeichleSelector : MonoBehaviour
     public float rotationSpeed = 5.0f;
     public float veichleScale = 0.2f;
     public Transform veichleSpawnPosition;
+    public Transform pivotTransform;
+    public Transform confirmTranform;
     public bool selectionCompleted = false;
     public GameObject HUD;
     public GameObject HUD_check;
@@ -17,6 +19,7 @@ public class UI_3D_VeichleSelector : MonoBehaviour
     private UI_3D_Manager _manager;
     private List<GameObject> availableVeichles;
     private GameObject currentSelectedVeichleInstance;
+
     private int currentSelectedVeichleIndex = 0;
     private GameObject mainCamera;
 
@@ -49,6 +52,9 @@ public class UI_3D_VeichleSelector : MonoBehaviour
                 HUD.transform.position = veichleSpawnPosition.position;
                 HUD_check.SetActive(false);
             }
+
+            pivotTransform.position = veichleSpawnPosition.position;
+            pivotTransform.rotation = Quaternion.identity;
         }
 
         _manager = UI_3D_Manager.Instance;
@@ -65,9 +71,22 @@ public class UI_3D_VeichleSelector : MonoBehaviour
         deltaTime = Time.deltaTime;
 
         // rotate veichle
-        if (currentSelectedVeichleInstance != null && !selectionCompleted)
+        if (currentSelectedVeichleInstance != null)
         {
-            currentSelectedVeichleInstance.transform.Rotate(Vector3.up, rotationSpeed * deltaTime);
+            pivotTransform.Rotate(Vector3.up, rotationSpeed * deltaTime);
+
+            if (selectionCompleted)
+            {
+                currentSelectedVeichleInstance.transform.rotation = Utils.ExpDecay(currentSelectedVeichleInstance.transform.rotation, confirmTranform.rotation, 3f, deltaTime);
+            }
+            else
+            {
+                currentSelectedVeichleInstance.transform.rotation = pivotTransform.rotation;
+
+                
+            }
+
+                
         }   
     }
 
