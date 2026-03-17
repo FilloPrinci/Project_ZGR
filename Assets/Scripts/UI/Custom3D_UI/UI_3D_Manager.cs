@@ -44,6 +44,10 @@ public class UI_3D_Manager : MonoBehaviour
     public float cameraRotateSpeed = 5f;
     public Transform cameraDefaultPosition;
     public Transform cameraVeichleSelectionPosition;
+    public Transform cameraVeichleSelectionPosition_1P;
+    public Transform cameraVeichleSelectionPosition_2P;
+    public Transform cameraVeichleSelectionPosition_3P;
+    public Transform cameraVeichleSelectionPosition_4P;
 
     [Header("Audio")]
     public MenuSoundManager menuSoundManager;
@@ -338,6 +342,8 @@ public class UI_3D_Manager : MonoBehaviour
 
     public void ManageBackFromVeichleSelection(int playerIndex)
     {
+        ShowAllPreviousSelection();
+
         if (veichleSelectorInstanceList.Count > 0)
         {
             for (int i = 0; i < veichleSelectorInstanceList.Count; i++)
@@ -422,13 +428,37 @@ public class UI_3D_Manager : MonoBehaviour
 
        
         Vector3 updatedVeichleCameraPosition = cameraVeichleSelectionPosition.position;
-        updatedVeichleCameraPosition = CalculateCameraVeichlePosition(veichleSelectionPositionList[0].position, veichleSelectionPositionList[playersAmount - 1].position);
+        Quaternion updatedVeichleCameraRotation = cameraVeichleSelectionPosition.rotation;
+
+        if (playersAmount == 1)
+        {
+            updatedVeichleCameraPosition = cameraVeichleSelectionPosition_1P.position;
+            updatedVeichleCameraRotation = cameraVeichleSelectionPosition_1P.rotation;
+        }else if (playersAmount == 2)
+        {
+            updatedVeichleCameraPosition = cameraVeichleSelectionPosition_2P.position;
+            updatedVeichleCameraRotation = cameraVeichleSelectionPosition_2P.rotation;
+        }
+        else if (playersAmount == 3)
+        {
+            updatedVeichleCameraPosition = cameraVeichleSelectionPosition_3P.position;
+            updatedVeichleCameraRotation = cameraVeichleSelectionPosition_3P.rotation;
+        }
+        else if (playersAmount == 4)
+        {
+            updatedVeichleCameraPosition = cameraVeichleSelectionPosition_4P.position;
+            updatedVeichleCameraRotation = cameraVeichleSelectionPosition_4P.rotation;
+        }
+
+        updatedVeichleCameraPosition = CalculateCameraVeichlePosition(veichleSelectionPositionList[0].position, veichleSelectionPositionList[playersAmount - 1].position, updatedVeichleCameraPosition);
 
         // Move Camera
         desideredCameraPosition = updatedVeichleCameraPosition;
-        desideredCameraRotation = cameraVeichleSelectionPosition.rotation;
+        desideredCameraRotation = updatedVeichleCameraRotation;
 
         selectionPhase = SelectionPhase.Veichle;
+
+        HideAllPreviousSelection();
     }
 
     public void OnVeichleSelectionReady()
@@ -455,11 +485,27 @@ public class UI_3D_Manager : MonoBehaviour
         }
     }
 
-    private Vector3 CalculateCameraVeichlePosition(Vector3 firstPosition, Vector3 lastPosition)
+    private Vector3 CalculateCameraVeichlePosition(Vector3 firstPosition, Vector3 lastPosition, Vector3 defaultPosition)
     {
         Vector3 origin = firstPosition;
         Vector3 avgPosition = (lastPosition - firstPosition) / 2;
-        Vector3 result = new Vector3(cameraVeichleSelectionPosition.position.x + origin.x + avgPosition.x, cameraVeichleSelectionPosition.position.y, cameraVeichleSelectionPosition.position.z);
+        Vector3 result = new Vector3(defaultPosition.x + origin.x + avgPosition.x, defaultPosition.y, defaultPosition.z);
         return result;
+    }
+
+    private void HideAllPreviousSelection()
+    {
+        foreach(UI_GroupComponent groupComponent in UI_GroupComponent_Stack)
+        {
+            groupComponent.gameObject.SetActive(false);
+        }
+    }
+
+    private void ShowAllPreviousSelection()
+    {
+        foreach (UI_GroupComponent groupComponent in UI_GroupComponent_Stack)
+        {
+            groupComponent.gameObject.SetActive(true);
+        }
     }
 }

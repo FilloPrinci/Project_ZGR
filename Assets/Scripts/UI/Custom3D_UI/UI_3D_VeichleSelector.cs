@@ -14,6 +14,11 @@ public class UI_3D_VeichleSelector : MonoBehaviour
     public bool selectionCompleted = false;
     public GameObject HUD;
     public GameObject HUD_check;
+    public GameObject SelectorLightMesh;
+    [SerializeField, ColorUsage(true, true)]
+    public Color NormalLightColor;
+    [SerializeField, ColorUsage(true, true)]
+    public Color SelectedLightColor;
 
     private RaceSettings _settings;
     private UI_3D_Manager _manager;
@@ -22,6 +27,9 @@ public class UI_3D_VeichleSelector : MonoBehaviour
 
     private int currentSelectedVeichleIndex = 0;
     private GameObject mainCamera;
+
+    private Renderer SelectorRenderer;
+    private Material SelectorLightMaterial;
 
     private float deltaTime;
 
@@ -62,6 +70,16 @@ public class UI_3D_VeichleSelector : MonoBehaviour
         if(_manager == null)
         {
             Debug.LogError("UI_3D_Manager instance not found!");
+        }
+
+        if (SelectorLightMesh != null) {
+            SelectorRenderer = SelectorLightMesh.GetComponent<Renderer>();
+            SelectorLightMaterial = SelectorRenderer.material;
+
+            if (SelectorLightMaterial != null)
+            {
+                SelectorLightMaterial.SetColor("_Color", NormalLightColor);
+            }
         }
 
     }
@@ -142,6 +160,11 @@ public class UI_3D_VeichleSelector : MonoBehaviour
             _settings.OnVeichleSelect(playerIndex, currentSelectedVeichleIndex);
             HUD_check.SetActive(true);
             _manager.OnVeichleSelectionReady();
+
+            if(SelectorLightMaterial != null)
+            {
+                SelectorLightMaterial.SetColor("_Color", SelectedLightColor);
+            }
         }
     }
 
@@ -151,6 +174,11 @@ public class UI_3D_VeichleSelector : MonoBehaviour
         {
             selectionCompleted = false;
             HUD_check.SetActive(false);
+
+            if (SelectorLightMaterial != null)
+            {
+                SelectorLightMaterial.SetColor("_Color", NormalLightColor);
+            }
         }
         else
         {

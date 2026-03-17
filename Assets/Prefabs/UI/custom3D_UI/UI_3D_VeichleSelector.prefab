@@ -120,6 +120,9 @@ MonoBehaviour:
   selectionCompleted: 0
   HUD: {fileID: 455484045201530452}
   HUD_check: {fileID: 6111755963355127574}
+  SelectorLightMesh: {fileID: 1753415849822351496}
+  NormalLightColor: {r: 4, g: 4, b: 4, a: 0}
+  SelectedLightColor: {r: 0, g: 4, b: 0, a: 0}
 --- !u!1 &2002919901296597830
 GameObject:
   m_ObjectHideFlags: 0
@@ -583,7 +586,7 @@ PrefabInstance:
     - target: {fileID: 1456271770618183520, guid: f16fc56befcb4d44b886702154ac91e1, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 4f20bffe58399094db821275d8df07a6, type: 2}
+      objectReference: {fileID: 2100000, guid: d360003b5a3b57c4ea4a57839b9cee98, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: -7640558969779515294, guid: f16fc56befcb4d44b886702154ac91e1, type: 3}
@@ -593,6 +596,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f16fc56befcb4d44b886702154ac91e1, type: 3}
+--- !u!1 &1753415849822351496 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8208529121560221653, guid: f16fc56befcb4d44b886702154ac91e1, type: 3}
+  m_PrefabInstance: {fileID: 7620072780749907805}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7941348828723396790 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f16fc56befcb4d44b886702154ac91e1, type: 3}
