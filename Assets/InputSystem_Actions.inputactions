@@ -664,6 +664,17 @@
                 {
                     "name": "",
                     "id": "6c0b613b-fadc-4226-9a25-22449c630989",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Start-Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "775278ba-4b78-4c69-866f-492eaf50f54c",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
@@ -1052,6 +1063,17 @@
                     "name": "",
                     "id": "a510970f-2098-44fa-a73d-fe42d48bbd88",
                     "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "CancelSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "171730a9-2309-4f15-97bd-a9c4a242bb2c",
+                    "path": "<Keyboard>/backspace",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
