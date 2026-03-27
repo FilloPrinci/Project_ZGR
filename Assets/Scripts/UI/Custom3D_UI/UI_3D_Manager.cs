@@ -27,6 +27,7 @@ public class UI_3D_Manager : MonoBehaviour
     [Header("Overlay")]
     public TextMeshProUGUI GroupName;
     public TextMeshProUGUI SelectionName;
+    public TextMeshProUGUI CurrentVersion;
 
     [Header("Settings")]
     public UI_GroupComponent Start_UI_GroupComponent;
@@ -115,6 +116,11 @@ public class UI_3D_Manager : MonoBehaviour
             desideredCameraRotation = cameraDefaultPosition.rotation;
 
             UpdateCameraPosition();
+        }
+
+        if(CurrentVersion != null)
+        {
+            CurrentVersion.text = "v " + Application.version;
         }
 
         if (Time.timeScale != 1f)
