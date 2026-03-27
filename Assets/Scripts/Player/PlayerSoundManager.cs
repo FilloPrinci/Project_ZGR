@@ -86,7 +86,12 @@ public class PlayerSoundManager : MonoBehaviour
 
     public void PlayCollisionEffect(float impactPower = 1f)
     {
-        if(soundEffects != null)
+        if(StaticGameData.CurrentReleasePlatform == ReleasePlatform.WebGL && !isHuman)
+        {
+            return; // Skip playing collision sound effects for AI players on WebGL to optimize performance, as WebGL can have limitations with audio playback and multiple sound sources.
+        }
+
+        if (soundEffects != null)
         {
             // play collision sound effect (only for human players)
 
