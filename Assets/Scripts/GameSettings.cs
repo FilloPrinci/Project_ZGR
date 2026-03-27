@@ -207,14 +207,7 @@ public class GameSettings : MonoBehaviour
         Vector2 resolutionInfo = ResolutionFromEnum(this.resolution);
         int framerate = RefreshRateFromEnum(this.fps_settings);
 
-        if (StaticGameData.CurrentReleasePlatform == ReleasePlatform.WebGL)
-        {
-            Debug.LogWarning("WebGL platform detected: forcing V-Sync and 60 FPS limit for better performance.");
-            framerate = 60;
-
-
-        }
-        else
+        if (StaticGameData.CurrentReleasePlatform != ReleasePlatform.WebGL)
         {
             Screen.SetResolution((int)resolutionInfo.x, (int)resolutionInfo.y, Screen.fullScreenMode);
 

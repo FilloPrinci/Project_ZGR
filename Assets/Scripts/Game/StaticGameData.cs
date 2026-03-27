@@ -9,5 +9,5 @@ public enum ReleasePlatform
 
 public static class StaticGameData
 {
-    public static ReleasePlatform CurrentReleasePlatform = ReleasePlatform.Windows;
+    public static ReleasePlatform CurrentReleasePlatform = ReleasePlatform.WebGL;
 }
