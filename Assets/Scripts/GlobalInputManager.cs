@@ -47,6 +47,15 @@ public class GlobalInputManager : MonoBehaviour
 
         playerInputList = new List<GameObject>();
 
+        bool singleKeyboardPlayer = false;
+
+        if(gameSettings != null && 
+            gameSettings.inputMode == InputMode.KeyboardOnly && 
+            playerAmount > 1)
+        {
+            singleKeyboardPlayer = true;
+        }
+
         // instantiate player input prefabs for each player
         for (int i = 0; i < playerAmount; i++)
         {
@@ -56,17 +65,28 @@ public class GlobalInputManager : MonoBehaviour
             PlayerInput playerInputSettings = newPlayerInput.GetComponent<PlayerInput>();
             if(playerInputSettings != null)
             {
-                if(gameSettings != null)
+                if(singleKeyboardPlayer && i > 0)
                 {
-                    if(gameSettings.inputMode == InputMode.GamepadOnly)
+                    playerInputSettings.DeactivateInput();
+                }
+                else
+                {
+                    if (gameSettings != null)
                     {
-                        playerInputSettings.SwitchCurrentControlScheme("Gamepad", Gamepad.all[i]);
-                    }
-                    else if(gameSettings.inputMode == InputMode.KeyboardOnly)
-                    {
-                        playerInputSettings.SwitchCurrentControlScheme("Keyboard&Mouse");
+                        if (gameSettings.inputMode == InputMode.GamepadOnly)
+                        {
+                            Debug.Log("Switching control scheme to Gamepad for player " + i);
+                            playerInputSettings.SwitchCurrentControlScheme("Gamepad", Gamepad.all[i]);
+                            Debug.Log("Player " + i + " assigned to gamepad: " + Gamepad.all[i].displayName);
+                        }
+                        else if (gameSettings.inputMode == InputMode.KeyboardOnly)
+                        {
+                            playerInputSettings.SwitchCurrentControlScheme("Keyboard&Mouse", Keyboard.current);
+                        }
                     }
                 }
+
+
             }
         }
     }
@@ -83,5 +103,35 @@ public class GlobalInputManager : MonoBehaviour
     public GameObject GetPlayerInput(int playerIndex)
     {
         return playerInputList[playerIndex];
+    }
+
+    public bool IsIndexValid(int index)
+    {
+        return index >= 0 && index < playerInputList.Count;
+    }
+
+    public void GlobalSteer(InputAction.CallbackContext context, int index)
+    {
+        if(IsIndexValid(index))
+        {
+            playerInputList[index].GetComponent<PlayerInputHandler>().OnSteer(context);
+        }
+    }
+
+    public void GlobalAccelerate(InputAction.CallbackContext context, int index)
+    {
+        if (IsIndexValid(index))
+        {
+            playerInputList[index].GetComponent<PlayerInputHandler>().OnAccelerate(context);
+        }
+        
+    }
+
+    public void GlobalStartPause(InputAction.CallbackContext context, int index)
+    {
+        if (IsIndexValid(index))
+        {
+            playerInputList[index].GetComponent<PlayerInputHandler>().OnSkip(context);
+        }
     }
 }
