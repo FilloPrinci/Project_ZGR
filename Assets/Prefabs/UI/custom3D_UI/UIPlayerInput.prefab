@@ -437,6 +437,158 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: e6ed5109-e8c3-4bbe-9c04-9f071ca9e961
     m_ActionName: 'Keyboard_2/Race_Start/Pause[/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6225187141548723403}
+        m_TargetAssemblyTypeName: KeyboardOnlyInput, Assembly-CSharp
+        m_MethodName: Player3_ConfirmSelection
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: d2b65872-5245-47db-ac9d-5602a8bdf6ef
+    m_ActionName: 'Keyboard_3/Selection_Confirm[/Keyboard/o]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6225187141548723403}
+        m_TargetAssemblyTypeName: KeyboardOnlyInput, Assembly-CSharp
+        m_MethodName: Player2_SelectVerticall
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 6f4c822a-cff3-47ad-b0b7-22c63fa063ba
+    m_ActionName: 'Keyboard_3/Selection_Vertical[/Keyboard/k,/Keyboard/i]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6225187141548723403}
+        m_TargetAssemblyTypeName: KeyboardOnlyInput, Assembly-CSharp
+        m_MethodName: Player3_SelectHorizontal
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 49ccec99-73fc-49d7-9913-0a325d06d3ad
+    m_ActionName: 'Keyboard_3/Selection_Horizontal[/Keyboard/j,/Keyboard/l]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6225187141548723403}
+        m_TargetAssemblyTypeName: KeyboardOnlyInput, Assembly-CSharp
+        m_MethodName: Player3_CancelSelection
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 79c75164-586f-4ffd-b97b-9840062fd62d
+    m_ActionName: 'Keyboard_3/Selection_Cancel[/Keyboard/q]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 504cbe33-06cc-4cc2-a290-4a784c680706
+    m_ActionName: 'Keyboard_3/Race_Steer[/Keyboard/a,/Keyboard/d]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 89252cf4-98ad-4673-900f-ce3ed7bdc418
+    m_ActionName: 'Keyboard_3/Race_Accelerate[/Keyboard/w]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5086828e-2dc6-4673-ba8c-029c7fe31cfc
+    m_ActionName: 'Keyboard_3/Race_Start/Pause[/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6225187141548723403}
+        m_TargetAssemblyTypeName: KeyboardOnlyInput, Assembly-CSharp
+        m_MethodName: Player4_ConfirmSelection
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: cc883a17-c7e1-48dc-974c-d139797a4866
+    m_ActionName: 'Keyboard_4/Selection_Confirm[/Keyboard/e]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6225187141548723403}
+        m_TargetAssemblyTypeName: KeyboardOnlyInput, Assembly-CSharp
+        m_MethodName: Player4_SelectVerticall
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: f614f3f2-6784-4c68-8c25-4e8fdffeee28
+    m_ActionName: 'Keyboard_4/Selection_Vertical[/Keyboard/s,/Keyboard/w]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6225187141548723403}
+        m_TargetAssemblyTypeName: KeyboardOnlyInput, Assembly-CSharp
+        m_MethodName: Player4_SelectHorizontal
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 88e0515e-bd7b-484a-a02d-f96eda3934f2
+    m_ActionName: 'Keyboard_4/Selection_Horizontal[/Keyboard/a,/Keyboard/d]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6225187141548723403}
+        m_TargetAssemblyTypeName: KeyboardOnlyInput, Assembly-CSharp
+        m_MethodName: Player4_CancelSelection
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: d8747ace-1453-4cdb-ae0d-6e5ad0165c30
+    m_ActionName: 'Keyboard_4/Selection_Cancel[/Keyboard/q]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 34c7603b-645f-4db7-b013-6a0a12c5c122
+    m_ActionName: 'Keyboard_4/Race_Steer[/Keyboard/a,/Keyboard/d]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 95929024-a8e2-4eb5-ba5d-cf3b173f8b00
+    m_ActionName: 'Keyboard_4/Race_Accelerate[/Keyboard/w]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: fc7728c7-7242-4937-bbe8-373a39e06dd6
+    m_ActionName: 'Keyboard_4/Race_Start/Pause[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: Keyboard&Mouse
   m_DefaultActionMap: CustomUI

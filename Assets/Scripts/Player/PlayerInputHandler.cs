@@ -54,12 +54,12 @@ public class PlayerInputHandler : MonoBehaviour
 
     public void OnSkip(InputAction.CallbackContext context)
     {
+        Debug.Log("Start button pressed by player " + playerIndex);
+
         isPressingStart = context.ReadValue<float>() > 0.1f;
 
         if (isPressingStart) {
             raceManager.OnStartButtonPress(playerIndex);
-                
         }
     }
-
 }
