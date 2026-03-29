@@ -32,10 +32,6 @@ public class UI_CustomInputManager : MonoBehaviour
         {
             Debug.LogError("[UI_CustomInputManager] ERROR: UI_3D_Manager component not found on the GameObject.");
         }
-
-
-
-
     }
 
     private int GetInputAmount()
@@ -82,26 +78,45 @@ public class UI_CustomInputManager : MonoBehaviour
         int playersAmount = GetInputAmount();
         maxPlayers = playersAmount;
 
-        for (int i = 0; i < maxPlayers; i++)
+        if(Gamepad.all.Count == 0 && Keyboard.current != null)
         {
+            Debug.Log("Only Keyboard Input detected");
+            maxPlayers = 4; // Allow up to 4 players using the keyboard, but they will all share the same input
             GameObject inputManager = Instantiate(playerInputPrefab, transform);
-            inputManager.name = "PlayerInputManager_" + i;
+            inputManager.name = "PlayerInputManager_" + "KeyboardOnly";
+            _gameSettings.inputMode = InputMode.KeyboardOnly;
+            inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Keyboard&Mouse", Keyboard.current);
+            inputManager.GetComponent<KeyboardOnlyInput>().Initialize(this);
+            playerInputManagers.Add(inputManager);
 
-            if (_gameSettings.inputMode == InputMode.GamepadOnly)
-            {
-                inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Gamepad", Gamepad.all[i]);
-                Debug.Log("Player " + i + " assigned to gamepad: " + Gamepad.all[i].displayName);
-            }
-            else if (_gameSettings.inputMode == InputMode.KeyboardOnly)
-            {
-                inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Keyboard&Mouse", Keyboard.current);
-                Debug.Log("Player " + i + " is using Keyboard");
-            }
-
-            inputManager.GetComponent<UI_CustomPlayerInput>().playerIndex = i;
+            // initializing the UI_CustomPlayerInput using -1 as playerIndex to ignore it
+            inputManager.GetComponent<UI_CustomPlayerInput>().playerIndex = -1;
             inputManager.GetComponent<UI_CustomPlayerInput>().UI_InputManager = this.gameObject;
             inputManager.GetComponent<UI_CustomPlayerInput>().Initialize();
-            playerInputManagers.Add(inputManager);
+        }
+        else
+        {
+            for (int i = 0; i < maxPlayers; i++)
+            {
+                GameObject inputManager = Instantiate(playerInputPrefab, transform);
+                inputManager.name = "PlayerInputManager_" + i;
+
+                if (_gameSettings.inputMode == InputMode.GamepadOnly)
+                {
+                    inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Gamepad", Gamepad.all[i]);
+                    Debug.Log("Player " + i + " assigned to gamepad: " + Gamepad.all[i].displayName);
+                }
+                else if (_gameSettings.inputMode == InputMode.KeyboardOnly)
+                {
+                    inputManager.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Keyboard&Mouse", Keyboard.current);
+                    Debug.Log("Player " + i + " is using Keyboard");
+                }
+
+                inputManager.GetComponent<UI_CustomPlayerInput>().playerIndex = i;
+                inputManager.GetComponent<UI_CustomPlayerInput>().UI_InputManager = this.gameObject;
+                inputManager.GetComponent<UI_CustomPlayerInput>().Initialize();
+                playerInputManagers.Add(inputManager);
+            }
         }
     }
 
@@ -113,38 +128,67 @@ public class UI_CustomInputManager : MonoBehaviour
         }
     }
 
+    private bool CheckPlayerIndex(int playerIndex)
+    {
+        if (playerIndex < 0 || playerIndex >= maxPlayers)
+        {
+            Debug.Log("Invalid player index: " + playerIndex);
+            return false;
+        }
+        return true;
+    }
+
     public void OnSelectRight(int playerIndex)
     {
-        LogCustomInput("Player " + playerIndex + " selected right");
-        UI_3D_Manager.ManageSelectRight(playerIndex);
+        if (CheckPlayerIndex(playerIndex))
+        {
+            LogCustomInput("Player " + playerIndex + " selected right");
+            UI_3D_Manager.ManageSelectRight(playerIndex);
+        }
+            
     }
 
     public void OnSelectLeft(int playerIndex)
     {
-        LogCustomInput("Player " + playerIndex + " selected left");
-        UI_3D_Manager.ManageSelectLeft(playerIndex);
+        if (CheckPlayerIndex(playerIndex))
+        {
+            LogCustomInput("Player " + playerIndex + " selected left");
+            UI_3D_Manager.ManageSelectLeft(playerIndex);
+        }
     }
     public void OnSelectUp(int playerIndex)
     {
-        LogCustomInput("Player " + playerIndex + " selected up");
-        UI_3D_Manager.ManageSelectUp(playerIndex);
+        if (CheckPlayerIndex(playerIndex))
+        {
+            LogCustomInput("Player " + playerIndex + " selected up");
+            UI_3D_Manager.ManageSelectUp(playerIndex);
+        }
     }
 
     public void OnSelectDown(int playerIndex)
     {
-        LogCustomInput("Player " + playerIndex + " selected down");
-        UI_3D_Manager.ManageSelectDown(playerIndex);
+        if (CheckPlayerIndex(playerIndex))
+        {
+            LogCustomInput("Player " + playerIndex + " selected down");
+            UI_3D_Manager.ManageSelectDown(playerIndex);
+        }
     }
 
     public void OnConfirmSelection(int playerIndex)
     {
-        LogCustomInput("Player " + playerIndex + " confirmed selection");
-        UI_3D_Manager.ManageConfirmSelection(playerIndex);
+        if (CheckPlayerIndex(playerIndex))
+        {
+            LogCustomInput("Player " + playerIndex + " confirmed selection");
+            UI_3D_Manager.ManageConfirmSelection(playerIndex);
+        }
     }
 
     public void OnCancelSelection(int playerIndex)
     {
-        LogCustomInput("Player " + playerIndex + " canceled selection");
-        UI_3D_Manager.ManageBackSelection(playerIndex);
+        if (CheckPlayerIndex(playerIndex))
+        {
+            LogCustomInput("Player " + playerIndex + " canceled selection");
+            UI_3D_Manager.ManageBackSelection(playerIndex);
+        }
     }
 }

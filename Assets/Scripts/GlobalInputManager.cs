@@ -84,4 +84,19 @@ public class GlobalInputManager : MonoBehaviour
     {
         return playerInputList[playerIndex];
     }
+
+    public void GlobalSteer(InputAction.CallbackContext context, int index)
+    {
+        playerInputList[index].GetComponent<PlayerInputHandler>().OnSteer(context);
+    }
+
+    public void GlobalAccelerate(InputAction.CallbackContext context, int index)
+    {
+        playerInputList[index].GetComponent<PlayerInputHandler>().OnAccelerate(context);
+    }
+
+    public void GlobalStartPause(InputAction.CallbackContext context, int index)
+    {
+        playerInputList[index].GetComponent<PlayerInputHandler>().OnSkip(context);
+    }
 }
