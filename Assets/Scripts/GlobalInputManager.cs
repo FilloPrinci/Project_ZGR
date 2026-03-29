@@ -75,7 +75,9 @@ public class GlobalInputManager : MonoBehaviour
                     {
                         if (gameSettings.inputMode == InputMode.GamepadOnly)
                         {
+                            Debug.Log("Switching control scheme to Gamepad for player " + i);
                             playerInputSettings.SwitchCurrentControlScheme("Gamepad", Gamepad.all[i]);
+                            Debug.Log("Player " + i + " assigned to gamepad: " + Gamepad.all[i].displayName);
                         }
                         else if (gameSettings.inputMode == InputMode.KeyboardOnly)
                         {

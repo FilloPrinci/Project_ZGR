@@ -656,18 +656,7 @@
                     "path": "<Gamepad>/start",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "Start-Pause",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "6c0b613b-fadc-4226-9a25-22449c630989",
-                    "path": "<Keyboard>/enter",
-                    "interactions": "Press(behavior=1)",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
+                    "groups": ";Gamepad",
                     "action": "Start-Pause",
                     "isComposite": false,
                     "isPartOfComposite": false

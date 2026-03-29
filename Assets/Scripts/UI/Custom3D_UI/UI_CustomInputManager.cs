@@ -78,7 +78,7 @@ public class UI_CustomInputManager : MonoBehaviour
         int playersAmount = GetInputAmount();
         maxPlayers = playersAmount;
 
-        if(Gamepad.all.Count == 0 && Keyboard.current != null)
+        if (Keyboard.current != null && _gameSettings.inputMode == InputMode.KeyboardOnly)
         {
             Debug.Log("Only Keyboard Input detected");
             maxPlayers = 4; // Allow up to 4 players using the keyboard, but they will all share the same input

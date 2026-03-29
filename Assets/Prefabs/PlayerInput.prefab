@@ -431,9 +431,9 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: fc7728c7-7242-4937-bbe8-373a39e06dd6
     m_ActionName: 'Keyboard_4/Race_Start/Pause[/Keyboard/escape]'
-  m_NeverAutoSwitchControlSchemes: 0
+  m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
-  m_DefaultActionMap: UI
+  m_DefaultActionMap: 541a3c86-cda1-44de-b306-45a0dec39fc0
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &2278709535883674508

@@ -672,6 +672,7 @@ public class RaceManager : MonoBehaviour
         isPaused = true;
         ShowPauseMenuForInputPlayer(playerIndex);
         Time.timeScale = 0f;
+        pausePlayerIndex = playerIndex;
     }
 
     public void OnPauseExit()
@@ -679,6 +680,7 @@ public class RaceManager : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         HidePauseMenuForAllPlayers();
+        pausePlayerIndex = -1;
     }
 
     public void OnStartButtonPress(int playerIndex)
@@ -700,9 +702,7 @@ public class RaceManager : MonoBehaviour
                 {
                     OnPauseEnter(playerIndex);
                     Debug.Log("[RaceManager] : Game paused");
-                    pausePlayerIndex = playerIndex;
                 }
-                
             }
             else
             {
@@ -710,7 +710,6 @@ public class RaceManager : MonoBehaviour
                 {
                     OnPauseExit();
                     Debug.Log("[RaceManager] : Game resumed");
-                    pausePlayerIndex = -1;
                 }
             }
         }
