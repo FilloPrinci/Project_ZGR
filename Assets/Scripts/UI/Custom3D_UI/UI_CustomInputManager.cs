@@ -61,6 +61,8 @@ public class UI_CustomInputManager : MonoBehaviour
 
     public void UpdateInputSettings()
     {
+        Debug.Log("Updating Input settings...");
+
         if(playerInputManagers == null)
         {
             playerInputManagers = new List<GameObject>();
@@ -96,6 +98,8 @@ public class UI_CustomInputManager : MonoBehaviour
         }
         else
         {
+            Debug.Log("Not KeyboardOnly input detected");
+
             for (int i = 0; i < maxPlayers; i++)
             {
                 GameObject inputManager = Instantiate(playerInputPrefab, transform);
@@ -118,6 +122,8 @@ public class UI_CustomInputManager : MonoBehaviour
                 playerInputManagers.Add(inputManager);
             }
         }
+
+        Debug.Log("Input settings updated");
     }
 
     private void LogCustomInput(string message)

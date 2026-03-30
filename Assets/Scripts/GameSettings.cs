@@ -4,7 +4,6 @@ using UnityEngine.InputSystem;
 
 public enum InputMode
 {
-    Both,
     GamepadOnly,
     KeyboardOnly
 }
@@ -123,10 +122,20 @@ public class GameSettings : MonoBehaviour
 
     public void LoadSettings()
     {
+        Debug.Log("Loading Settings...");
+
         //inputMode = (InputMode)PlayerPrefs.GetInt("InputMode", 0);
         useCustomMapping = PlayerPrefs.GetInt("UseCustomMapping", 0) == 1;
+
+        Debug.Log("     Loaded useCustomMapping: " + useCustomMapping);
+
         showFPS = PlayerPrefs.GetInt("ShowFPS", 0) == 1;
-        inputMode = (InputMode)PlayerPrefs.GetInt("InputMode", 0);
+
+        Debug.Log("     Loaded showFPS: " + showFPS);
+
+        inputMode = (InputMode)PlayerPrefs.GetInt("InputMode", 1); // Keyboard only if no settings found
+
+        Debug.Log("     Loaded inputMode: " + inputMode);
 
         // default is Full HD
         resolution = (Resolutions)PlayerPrefs.GetInt("Resolution", 1);
