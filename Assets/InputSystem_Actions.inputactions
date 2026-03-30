@@ -597,30 +597,8 @@
                 },
                 {
                     "name": "negative",
-                    "id": "7decaa2a-0871-46f7-a6a1-2d52ec79bd88",
-                    "path": "<Keyboard>/a",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Steer",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "negative",
                     "id": "c9861fe1-0887-4d93-8965-13c45dcaacfd",
                     "path": "<Keyboard>/leftArrow",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Steer",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "1829cf86-6df8-4a7b-b0c4-80886e279f3b",
-                    "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
