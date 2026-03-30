@@ -205,26 +205,35 @@ public class GameSettings : MonoBehaviour
     {
 
         Vector2 resolutionInfo = ResolutionFromEnum(this.resolution);
-
-        Screen.SetResolution((int)resolutionInfo.x, (int)resolutionInfo.y, Screen.fullScreenMode, 30);
-
-
         int framerate = RefreshRateFromEnum(this.fps_settings);
 
-        if(framerate == 0)
+        if (StaticGameData.CurrentReleasePlatform == ReleasePlatform.WebGL)
         {
-            QualitySettings.vSyncCount = 1;
+            Debug.LogWarning("WebGL platform detected: forcing V-Sync and 60 FPS limit for better performance.");
+            framerate = 60;
+
+
         }
         else
         {
-            QualitySettings.vSyncCount = 0;
+            Screen.SetResolution((int)resolutionInfo.x, (int)resolutionInfo.y, Screen.fullScreenMode);
 
-            if (framerate == -1) {
-                Application.targetFrameRate = -1;
+            if (framerate == 0)
+            {
+                QualitySettings.vSyncCount = 1;
             }
             else
             {
-                Application.targetFrameRate = framerate;
+                QualitySettings.vSyncCount = 0;
+
+                if (framerate == -1)
+                {
+                    Application.targetFrameRate = -1;
+                }
+                else
+                {
+                    Application.targetFrameRate = framerate;
+                }
             }
         }
 

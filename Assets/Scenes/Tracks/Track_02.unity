@@ -880,11 +880,23 @@ MonoBehaviour:
   - {fileID: 1323328838}
   presentationManager: {fileID: 941342185}
   playersCollisionDetection: {fileID: 219254185}
-  mode: 2
+  mode: 3
   playerDataList:
   - name: Player1
     veichlePrefab: {fileID: 4699924895700797138, guid: 267da2944cbf0b044896309ba451fb34, type: 3}
     playerInputIndex: 0
+    cpuIndex: -1
+  - name: Player1
+    veichlePrefab: {fileID: 4699924895700797138, guid: 267da2944cbf0b044896309ba451fb34, type: 3}
+    playerInputIndex: 1
+    cpuIndex: -1
+  - name: Player1
+    veichlePrefab: {fileID: 4699924895700797138, guid: 267da2944cbf0b044896309ba451fb34, type: 3}
+    playerInputIndex: 2
+    cpuIndex: -1
+  - name: Player1
+    veichlePrefab: {fileID: 4699924895700797138, guid: 267da2944cbf0b044896309ba451fb34, type: 3}
+    playerInputIndex: 3
     cpuIndex: -1
   maxLaps: 3
   avaiableVeichleList:
