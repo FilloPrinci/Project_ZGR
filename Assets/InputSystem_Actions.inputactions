@@ -553,17 +553,6 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "39700224-0462-4417-aa47-5ed6fb54cf14",
-                    "path": "<Keyboard>/w",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Accelerate",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "1a74c5ef-fd7d-4061-8006-0b51234cd520",
                     "path": "<Keyboard>/upArrow",
                     "interactions": "",
