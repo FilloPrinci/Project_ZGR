@@ -6,7 +6,8 @@ public class LogicActions : MonoBehaviour
     public UI_CustomInputManager uI_CustomInputManager;
 
     private GameSettings gameSettings;
-    
+    private RaceSettings raceSettings;
+
 
     private void OnValidate()
     {
@@ -20,10 +21,16 @@ public class LogicActions : MonoBehaviour
     void Start()
     {
         gameSettings = GameSettings.Instance;
+        raceSettings = RaceSettings.Instance;
 
-        if(gameSettings == null)
+        if (gameSettings == null)
         {
             Debug.LogWarning("GameSettings instance not found!");
+        }
+
+        if(raceSettings == null)
+        {
+            Debug.LogWarning("RaceSettings instance not found!");
         }
     }
 
@@ -42,6 +49,25 @@ public class LogicActions : MonoBehaviour
     {
         Application.Quit();
     }
+
+    #region Difficulty
+    
+    public void OnEasy()
+    {
+        raceSettings.SetSelectedDifficulty(GlobalDifficulty.easy);
+    }
+
+    public void OnNormal()
+    {
+        raceSettings.SetSelectedDifficulty(GlobalDifficulty.normal);
+    }
+
+    public void OnHard()
+    {
+        raceSettings.SetSelectedDifficulty(GlobalDifficulty.hard);
+    }
+
+    #endregion
 
     #region GameSettings
 

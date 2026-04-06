@@ -150,6 +150,10 @@ public class RaceManager : MonoBehaviour
         humanPlayersAmount = playerDataList.Count;
     }
 
+    public List<GameObject> GetPlayerInstanceList()
+    {
+        return playerInstanceList;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -241,7 +245,7 @@ public class RaceManager : MonoBehaviour
         isReady = true;
 
     }
-    
+
     private void addPlayerInstances(bool keepOrder = false)
     {
         if (keepOrder)
@@ -306,6 +310,7 @@ public class RaceManager : MonoBehaviour
             playerDataList = currentRaceSettings.GetAllPlayerDataList();
             mode = currentRaceSettings.GetSelectedRaceMode();
             avaiableVeichleList = currentRaceSettings.veichlePrefabList;
+            gameObject.GetComponent<RaceDifficultyManager>().difficulty = currentRaceSettings.GetSelectedDifficulty();
         }
 
     }

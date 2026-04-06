@@ -5,6 +5,7 @@ public class EngineFeedback : MonoBehaviour
 
     [Header("Visual Effects")]
     public GameObject engineEffectModel;
+    public GameObject powerOnEffect;
     public float minEffectScale = 0.1f;
     public float normalEffectScale = 1f;
     public float maxEffectScale = 2f;

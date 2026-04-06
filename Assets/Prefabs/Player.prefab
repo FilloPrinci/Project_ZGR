@@ -132,11 +132,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 869ec3e6f72eb8f4fa007b29c7db7e6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  powerUpMode: 1
   energyRecharge: 10
   energyZoneRecharge: 0.2
+  energySpeedMultiplier: 5
   hitDamage: 15
   normalDamageFactor: 1
-  playerDamageFactor: 0.5
+  playerDamageFactor: 0.1
   obstacleDamageFactor: 2
   normalSpeedCollistionFactor: 0.75
   playerSpeedCollisionFactor: 0.99
@@ -160,7 +162,8 @@ MonoBehaviour:
   turboAccelerationMultiplier: 1
   onTurbo: 0
   turboDuration: 2
-  bufferSize: 3
+  bufferSize: 5
+  defficultyMaxSpeedFraction: 0.05
 --- !u!114 &7242950170658541357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,7 +231,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb0ff943206bb124e956f82243dc815a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  humanPlayer: 0
 --- !u!65 &1331134543065289110
 BoxCollider:
   m_ObjectHideFlags: 0

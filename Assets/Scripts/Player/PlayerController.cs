@@ -94,6 +94,9 @@ public class PlayerController : MonoBehaviour
     private Vector3 localBounceVector = Vector3.zero;
     private Vector3 localExitVector = Vector3.zero;
 
+    // for CPU only
+    private int rubberbandingLevel = 0;
+
     #region Unity Standard Methods
 
     private void OnValidate()
@@ -366,6 +369,25 @@ public class PlayerController : MonoBehaviour
 
     #region public methods
 
+    public void SetRubberbandLevel(int newLevel)
+    {
+        if (!IsHuman())
+        {
+            rubberbandingLevel = newLevel;
+        }
+        else
+        {
+            rubberbandingLevel = 0;
+        }
+
+        playerStats.OnRubberbandUpdated(rubberbandingLevel);
+    }
+
+    public int GetRubberbandingLevel()
+    {
+        return rubberbandingLevel;
+    }   
+
     public bool IsHuman()
     {
         return playerData.playerInputIndex != InputIndex.CPU;
@@ -379,6 +401,16 @@ public class PlayerController : MonoBehaviour
     public float GetMaxSpeed()
     {
         return maxSpeed;
+    }
+
+    public PlayerRaceData GetCurrentRaceData()
+    {
+        return raceManager.GetRaceData().GetPlayerRaceDataByID(playerData.name);
+    }
+
+    public int GetCurrentPositionInRace()
+    {
+        return GetCurrentRaceData().position;
     }
 
     public GameObject GetVeichleModel()
@@ -585,7 +617,15 @@ public class PlayerController : MonoBehaviour
             {
                 collistionMovementFactor = playerStats.playerSpeedCollisionFactor;
                 damageFactor = playerStats.playerDamageFactor;
-                collistionBounceFactor = playerStats.playerBounceCollisionFactor;
+                if(IsHuman())
+                {
+                    collistionBounceFactor = playerStats.playerBounceCollisionFactor * 0.8f;
+                }
+                else
+                {
+                    collistionBounceFactor = playerStats.playerBounceCollisionFactor * 1.2f;
+                }
+                    
             }
             else if (lastCollisionType == CollisionTypeEnum.Obstacle)
             {

@@ -28,6 +28,7 @@ public class MagneticSpawner : MonoBehaviour
 
     private void OnEnable()
     {
+        if (!gameObject.scene.isLoaded) return;
         Generate();
     }
 
@@ -60,6 +61,10 @@ public class MagneticSpawner : MonoBehaviour
     [ContextMenu("Generate")]
     public void Generate()
     {
+        if (Application.isPlaying) return;
+
+        if (!gameObject.scene.isLoaded) return;
+
         if (isGenerating) return;
         isGenerating = true;
 

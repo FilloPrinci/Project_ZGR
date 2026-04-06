@@ -1,4 +1,5 @@
 using NUnit.Framework.Constraints;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -15,6 +16,7 @@ public class RaceGUI : MonoBehaviour
     public GameObject raceDataPanel;
     public GameObject speedometerPanel;
     public GameObject statsPanel;
+    public GameObject itemsPanel;
     public GameObject positionResultPanel;
     public GameObject currentPositionPanel;
 
@@ -67,8 +69,22 @@ public class RaceGUI : MonoBehaviour
         countdownManager = CountdownManager.Instance;
         currentPlayerData = currentPlayer.GetComponent<PlayerController>().playerData;
         currentPlayerStats = currentPlayer.GetComponent<PlayerController>().playerStats;
+
+        if (currentPlayerStats != null) { 
+            if(currentPlayerStats.powerUpMode != PowerUpMode.itemStats)
+            {
+                itemsPanel.SetActive(false);
+            }
+            else
+            {
+                itemsPanel.SetActive(true);
+            }
+        }
+
         sceneReferences = SceneReferences.Instance;
         raceSettings = RaceSettings.Instance;
+
+        StartCoroutine(UpdateSpeedCoroutine(10f)); // 10Hz
     }
 
     // Update is called once per frame
@@ -85,11 +101,32 @@ public class RaceGUI : MonoBehaviour
         ShowPositionResult();
         ShowCountDown();
         ShowPauseMenu();
-        UpdateSpeedometer(Time.fixedDeltaTime);
         ShowEnergy();
     }
 
-    void UpdateSpeedometer(float time)
+    IEnumerator UpdateSpeedCoroutine(float Hertz)
+    {
+        float timeInterval = 1f / Hertz;
+
+        var wait = new WaitForSeconds(timeInterval);
+
+        Vector3 prevPosition = currentPlayer.transform.position;
+        float prevSpeed = 0f;
+        float speed = 0f;
+
+        while (true)
+        {
+            Vector3 diffPosition = currentPlayer.transform.position - prevPosition;
+            speed = UpdateSpeedometer(diffPosition, timeInterval, prevSpeed);
+            float kmhSpeed = (int)(speed * 3.6f); // Convert m/s to km/h
+            speedometerText.text = kmhSpeed.ToString();
+            prevPosition = currentPlayer.transform.position;
+            prevSpeed = speed;
+            yield return wait;
+        }
+    }
+
+    float UpdateSpeedometer(Vector3 diffPosition, float time, float prevSpeed)
     {
         if (canShowSpeedometer)
         {
@@ -98,20 +135,16 @@ public class RaceGUI : MonoBehaviour
                 speedometerPanel.SetActive(true);
             }
 
-            int speed = 0;
-            float? realSpeed = currentPlayer.GetComponent<PlayerController>().GetCurrentSpeed();
-            realSpeed *= 3.6f; // Convert m/s to km/h
-            if (realSpeed != null)
-            {
-                speed = (int)realSpeed;
-            }
+            float speed = 0;
+            float realSpeed = diffPosition.magnitude / time;           
+            speed = (realSpeed + prevSpeed) / 2;
 
-            speedometerText.text = speed.ToString();
+            return speed;
         }
         else
         {
             speedometerPanel.SetActive(false);
-            return;
+            return 0;
         }
     }
 
