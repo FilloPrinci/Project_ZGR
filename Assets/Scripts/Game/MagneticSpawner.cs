@@ -1,5 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+[ExecuteAlways]
 public class MagneticSpawner : MonoBehaviour
 {
     [Header("Spawn Settings")]
@@ -12,10 +17,65 @@ public class MagneticSpawner : MonoBehaviour
     [Tooltip("Degrees per step (horizontal curve)")]
     public float curvatureAngle = 0f;
 
-    [ContextMenu("Spawn")]
-    public void SpawnChain()
+    [Header("Editor")]
+    public bool autoUpdate = true;
+
+    private Transform container;
+
+    bool isGenerating = false;
+
+    // --------------------------------------------------
+
+    private void OnEnable()
     {
-        if (prefab == null) return;
+        Generate();
+    }
+
+    private void OnValidate()
+    {
+        if (!autoUpdate) return;
+
+        #if UNITY_EDITOR
+                if (EditorApplication.isCompiling) return;
+
+                // evita chiamate multiple nello stesso frame
+                EditorApplication.delayCall -= DelayedGenerate;
+                EditorApplication.delayCall += DelayedGenerate;
+        #endif
+    }
+
+    #if UNITY_EDITOR
+    void DelayedGenerate()
+    {
+        if (this == null) return;
+        if (isGenerating) return;
+
+        Generate();
+    }
+#endif
+
+    // --------------------------------------------------
+
+    [ContextMenu("Generate")]
+    [ContextMenu("Generate")]
+    public void Generate()
+    {
+        if (isGenerating) return;
+        isGenerating = true;
+
+        if (prefab == null)
+        {
+            isGenerating = false;
+            return;
+        }
+
+        EnsureContainer();
+
+#if UNITY_EDITOR
+        Undo.RegisterFullObjectHierarchyUndo(container.gameObject, "Regenerate Chain");
+#endif
+
+        ClearContainer();
 
         Vector3 currentPosition = transform.position;
         Vector3 currentForward = transform.forward;
@@ -25,27 +85,23 @@ public class MagneticSpawner : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            // 1. Applica curvatura (yaw attorno all'up corrente)
+            // Curvatura
             if (Mathf.Abs(curvatureAngle) > 0.001f)
             {
                 Quaternion curvatureRotation = Quaternion.AngleAxis(curvatureAngle, currentUp);
                 currentForward = curvatureRotation * currentForward;
             }
 
-            // 2. Avanza
+            // Movimento
             currentPosition += currentForward * stepDistance + currentUp;
 
             RaycastHit hit;
 
-            // 3. Raycast verso il basso locale
             if (Physics.Raycast(currentPosition, -currentUp, out hit, rayDistance))
             {
                 currentPosition = hit.point;
-
-                // 4. Aggiorna up dalla normale
                 currentUp = hit.normal;
 
-                // 5. Calcola forward proiettato sul piano
                 Vector3 projectedForward = Vector3.ProjectOnPlane(currentForward, currentUp);
 
                 if (projectedForward.sqrMagnitude < 0.001f)
@@ -55,10 +111,20 @@ public class MagneticSpawner : MonoBehaviour
 
                 Quaternion rotation = Quaternion.LookRotation(projectedForward, currentUp);
 
-                // 6. Instanzia prefab
-                GameObject obj = Instantiate(prefab, currentPosition, rotation);
+                GameObject obj;
 
-                // 7. Fai guardare il precedente verso questo
+                #if UNITY_EDITOR
+                    obj = (GameObject)PrefabUtility.InstantiatePrefab(prefab, container);
+                    obj.transform.position = currentPosition;
+                    obj.transform.rotation = rotation;
+                    Undo.RegisterCreatedObjectUndo(obj, "Create Segment");
+                #else
+                    obj = Instantiate(prefab, currentPosition, rotation, container);
+                #endif
+
+                obj.name = prefab.name + "_" + i;
+
+                // orienta il precedente
                 if (previous != null)
                 {
                     Vector3 dir = (obj.transform.position - previous.transform.position).normalized;
@@ -71,16 +137,56 @@ public class MagneticSpawner : MonoBehaviour
                 }
 
                 previous = obj;
-
-                // 8. Aggiorna forward coerente
                 currentForward = rotation * Vector3.forward;
             }
             else
             {
-                // Se non colpisce nulla, esci (evita spawn nel vuoto)
-                Debug.LogWarning("Raycast missed, stopping spawn.");
                 break;
             }
+        }
+
+        isGenerating = false;
+    }
+
+    // --------------------------------------------------
+
+    void EnsureContainer()
+    {
+        if (container != null) return;
+
+        Transform existing = transform.Find("Generated");
+
+        if (existing != null)
+        {
+            container = existing;
+        }
+        else
+        {
+            GameObject go = new GameObject("Generated");
+            go.transform.SetParent(transform);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+
+            container = go.transform;
+        }
+    }
+
+    void ClearContainer()
+    {
+        if (container == null) return;
+
+        for (int i = container.childCount - 1; i >= 0; i--)
+        {
+            Transform child = container.GetChild(i);
+
+        #if UNITY_EDITOR
+            if (!Application.isPlaying)
+                Undo.DestroyObjectImmediate(child.gameObject);
+            else
+                Destroy(child.gameObject);
+        #else
+            Destroy(child.gameObject);
+        #endif
         }
     }
 }

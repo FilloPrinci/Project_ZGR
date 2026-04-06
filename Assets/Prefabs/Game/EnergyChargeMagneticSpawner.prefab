@@ -49,3 +49,4 @@ MonoBehaviour:
   stepDistance: 5
   rayDistance: 5
   curvatureAngle: -1.1
+  autoUpdate: 1
