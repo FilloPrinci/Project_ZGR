@@ -131,22 +131,6 @@ public class RaceDifficultyManager : MonoBehaviour
         // Implement rubberbanding logic based on the difficulty settings and player positions
         // This may involve adjusting the speed or performance of CPU players based on their position in race
 
-        // OrderByPosition
-
-        cpuPlayerInstanceList.Sort((a, b) =>
-        {
-            PlayerRaceData aRaceData = a.GetComponent<PlayerController>().GetCurrentRaceData();
-            PlayerRaceData bRaceData = b.GetComponent<PlayerController>().GetCurrentRaceData();
-            if (aRaceData != null && bRaceData != null)
-            {
-                return aRaceData.position.CompareTo(bRaceData.position);
-            }
-            else
-            {
-                return 0; // If either player instance does not have PlayerRaceData, consider them equal for sorting purposes
-            }
-        });
-
         // retrive player positions and apply rubberbanding adjustments based on the difficulty settings
         humanPlayerInstanceList.Sort((a, b) =>
         {
@@ -162,44 +146,78 @@ public class RaceDifficultyManager : MonoBehaviour
             }
         });
         bestPlayerPosition = humanPlayerInstanceList[0].GetComponent<PlayerController>().GetCurrentPositionInRace();
+        PlayerRaceData bestPlayerRaceData = humanPlayerInstanceList[0].GetComponent<PlayerController>().GetCurrentRaceData();
 
-        // If player is in the bottom positions, apply top rubberbanding level
-        if (bestPlayerPosition > cpuPlayerInstanceList.Count / 2)
+        if(bestPlayerRaceData.currentLap == raceManager.maxLaps && bestPlayerRaceData.nextCheckpointIndex == raceManager.checkPointList.Count - 1)
         {
-            // Apply top rubberbanding level to CPU players
+            // player is finishing the race, reset rubberbanding
+            Debug.Log("A player is finishing the race, rubberbanding off");
+
             foreach (GameObject cpuPlayer in cpuPlayerInstanceList)
             {
-                // Adjust CPU player performance based on the top rubberbanding level
-                if(cpuPlayer.GetComponent<PlayerController>().GetCurrentPositionInRace() < bestPlayerPosition)
-                {
-                    // CPU player is ahead of the best human player, apply top rubberbanding level so the CPU slow down
-                    cpuPlayer.GetComponent<PlayerController>().SetRubberbandLevel(-1 * selectedDifficultySettings.goSlowerLevel);
-                }
-                else
-                {
-                    cpuPlayer.GetComponent<PlayerController>().SetRubberbandLevel(0); // No rubberbanding for CPU players behind the best human player
-                }
+                    cpuPlayer.GetComponent<PlayerController>().SetRubberbandLevel(0);
             }
         }
         else
         {
-            // If player is in the top positions, apply bottom rubberbanding level
-            // Apply bottom rubberbanding level to CPU players
-            foreach (GameObject cpuPlayer in cpuPlayerInstanceList)
+            // OrderByPosition
+
+            cpuPlayerInstanceList.Sort((a, b) =>
             {
-                // Adjust CPU player performance based on the top rubberbanding level
-                if (cpuPlayer.GetComponent<PlayerController>().GetCurrentPositionInRace() > bestPlayerPosition)
+                PlayerRaceData aRaceData = a.GetComponent<PlayerController>().GetCurrentRaceData();
+                PlayerRaceData bRaceData = b.GetComponent<PlayerController>().GetCurrentRaceData();
+                if (aRaceData != null && bRaceData != null)
                 {
-                    // CPU player is behind of the best human player, apply top rubberbanding level so the CPU gets faster
-                    cpuPlayer.GetComponent<PlayerController>().SetRubberbandLevel(1 * selectedDifficultySettings.goFasterLevel);
+                    return aRaceData.position.CompareTo(bRaceData.position);
                 }
                 else
                 {
-                    cpuPlayer.GetComponent<PlayerController>().SetRubberbandLevel(0); // No rubberbanding for CPU players ahead the best human player
+                    return 0; // If either player instance does not have PlayerRaceData, consider them equal for sorting purposes
+                }
+            });
+
+
+
+            // If player is in the bottom positions, apply top rubberbanding level
+            if (bestPlayerPosition > cpuPlayerInstanceList.Count / 2)
+            {
+                // Apply top rubberbanding level to CPU players
+                foreach (GameObject cpuPlayer in cpuPlayerInstanceList)
+                {
+                    // Adjust CPU player performance based on the top rubberbanding level
+                    if (cpuPlayer.GetComponent<PlayerController>().GetCurrentPositionInRace() < bestPlayerPosition)
+                    {
+                        // CPU player is ahead of the best human player, apply top rubberbanding level so the CPU slow down
+                        cpuPlayer.GetComponent<PlayerController>().SetRubberbandLevel(-1 * selectedDifficultySettings.goSlowerLevel);
+                    }
+                    else
+                    {
+                        cpuPlayer.GetComponent<PlayerController>().SetRubberbandLevel(0); // No rubberbanding for CPU players behind the best human player
+                    }
                 }
             }
+            else
+            {
+                // If player is in the top positions, apply bottom rubberbanding level
+                // Apply bottom rubberbanding level to CPU players
+                foreach (GameObject cpuPlayer in cpuPlayerInstanceList)
+                {
+                    // Adjust CPU player performance based on the top rubberbanding level
+                    if (cpuPlayer.GetComponent<PlayerController>().GetCurrentPositionInRace() > bestPlayerPosition)
+                    {
+                        // CPU player is behind of the best human player, apply top rubberbanding level so the CPU gets faster
+                        cpuPlayer.GetComponent<PlayerController>().SetRubberbandLevel(1 * selectedDifficultySettings.goFasterLevel);
+                    }
+                    else
+                    {
+                        cpuPlayer.GetComponent<PlayerController>().SetRubberbandLevel(0); // No rubberbanding for CPU players ahead the best human player
+                    }
+                }
 
+            }
         }
+
+            
     }
 
     // Update is called once per frame
