@@ -71,6 +71,9 @@ public class RaceDifficultyManager : MonoBehaviour
                         humanPlayerInstanceList.Add(playerInstance);
                     }
                 }
+
+                SetupDifficultyStats();
+
                 if (cpuPlayerInstanceList != null && cpuPlayerInstanceList.Count > 0)
                 {
                     StartCoroutine(UpdateRubberbanding(managementRefreshRate));
@@ -79,6 +82,18 @@ public class RaceDifficultyManager : MonoBehaviour
                 {
                     Debug.LogWarning("RaceDifficultyManager: RaceManager is not ready. Player instances may not be available yet.");
                 }
+            }
+        }
+    }
+    
+    void SetupDifficultyStats()
+    {
+        foreach (GameObject playerInstance in allPlayerInstanceList)
+        {
+            PlayerController controller = playerInstance.GetComponent<PlayerController>();
+            if (controller != null)
+            {
+                controller.SetPlayerStatsDifficultyLevel((int)difficulty);
             }
         }
     }

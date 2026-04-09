@@ -369,6 +369,11 @@ public class PlayerController : MonoBehaviour
 
     #region public methods
 
+    public void SetPlayerStatsDifficultyLevel(int newLevel)
+    {
+        playerStats.OnDifficultyUpdated(newLevel);
+    }
+
     public void SetRubberbandLevel(int newLevel)
     {
         if (!IsHuman())

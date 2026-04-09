@@ -66,9 +66,11 @@ public class PlayerStats : MonoBehaviour
     public int bufferSize = 3;
     public Queue<ItemType> itemBuffer = new Queue<ItemType>();
 
-    [Header("RUBBERBANDING")]
+    [Header("DIFFICULTY")]
+    public int difficultyMultiplier = 1;
     public float defficultyMaxSpeedFraction = 0.1f;
-
+    public float maxSpeedDifficultyIncrease = 0.2f;
+    
 
     private float rubberbandMaxSpeedEffect = 0;
 
@@ -122,7 +124,7 @@ public class PlayerStats : MonoBehaviour
     void ApplyStats()
     {
 
-        currentMaxSpeed = (maxSpeedKmH / 3.6f * maxSpeedMultiplier) + (rubberbandMaxSpeedEffect * currentMaxSpeed * defficultyMaxSpeedFraction);
+        currentMaxSpeed = ((maxSpeedKmH / 3.6f * maxSpeedMultiplier) + (rubberbandMaxSpeedEffect * currentMaxSpeed * defficultyMaxSpeedFraction)) *  (1 + (difficultyMultiplier * maxSpeedDifficultyIncrease));
         currentAcceleration = acceleration * accelerationMultiplier;
         currentRotationSpeed = maxRotationSpeed * maxRotationSpeedMultiplier;
         currentRotationAcceleration = rotationAcceleration * rotationAccelerationMultiplier;
@@ -233,6 +235,13 @@ public class PlayerStats : MonoBehaviour
     public void OnRubberbandUpdated(int rubberbandLevel)
     {
         rubberbandMaxSpeedEffect = rubberbandLevel;
+
+        ApplyStats();
+    }
+
+    public void OnDifficultyUpdated(int newDifficultyLevel)
+    {
+        difficultyMultiplier = newDifficultyLevel;
 
         ApplyStats();
     }
