@@ -220,6 +220,7 @@ GameObject:
   - component: {fileID: 3894135735151701788}
   - component: {fileID: 9175970223712425277}
   - component: {fileID: 4740966887684551909}
+  - component: {fileID: 8096754696432802289}
   m_Layer: 0
   m_Name: VehiclePivot
   m_TagString: Untagged
@@ -290,6 +291,28 @@ MonoBehaviour:
     volumeFactor: 0.1
     desideredPitch: 1
     desideredVolume: 1
+--- !u!114 &8096754696432802289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4810288639906654062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13a1e4fa6e0df3e4aa95f0c9a7e524f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetShader: {fileID: -6465566751694194690, guid: e1327fddf0db36b419e1a0a4ec9116b4, type: 3}
+  includeInactiveChildren: 1
+  collisionEffectSettings:
+    intensity: 0.75
+    fresnelPower: 10
+    glowColor: {r: 4, g: 4, b: 4, a: 0}
+  EnergyChargeEffectSettings:
+    intensity: 1
+    fresnelPower: 10
+    glowColor: {r: 0, g: 4, b: 4, a: 0}
 --- !u!1 &4830152694235476529
 GameObject:
   m_ObjectHideFlags: 0

@@ -309,6 +309,7 @@ public class PlayerController : MonoBehaviour
                     {
                         float currentSpeed = GetCurrentSpeed();
                         playerStats.OnEnergyRechargeBySpeed(Time.fixedDeltaTime, currentSpeed);
+                        feedBackManager.OnEnergyRechargeFeedback();
                         if (playerStructure != null)
                         {
                             playerStructure.UpdatePlayerGUI(playerStats);
@@ -451,6 +452,11 @@ public class PlayerController : MonoBehaviour
     public VeichleAnchors GetVeichleAnchors()
     {
         return veichlePivot.gameObject.GetComponent<VeichleAnchors>();
+    }
+
+    public GameObject GetVeichlePivot()
+    {
+               return veichlePivot.gameObject;
     }
 
     public void EndRace()
@@ -719,7 +725,7 @@ public class PlayerController : MonoBehaviour
 
         globalUpdateMovementVector *= collistionMovementFactor;
 
-        feedBackManager.TriggerCameraShake();
+        feedBackManager.OnCollisionFeedback();
 
         return bounceVector;
     }

@@ -1,5 +1,5 @@
-
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum CameraPositionMode
@@ -37,6 +37,13 @@ public class FeedBackManager : MonoBehaviour
     private float currentEnginePower = 0f;
     private bool onTurbo = false;
 
+    // Visual material effect support
+    private VeichleVisualEffects veichleVisualEffects;
+    private Coroutine visualEffectCoroutine;
+    private readonly float visualEffectDurationDefault = 0.5f; // half second as requested
+
+    private List<Material> activeInstanceMaterials = new List<Material>();
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -47,6 +54,16 @@ public class FeedBackManager : MonoBehaviour
 
         veichleAnchors = playerController.GetVeichleAnchors();
         cameraPositionMode = CameraPositionMode.Race;
+
+        veichleVisualEffects = playerController.GetVeichlePivot().GetComponent<VeichleVisualEffects>();
+        if(veichleVisualEffects == null)
+        {
+            Debug.LogWarning("VeichleVisualEffects component not found on VeichlePivot. Collision visual effects will be unavailable.");
+        }
+        else
+        {
+            InitVisualEffects();
+        }
     }
 
     // Update is called once per frame
@@ -65,8 +82,13 @@ public class FeedBackManager : MonoBehaviour
             veichleAnchors.cameraPivot.position = veichleAnchors.OutRace_CameraPivot.position;
             veichleAnchors.cameraPivot.rotation = veichleAnchors.OutRace_CameraPivot.rotation;
         }
+    }
 
-             
+    private void InitVisualEffects() { 
+        if (veichleVisualEffects != null)
+        {
+            veichleVisualEffects.SetGlow(0, 0, new Color(0, 0, 0));
+        }
     }
 
     void EngineFeedback()
@@ -101,7 +123,33 @@ public class FeedBackManager : MonoBehaviour
         steeringAmount = newAmount;  
     }
 
-    public void TriggerCameraShake()
+    public void OnCollisionFeedback()
+    {
+        //TriggerCameraShake();
+
+        if (veichleVisualEffects != null)
+        {
+            if (visualEffectCoroutine != null)
+            {
+                StopCoroutine(visualEffectCoroutine);
+            }
+            visualEffectCoroutine = StartCoroutine(veichleVisualEffects.PlayCollisionEffect(0.2f));
+        }
+    }
+
+    public void OnEnergyRechargeFeedback()
+    {
+        if (veichleVisualEffects != null)
+        {
+            if (visualEffectCoroutine != null)
+            {
+                StopCoroutine(visualEffectCoroutine);
+            }
+            visualEffectCoroutine = StartCoroutine(veichleVisualEffects.PlayEnergyChargeEffect(0.25f));
+        }
+    }
+
+    private void TriggerCameraShake()
     {
         if (shakeCoroutine != null)
         {
@@ -171,15 +219,14 @@ public class FeedBackManager : MonoBehaviour
 
         while (elapsed < shakeDuration)
         {
-            // Normalizza il tempo (0 ? 1)
+            // Normalize time (0 .. 1)
             float t = elapsed / shakeDuration;
 
-            // 1?? Inizio: botta verso il basso
-            // 2?? Poi effetto molla (oscillazione smorzata)
-            float damper = Mathf.Exp(-5f * t); // smorzamento
-            float spring = Mathf.Sin(t * Mathf.PI * 4f); // oscillazione
+            // damped spring-like motion
+            float damper = Mathf.Exp(-5f * t); // damping
+            float spring = Mathf.Sin(t * Mathf.PI * 4f); // oscillation
 
-            // Movimento verticale: inizia con una botta negativa e poi rimbalza
+            // vertical offset: initial hit then bounce
             float offsetY = (-Mathf.Abs(Mathf.Sin(t * Mathf.PI)) + spring) * shakeMagnitude * damper;
 
             veichleAnchors.cameraPivot.localPosition = originalCamPos + new Vector3(0f, offsetY, 0f);
@@ -188,7 +235,7 @@ public class FeedBackManager : MonoBehaviour
             yield return null;
         }
 
-        // Ritorna esattamente alla posizione originale
+        // Return exactly to the original position
         veichleAnchors.cameraPivot.localPosition = originalCamPos;
     }
 }
