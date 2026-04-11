@@ -79,14 +79,22 @@ public class PlayerController : MonoBehaviour
     private float steerInput = 0f;
     private bool accelerateInput = false;
 
+    // Collistion handling
+
     private CollisionTypeEnum lastCollisionType = CollisionTypeEnum.None;
+    private BoxCollider selfCollider;
+    private Vector3 globalBounceVector = Vector3.zero;
+    private PlayerCollisionInfo playerCollisionInfo;
+    private PlayerCollisionInfo trackCollisionInfo;-
+    private Vector3 exitVector = Vector3.zero;
+    private Vector3 localBounceVector = Vector3.zero;
+    private Vector3 localExitVector = Vector3.zero;
 
     private bool autoDrive = false;
     private float enginePower =0f;
     private Collider trackMainCollider;
-    private BoxCollider selfCollider;
     private Vector3 globalUpdateMovementVector = Vector3.zero;
-    private Vector3 globalBounceVector = Vector3.zero;
+    
     private float globalUpdateSpeed = 0f;
 
     private Vector3 coroutineCurrentPosition = Vector3.zero;
@@ -95,12 +103,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 selfColliderStartSize = Vector3.zero;
 
     private bool pauseMode = false;
-    private PlayerCollisionInfo playerCollisionInfo;
-    private PlayerCollisionInfo trackCollisionInfo;
-
-    private Vector3 exitVector = Vector3.zero;
-    private Vector3 localBounceVector = Vector3.zero;
-    private Vector3 localExitVector = Vector3.zero;
+    
 
     // for CPU only
     private int rubberbandingLevel = 0;
