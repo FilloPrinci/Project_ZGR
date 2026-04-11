@@ -17,6 +17,8 @@ enum CollisionTypeEnum
 
 public class PlayerController : MonoBehaviour
 {
+    #region public attributes
+
     [Header("Component Setup")]
 
     public PlayerData playerData;
@@ -53,6 +55,10 @@ public class PlayerController : MonoBehaviour
     [Header("Debug")]
     [SerializeField]
     public bool debugMode = false;
+
+    #endregion
+
+    #region private attributes
 
     private GlobalInputManager globalInputManager;
     private PlayerInputHandler playerInputHandler;
@@ -107,6 +113,8 @@ public class PlayerController : MonoBehaviour
 
     // for CPU only
     private int rubberbandingLevel = 0;
+
+    #endregion
 
     #region Unity Standard Methods
 
