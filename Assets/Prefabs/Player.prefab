@@ -134,7 +134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   powerUpMode: 1
   energyRecharge: 10
-  energyZoneRecharge: 0.2
+  energyZoneRecharge: 0.25
   energySpeedMultiplier: 5
   hitDamage: 15
   normalDamageFactor: 1
@@ -186,22 +186,24 @@ MonoBehaviour:
   playerStats: {fileID: 7834776545252078584}
   playerStructure: {fileID: 0}
   playerSoundManager: {fileID: 3114235918088769195}
+  veichlePivot: {fileID: 0}
   hoverHeight: 0.4
   startHoverHeight: 0.275
+  hoverRaycastMask:
+    serializedVersion: 2
+    m_Bits: 3
   maxSpeed: 100
   rotationMaxSpeed: 150
   rotationAccelleration: 3
   accelleration: 1
-  bounceFactor: 1
   autoBrakeDecelleration: 1
   brakeDecelleration: 2.5
-  collisionBounceDecelleration: 15
-  hoverRaycastMask:
-    serializedVersion: 2
-    m_Bits: 3
-  veichlePivot: {fileID: 0}
   pivotRotationDecay: 10
   pivotPositionDecay: 40
+  bounceFactor: 1
+  collisionBounceDecelleration: 20
+  collisionRotationFactor: 0.6
+  collisionRotationDecay: 20
   debugMode: 1
 --- !u!114 &2753818033003460965
 MonoBehaviour:
