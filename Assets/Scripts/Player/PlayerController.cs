@@ -91,7 +91,7 @@ public class PlayerController : MonoBehaviour
     private BoxCollider selfCollider;
     private Vector3 globalBounceVector = Vector3.zero;
     private PlayerCollisionInfo playerCollisionInfo;
-    private PlayerCollisionInfo trackCollisionInfo;-
+    private PlayerCollisionInfo trackCollisionInfo;
     private Vector3 exitVector = Vector3.zero;
     private Vector3 localBounceVector = Vector3.zero;
     private Vector3 localExitVector = Vector3.zero;
