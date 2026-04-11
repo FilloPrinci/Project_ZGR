@@ -17,32 +17,40 @@ enum CollisionTypeEnum
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Component Setup")]
+
     public PlayerData playerData;
     private GameObject veichleModelInstance;
     public PlayerStats playerStats;
     public PlayerStructure playerStructure;
     public PlayerSoundManager playerSoundManager;
+    public Transform veichlePivot;
+
+    [Header("Hover Settings")]
 
     public float hoverHeight = 0.5f;
     public float startHoverHeight = 0.3f;
+    public LayerMask hoverRaycastMask;
+
+    [Header("Default Stats")]
 
     public float maxSpeed = 300f;
     public float rotationMaxSpeed = 10;
     public float rotationAccelleration = 5;
     public float accelleration = 5f;
-    public float bounceFactor = 0.5f;
     public float autoBrakeDecelleration = 1f;
     public float brakeDecelleration = 2.5f;
-    public float collisionBounceDecelleration = 5f;
-    public LayerMask hoverRaycastMask;
-
-    public Transform veichlePivot;
-
     [SerializeField]
     public float pivotRotationDecay = 10f;
     [SerializeField]
-    public  float pivotPositionDecay = 10f;
+    public float pivotPositionDecay = 10f;
 
+    [Header("Collision Handling")]
+
+    public float bounceFactor = 0.5f;
+    public float collisionBounceDecelleration = 5f;
+
+    [Header("Debug")]
     [SerializeField]
     public bool debugMode = false;
 
