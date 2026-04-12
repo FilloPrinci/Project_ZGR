@@ -41,6 +41,18 @@ public class KeyboardOnlyInput : MonoBehaviour
         }
     }
 
+    #region Global
+
+    public void Global_Ready(InputAction.CallbackContext context)
+    {
+        if (GlobalInputManagerInstance != null)
+        {
+            GlobalInputManagerInstance.GlobalReady(context, 0);
+        }
+    }
+
+    #endregion
+
     #region P1
 
     public void Player1_SelectHorizontal(InputAction.CallbackContext context)

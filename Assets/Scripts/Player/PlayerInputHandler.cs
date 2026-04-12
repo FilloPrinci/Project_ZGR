@@ -8,6 +8,7 @@ public class PlayerInputHandler : MonoBehaviour
     private Vector2 moveInput;
     private bool isAccelerating;
     private bool isPressingStart;
+    private bool isPressingReady;
 
     public int playerIndex = 0;
 
@@ -16,7 +17,8 @@ public class PlayerInputHandler : MonoBehaviour
 
     public bool IsPressingStart => isPressingStart;
 
-    
+    public bool IsPressingReady => isPressingReady;
+
     private void Start()
     {
         raceManager = RaceManager.Instance;
@@ -60,6 +62,18 @@ public class PlayerInputHandler : MonoBehaviour
 
         if (isPressingStart) {
             raceManager.OnStartButtonPress(playerIndex);
+        }
+    }
+
+    public void OnReady(InputAction.CallbackContext context)
+    {
+        Debug.Log("Ready button pressed by player " + playerIndex);
+
+        isPressingReady = context.ReadValue<float>() > 0.1f;
+
+        if (isPressingReady)
+        {
+            raceManager.OnReadyButtonPress(playerIndex);
         }
     }
 }

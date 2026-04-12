@@ -150,6 +150,10 @@ public class RaceManager : MonoBehaviour
         humanPlayersAmount = playerDataList.Count;
     }
 
+    public List<GameObject> GetPlayerInstanceList()
+    {
+        return playerInstanceList;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -241,7 +245,7 @@ public class RaceManager : MonoBehaviour
         isReady = true;
 
     }
-    
+
     private void addPlayerInstances(bool keepOrder = false)
     {
         if (keepOrder)
@@ -306,6 +310,7 @@ public class RaceManager : MonoBehaviour
             playerDataList = currentRaceSettings.GetAllPlayerDataList();
             mode = currentRaceSettings.GetSelectedRaceMode();
             avaiableVeichleList = currentRaceSettings.veichlePrefabList;
+            gameObject.GetComponent<RaceDifficultyManager>().difficulty = currentRaceSettings.GetSelectedDifficulty();
         }
 
     }
@@ -700,16 +705,21 @@ public class RaceManager : MonoBehaviour
         pausePlayerIndex = -1;
     }
 
-    public void OnStartButtonPress(int playerIndex)
+    public void OnReadyButtonPress(int playerIndex)
     {
-        Debug.Log("[RaceManager] : Player" + (playerIndex + 1) + " pressed START button");
+        Debug.Log("[RaceManager] : Player" + (playerIndex + 1) + " pressed READY button");
 
         if (currentRacePhase == RacePhase.Presentation)
         {
             Debug.Log("[RaceManager] : Skip Presentation");
             TriggerRaceEvent(RacePhaseEvent.PresentationEnd);
         }
-        else if (currentRacePhase == RacePhase.Race)
+    }
+
+    public void OnStartButtonPress(int playerIndex)
+    {
+        Debug.Log("[RaceManager] : Player" + (playerIndex + 1) + " pressed START button");
+        if (currentRacePhase == RacePhase.Race)
         {
             Debug.Log("[RaceManager] : Pause button pressed");
             

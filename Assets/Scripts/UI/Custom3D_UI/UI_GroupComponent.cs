@@ -338,23 +338,32 @@ public class UI_GroupComponent : MonoBehaviour
             Debug.LogWarning("Trying to select right on a vertical group component, this is not allowed");
             return;
         }
-
-        if (ActiveComponentIndex == positionList.Count - 1)
-        {
-            //don't wrap around
-            
-            return;
-        }
         else
         {
-            ActiveComponentIndex++;
-            for (int i = 0; i < positionList.Count; i++)
+            if (!inSubMenu)
             {
-                positionList[i] += Vector3.right * -groupSpacing;
+                if (ActiveComponentIndex == positionList.Count - 1)
+                {
+                    //don't wrap around
+
+                    return;
+                }
+                else
+                {
+                    ActiveComponentIndex++;
+                    for (int i = 0; i < positionList.Count; i++)
+                    {
+                        positionList[i] += Vector3.right * -groupSpacing;
+                    }
+                }
+
+                SelectComponent();
+            }
+            else
+            {
+                Debug.LogWarning("Trying to select right while on a subMenu, this is not allowed");
             }
         }
-
-        SelectComponent();
     }
 
     public void SelectLeft(int playerIndex)
@@ -364,23 +373,34 @@ public class UI_GroupComponent : MonoBehaviour
             Debug.LogWarning("Trying to select left on a vertical group component, this is not allowed");
             return;
         }
-
-        if (ActiveComponentIndex == 0)
-        {
-            //don't wrap around
-            
-            return;
-        }
         else
         {
-            ActiveComponentIndex--;
-            for (int i = 0; i < positionList.Count; i++)
+            if (!inSubMenu)
             {
-                positionList[i] += Vector3.right * groupSpacing;
+                if (ActiveComponentIndex == 0)
+                {
+                    //don't wrap around
+
+                    return;
+                }
+                else
+                {
+                    ActiveComponentIndex--;
+                    for (int i = 0; i < positionList.Count; i++)
+                    {
+                        positionList[i] += Vector3.right * groupSpacing;
+                    }
+                }
+
+                SelectComponent();
+            }
+            else
+            {
+                Debug.LogWarning("Trying to select left while on a subMenu, this is not allowed");
             }
         }
 
-        SelectComponent();
+       
     }
 
     public void SelectUp(int playerIndex)

@@ -82,7 +82,6 @@ MonoBehaviour:
   particleEffect: {fileID: 2745496452740110057}
   engineFeedback: {fileID: 7056777168527153928}
   engineFeedback_2: {fileID: 8380428923626257066}
-  engineAudioSource: {fileID: 0}
   particlePower: 0
 --- !u!1001 &2900179492879922249
 PrefabInstance:
@@ -257,11 +256,11 @@ PrefabInstance:
     - target: {fileID: 2023270114374694915, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: ec2113df35658c3458920514550e6fba, type: 2}
+      objectReference: {fileID: 2100000, guid: 982869189e42d1845b92846470bdaf73, type: 2}
     - target: {fileID: 2023270114374694915, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: ec2113df35658c3458920514550e6fba, type: 2}
+      objectReference: {fileID: 2100000, guid: 982869189e42d1845b92846470bdaf73, type: 2}
     - target: {fileID: 5389799022908187463, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
