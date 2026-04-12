@@ -431,9 +431,53 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: fc7728c7-7242-4937-bbe8-373a39e06dd6
     m_ActionName: 'Keyboard_4/Race_Start/Pause[/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2278709535883674508}
+        m_TargetAssemblyTypeName: PlayerInputHandler, Assembly-CSharp
+        m_MethodName: OnReady
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: a3d75fb1-a0af-42e5-bdf0-a0ce874d7e9f
+    m_ActionName: 'RaceInput/Ready[/Keyboard/anyKey,/XInputControllerWindows/buttonEast,/XInputControllerWindows/buttonNorth,/XInputControllerWindows/buttonSouth,/XInputControllerWindows/buttonWest,/XInputControllerWindows/start]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5552291074071370082}
+        m_TargetAssemblyTypeName: KeyboardOnlyInput, Assembly-CSharp
+        m_MethodName: Global_Ready
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: e2970887-4fba-4646-a54d-598ca18a4095
+    m_ActionName: Keyboard_1/Ready
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 9f4329b9-da8b-459c-8ce5-edc50a4aebad
+    m_ActionName: 'Keyboard_2/Ready[/Keyboard/anyKey]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 133f6074-a803-4ed9-b682-4288e2fd11f0
+    m_ActionName: 'Keyboard_3/Ready[/Keyboard/anyKey]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: fb1b1534-3aa3-4e02-af04-9724e04880c7
+    m_ActionName: 'Keyboard_4/Ready[/Keyboard/anyKey]'
   m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
-  m_DefaultActionMap: 541a3c86-cda1-44de-b306-45a0dec39fc0
+  m_DefaultActionMap: RaceInput
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &2278709535883674508

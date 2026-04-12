@@ -705,16 +705,21 @@ public class RaceManager : MonoBehaviour
         pausePlayerIndex = -1;
     }
 
-    public void OnStartButtonPress(int playerIndex)
+    public void OnReadyButtonPress(int playerIndex)
     {
-        Debug.Log("[RaceManager] : Player" + (playerIndex + 1) + " pressed START button");
+        Debug.Log("[RaceManager] : Player" + (playerIndex + 1) + " pressed READY button");
 
         if (currentRacePhase == RacePhase.Presentation)
         {
             Debug.Log("[RaceManager] : Skip Presentation");
             TriggerRaceEvent(RacePhaseEvent.PresentationEnd);
         }
-        else if (currentRacePhase == RacePhase.Race)
+    }
+
+    public void OnStartButtonPress(int playerIndex)
+    {
+        Debug.Log("[RaceManager] : Player" + (playerIndex + 1) + " pressed START button");
+        if (currentRacePhase == RacePhase.Race)
         {
             Debug.Log("[RaceManager] : Pause button pressed");
             

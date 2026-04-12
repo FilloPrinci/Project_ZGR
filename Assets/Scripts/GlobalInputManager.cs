@@ -134,4 +134,12 @@ public class GlobalInputManager : MonoBehaviour
             playerInputList[index].GetComponent<PlayerInputHandler>().OnSkip(context);
         }
     }
+
+    public void GlobalReady(InputAction.CallbackContext context, int index)
+    {
+        if (IsIndexValid(index))
+        {
+            playerInputList[index].GetComponent<PlayerInputHandler>().OnSkip(context);
+        }
+    }
 }
