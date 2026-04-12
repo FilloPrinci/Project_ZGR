@@ -306,13 +306,13 @@ MonoBehaviour:
   targetShader: {fileID: -6465566751694194690, guid: e1327fddf0db36b419e1a0a4ec9116b4, type: 3}
   includeInactiveChildren: 1
   collisionEffectSettings:
-    intensity: 0.75
-    fresnelPower: 10
-    glowColor: {r: 4, g: 4, b: 4, a: 0}
+    intensity: 1
+    fresnelPower: 5
+    glowColor: {r: 5.9921575, g: 5.9921575, b: 5.9921575, a: 0}
   EnergyChargeEffectSettings:
     intensity: 1
-    fresnelPower: 10
-    glowColor: {r: 0, g: 4, b: 4, a: 0}
+    fresnelPower: 5
+    glowColor: {r: 0, g: 5.9921575, b: 5.9921575, a: 0}
 --- !u!1 &4830152694235476529
 GameObject:
   m_ObjectHideFlags: 0

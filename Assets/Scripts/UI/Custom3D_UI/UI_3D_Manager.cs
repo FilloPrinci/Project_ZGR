@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -20,6 +21,18 @@ enum SelectionPhase
     Track
 }
 
+[Serializable]
+public class PopupInfo
+{
+    public string title;
+    public string description;
+    public PopupInfo(string title, string description)
+    {
+        this.title = title;
+        this.description = description;
+    }
+}
+
 public class UI_3D_Manager : MonoBehaviour
 {
     public static UI_3D_Manager Instance { get; private set; }
@@ -28,6 +41,10 @@ public class UI_3D_Manager : MonoBehaviour
     public TextMeshProUGUI GroupName;
     public TextMeshProUGUI SelectionName;
     public TextMeshProUGUI CurrentVersion;
+
+    public GameObject popupPanel;
+    public TextMeshProUGUI popupTitle;
+    public TextMeshProUGUI popupDescription;
 
     [Header("Settings")]
     public UI_GroupComponent Start_UI_GroupComponent;
@@ -70,6 +87,8 @@ public class UI_3D_Manager : MonoBehaviour
     private Vector3 desideredCameraPosition;
     private Quaternion desideredCameraRotation;
     private float deltaTime;
+
+    private bool popupFocused = false;
 
     private void Awake()
     {
@@ -137,6 +156,32 @@ public class UI_3D_Manager : MonoBehaviour
     private void LateUpdate()
     {
         UpdateCameraPosition();
+    }
+
+    public void ShowPopup(PopupInfo popupInfo)
+    {
+        if(popupPanel != null)
+        {
+            if(popupTitle != null)
+            {
+                popupTitle.text = popupInfo.title;
+            }
+            if (popupDescription != null)
+            {
+                popupDescription.text = popupInfo.description;
+            }
+            popupFocused = true;
+            popupPanel.SetActive(true);
+        }
+    }
+
+    public void HidePopup()
+    {
+        if (popupPanel != null)
+        {
+            popupFocused = false;
+            popupPanel.SetActive(false);
+        }
     }
 
     private void UpdateCameraPosition()
@@ -271,6 +316,12 @@ public class UI_3D_Manager : MonoBehaviour
     {
         PlayConfirmSound();
 
+        if(popupFocused)
+        {
+            HidePopup();
+            return;
+        }
+
         if (selectionPhase == SelectionPhase.Menu)
         {
             if (Current_UI_GroupCompoment != null)
@@ -294,7 +345,14 @@ public class UI_3D_Manager : MonoBehaviour
 
     public void ManageBackSelection(int playerIndex)
     {
+
         PlayCancelSound();
+
+        if (popupFocused)
+        {
+            HidePopup();
+            return;
+        }
 
         if(selectionPhase == SelectionPhase.Menu)
         {
