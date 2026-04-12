@@ -58,6 +58,11 @@ public class LogicActions : MonoBehaviour
         Application.Quit();
     }
 
+    public void UI_Back()
+    {
+        uI_3D_Manager.ManageBackSelection(0);
+    }
+
     #region Difficulty
     
     public void OnEasy()
@@ -80,6 +85,22 @@ public class LogicActions : MonoBehaviour
     #region GameSettings
 
     #region Input
+
+    public void ShowInputLayout()
+    {
+        if(gameSettings.inputMode == InputMode.GamepadOnly)
+        {
+            uI_3D_Manager.ShowPopup(new PopupInfo("Input Layout", "Gamepad layout:", image: uI_3D_Manager.controllerLayoutImage,  onClose: UI_Back));
+        }
+        else if(gameSettings.inputMode == InputMode.KeyboardOnly)
+        {
+            uI_3D_Manager.ShowPopup(new PopupInfo("Input Layout", "Keyboard layout:", image: uI_3D_Manager.keyboardLayoutImage, onClose: UI_Back));
+        }
+        else
+        {
+            uI_3D_Manager.ShowPopup(new PopupInfo("Input Layout", "No input mode selected.", onClose: UI_Back));
+        }
+    }
 
     public void SetInputModeGamepad()
     {
@@ -106,11 +127,11 @@ public class LogicActions : MonoBehaviour
 
         if (completed)
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "gamepad is now in use"));
+            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "gamepad is now in use", onClose: UI_Back));
         }
         else
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "no gamepad detected"));
+            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "no gamepad detected", onClose: UI_Back));
         }
     }
 
@@ -127,11 +148,11 @@ public class LogicActions : MonoBehaviour
 
         if (completed)
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "keyboard is now in use"));
+            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "keyboard is now in use", onClose: UI_Back));
         }
         else
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "", onClose: UI_Back));
         }
 
         
@@ -153,11 +174,11 @@ public class LogicActions : MonoBehaviour
         }
         if (completed)
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("Done", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "", onClose: UI_Back));
         }
         else
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "", onClose: UI_Back));
         }
     }
 
@@ -173,11 +194,11 @@ public class LogicActions : MonoBehaviour
         }
         if (completed)
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("Done", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "", onClose: UI_Back));
         }
         else
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "", onClose: UI_Back));
         }
     }
 
@@ -193,11 +214,11 @@ public class LogicActions : MonoBehaviour
         }
         if (completed)
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("Done", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "", onClose: UI_Back));
         }
         else
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "", onClose: UI_Back));
         }
     }
 
@@ -213,11 +234,11 @@ public class LogicActions : MonoBehaviour
         }
         if (completed)
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("Done", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "", onClose: UI_Back));
         }
         else
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "", onClose: UI_Back));
         }
     }
 
@@ -233,11 +254,11 @@ public class LogicActions : MonoBehaviour
         }
         if (completed)
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("Done", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "", onClose: UI_Back));
         }
         else
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "", onClose: UI_Back));
         }
     }
 
@@ -253,11 +274,11 @@ public class LogicActions : MonoBehaviour
         }
         if (completed)
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("Done", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "", onClose: UI_Back));
         }
         else
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "", onClose: UI_Back));
         }
     }
 
@@ -273,11 +294,11 @@ public class LogicActions : MonoBehaviour
         }
         if (completed)
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("Done", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "", onClose: UI_Back));
         }
         else
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "", onClose: UI_Back));
         }
     }
 
@@ -293,11 +314,11 @@ public class LogicActions : MonoBehaviour
         }
         if (completed)
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("Done", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "", onClose: UI_Back));
         }
         else
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "", onClose: UI_Back));
         }
     }
 
@@ -313,11 +334,11 @@ public class LogicActions : MonoBehaviour
         }
         if (completed)
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("Done", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "", onClose: UI_Back));
         }
         else
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "", onClose: UI_Back));
         }
     }
 
@@ -346,11 +367,11 @@ public class LogicActions : MonoBehaviour
         }
         if (completed)
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("Done", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "", onClose: UI_Back));
         }
         else
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "", onClose: UI_Back));
         }
     }
 
@@ -366,11 +387,11 @@ public class LogicActions : MonoBehaviour
         }
         if (completed)
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("Done", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("Done", "", onClose: UI_Back));
         }
         else
         {
-            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", ""));
+            uI_3D_Manager.ShowPopup(new PopupInfo("ERROR", "", onClose: UI_Back));
         }
     }
 

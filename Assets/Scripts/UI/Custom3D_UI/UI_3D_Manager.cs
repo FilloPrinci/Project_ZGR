@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 enum SlectionDirection
@@ -26,10 +28,14 @@ public class PopupInfo
 {
     public string title;
     public string description;
-    public PopupInfo(string title, string description)
+    public Sprite image;
+    public Action onClose;
+    public PopupInfo(string title, string description, Action onClose = null, Sprite image = null)
     {
         this.title = title;
         this.description = description;
+        this.onClose = onClose;
+        this.image = image;
     }
 }
 
@@ -45,6 +51,11 @@ public class UI_3D_Manager : MonoBehaviour
     public GameObject popupPanel;
     public TextMeshProUGUI popupTitle;
     public TextMeshProUGUI popupDescription;
+    public Image popupImage;
+
+    public Sprite defaultPopupImage;
+    public Sprite keyboardLayoutImage;
+    public Sprite controllerLayoutImage;
 
     [Header("Settings")]
     public UI_GroupComponent Start_UI_GroupComponent;
@@ -89,6 +100,7 @@ public class UI_3D_Manager : MonoBehaviour
     private float deltaTime;
 
     private bool popupFocused = false;
+    private PopupInfo currentPopupInfo;
 
     private void Awake()
     {
@@ -162,13 +174,28 @@ public class UI_3D_Manager : MonoBehaviour
     {
         if(popupPanel != null)
         {
-            if(popupTitle != null)
+            currentPopupInfo = popupInfo;
+
+            if (popupTitle != null)
             {
-                popupTitle.text = popupInfo.title;
+                popupTitle.text = currentPopupInfo.title;
             }
             if (popupDescription != null)
             {
-                popupDescription.text = popupInfo.description;
+                popupDescription.text = currentPopupInfo.description;
+            }
+            if( popupImage != null)
+            {
+                if (currentPopupInfo.image != null)
+                {
+                    popupImage.sprite = currentPopupInfo.image;
+                    popupImage.color = Color.white; // Ensure the image is visible
+                }
+                else
+                {
+                    popupImage.sprite = null;
+                    popupImage.color = new Color(0, 0, 0, 0); // Ensure the image is not visible
+                }
             }
             popupFocused = true;
             popupPanel.SetActive(true);
@@ -181,6 +208,12 @@ public class UI_3D_Manager : MonoBehaviour
         {
             popupFocused = false;
             popupPanel.SetActive(false);
+
+            if (currentPopupInfo.onClose != null)
+            {
+                currentPopupInfo.onClose.Invoke();
+            }
+
         }
     }
 
