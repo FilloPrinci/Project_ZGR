@@ -17,34 +17,53 @@ enum CollisionTypeEnum
 
 public class PlayerController : MonoBehaviour
 {
+    #region public attributes
+
+    [Header("Component Setup")]
+
     public PlayerData playerData;
     private GameObject veichleModelInstance;
     public PlayerStats playerStats;
     public PlayerStructure playerStructure;
     public PlayerSoundManager playerSoundManager;
+    public Transform veichlePivot;
+
+    [Header("Hover Settings")]
 
     public float hoverHeight = 0.5f;
     public float startHoverHeight = 0.3f;
+    public LayerMask hoverRaycastMask;
+
+    [Header("Default Stats")]
 
     public float maxSpeed = 300f;
     public float rotationMaxSpeed = 10;
     public float rotationAccelleration = 5;
     public float accelleration = 5f;
-    public float bounceFactor = 0.5f;
     public float autoBrakeDecelleration = 1f;
     public float brakeDecelleration = 2.5f;
-    public float collisionBounceDecelleration = 5f;
-    public LayerMask hoverRaycastMask;
-
-    public Transform veichlePivot;
-
     [SerializeField]
     public float pivotRotationDecay = 10f;
     [SerializeField]
-    public  float pivotPositionDecay = 10f;
+    public float pivotPositionDecay = 10f;
 
+    [Header("Collision Handling")]
+
+    public float bounceFactor = 0.5f;
+    public float collisionBounceDecelleration = 5f;
+    [SerializeField]
+    public float collisionRotationFactor = 0.6f;
+    [SerializeField]
+    public float collisionRotationDecay = 5f;
+
+
+    [Header("Debug")]
     [SerializeField]
     public bool debugMode = false;
+
+    #endregion
+
+    #region private attributes
 
     private GlobalInputManager globalInputManager;
     private PlayerInputHandler playerInputHandler;
@@ -71,14 +90,23 @@ public class PlayerController : MonoBehaviour
     private float steerInput = 0f;
     private bool accelerateInput = false;
 
+    // Collistion handling
+
     private CollisionTypeEnum lastCollisionType = CollisionTypeEnum.None;
+    private BoxCollider selfCollider;
+    private Vector3 globalBounceVector = Vector3.zero;
+    private PlayerCollisionInfo playerCollisionInfo;
+    private PlayerCollisionInfo trackCollisionInfo;
+    private Vector3 exitVector = Vector3.zero;
+    private Vector3 localBounceVector = Vector3.zero;
+    private Vector3 localExitVector = Vector3.zero;
+    private float collisionRotationVelocity = 0f;
 
     private bool autoDrive = false;
     private float enginePower =0f;
     private Collider trackMainCollider;
-    private BoxCollider selfCollider;
     private Vector3 globalUpdateMovementVector = Vector3.zero;
-    private Vector3 globalBounceVector = Vector3.zero;
+    
     private float globalUpdateSpeed = 0f;
 
     private Vector3 coroutineCurrentPosition = Vector3.zero;
@@ -87,12 +115,12 @@ public class PlayerController : MonoBehaviour
     private Vector3 selfColliderStartSize = Vector3.zero;
 
     private bool pauseMode = false;
-    private PlayerCollisionInfo playerCollisionInfo;
-    private PlayerCollisionInfo trackCollisionInfo;
+    
 
-    private Vector3 exitVector = Vector3.zero;
-    private Vector3 localBounceVector = Vector3.zero;
-    private Vector3 localExitVector = Vector3.zero;
+    // for CPU only
+    private int rubberbandingLevel = 0;
+
+    #endregion
 
     #region Unity Standard Methods
 
@@ -281,6 +309,7 @@ public class PlayerController : MonoBehaviour
                     {
                         float currentSpeed = GetCurrentSpeed();
                         playerStats.OnEnergyRechargeBySpeed(Time.fixedDeltaTime, currentSpeed);
+                        feedBackManager.OnEnergyRechargeFeedback();
                         if (playerStructure != null)
                         {
                             playerStructure.UpdatePlayerGUI(playerStats);
@@ -366,6 +395,30 @@ public class PlayerController : MonoBehaviour
 
     #region public methods
 
+    public void SetPlayerStatsDifficultyLevel(int newLevel)
+    {
+        playerStats.OnDifficultyUpdated(newLevel);
+    }
+
+    public void SetRubberbandLevel(int newLevel)
+    {
+        if (!IsHuman())
+        {
+            rubberbandingLevel = newLevel;
+        }
+        else
+        {
+            rubberbandingLevel = 0;
+        }
+
+        playerStats.OnRubberbandUpdated(rubberbandingLevel);
+    }
+
+    public int GetRubberbandingLevel()
+    {
+        return rubberbandingLevel;
+    }   
+
     public bool IsHuman()
     {
         return playerData.playerInputIndex != InputIndex.CPU;
@@ -381,6 +434,16 @@ public class PlayerController : MonoBehaviour
         return maxSpeed;
     }
 
+    public PlayerRaceData GetCurrentRaceData()
+    {
+        return raceManager.GetRaceData().GetPlayerRaceDataByID(playerData.name);
+    }
+
+    public int GetCurrentPositionInRace()
+    {
+        return GetCurrentRaceData().position;
+    }
+
     public GameObject GetVeichleModel()
     {
         return veichleModelInstance;
@@ -389,6 +452,11 @@ public class PlayerController : MonoBehaviour
     public VeichleAnchors GetVeichleAnchors()
     {
         return veichlePivot.gameObject.GetComponent<VeichleAnchors>();
+    }
+
+    public GameObject GetVeichlePivot()
+    {
+               return veichlePivot.gameObject;
     }
 
     public void EndRace()
@@ -579,13 +647,18 @@ public class PlayerController : MonoBehaviour
 
         if (playerStats != null)
         {
-
-
             if (lastCollisionType == CollisionTypeEnum.Player)
             {
                 collistionMovementFactor = playerStats.playerSpeedCollisionFactor;
                 damageFactor = playerStats.playerDamageFactor;
-                collistionBounceFactor = playerStats.playerBounceCollisionFactor;
+                if (IsHuman())
+                {
+                    collistionBounceFactor = playerStats.playerBounceCollisionFactor * 0.8f;
+                }
+                else
+                {
+                    collistionBounceFactor = playerStats.playerBounceCollisionFactor * 1.2f;
+                }
             }
             else if (lastCollisionType == CollisionTypeEnum.Obstacle)
             {
@@ -600,13 +673,12 @@ public class PlayerController : MonoBehaviour
                 collistionBounceFactor = playerStats.normalBounceCollistionFactor;
             }
 
-            // recive damage
+            // apply damage
             playerStats.OnDamage(damageFactor);
             if (playerStructure != null)
             {
                 playerStructure.UpdatePlayerGUI(playerStats);
             }
-
         }
 
         if (collisionExitDirection != Vector3.zero)
@@ -614,12 +686,46 @@ public class PlayerController : MonoBehaviour
             float currentSpeed = Speed(globalUpdateMovementVector, time);
             float finalBounceForce = Mathf.Max(currentSpeed * collistionBounceFactor * bounceFactor, 1f);
 
+            // bounce vector in world space
             bounceVector = collisionExitDirection.normalized * finalBounceForce * time;
+
+            // Work with the same exit vector logic used for bounce: convert to local space
+            Vector3 localExit = transform.InverseTransformDirection(collisionExitDirection);
+            // impact origin is opposite to the exit direction
+            Vector3 impactOriginLocal = -localExit;
+
+            // lateralOrigin > 0 => impact came from vehicle's right side; < 0 => from left
+            float lateralOrigin = impactOriginLocal.x;
+
+            if (Mathf.Abs(lateralOrigin) > 0.01f)
+            {
+                float intensity = Mathf.Clamp01(Mathf.Abs(lateralOrigin)); // 0..1
+
+                // scale by impact speed relative to max speed
+                float speedFactor = Mathf.Clamp01(currentSpeed / Mathf.Max(1e-5f, maxSpeed));
+
+                // compute immediate rotation angle (gradi)
+                // negative sign to rotate away from the impact origin
+                float immediateAngle = -Mathf.Sign(lateralOrigin) * rotationMaxSpeed * collisionRotationFactor * intensity * speedFactor;
+
+                // apply immediate rotation
+                transform.Rotate(0f, immediateAngle, 0f, Space.Self);
+
+                // clear any residual collision rotation velocity so no decay is applied later
+                collisionRotationVelocity = 0f;
+            }
+
+            if (debugMode)
+            {
+                // exit (red), impact origin (world space, green)
+                Debug.DrawRay(transform.position, collisionExitDirection.normalized * 2f, Color.red, 1f);
+                Debug.DrawRay(transform.position, transform.TransformDirection(impactOriginLocal.normalized) * 2f, Color.green, 1f);
+            }
         }
 
         globalUpdateMovementVector *= collistionMovementFactor;
 
-        feedBackManager.TriggerCameraShake();
+        feedBackManager.OnCollisionFeedback();
 
         return bounceVector;
     }
@@ -636,7 +742,16 @@ public class PlayerController : MonoBehaviour
             rotationVelocity = AccellerateRotationSpeed(0, rotationAccelleration, time);
         }
 
+        // input player / CPU rotation
         transform.Rotate(0, rotationVelocity * time, 0, Space.Self);
+
+        // apply addittive collision rotation
+        if (Mathf.Abs(collisionRotationVelocity) > 0.001f)
+        {
+            transform.Rotate(0, collisionRotationVelocity * time, 0, Space.Self);
+            collisionRotationVelocity = Utils.ExpDecay(collisionRotationVelocity, 0f, collisionRotationDecay, time);
+            if (Mathf.Abs(collisionRotationVelocity) < 0.01f) collisionRotationVelocity = 0f;
+        }
     }
 
     private Vector3 CalculateLocalMovement(float time)

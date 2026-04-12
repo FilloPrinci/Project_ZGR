@@ -27,11 +27,6 @@ public class VeichleEffects : MonoBehaviour
                     particleEffectList.Add(particleSystem);
                 }
             }
-
-            if (particleEffectList.Count == 0)
-            {
-                Debug.LogWarning("No Particle Systems found in the specified particleEffect GameObject or its children.");
-            }
         }
     }
 

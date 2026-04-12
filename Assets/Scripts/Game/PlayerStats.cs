@@ -4,12 +4,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
+public enum PowerUpMode
+{
+    itemStats,
+    energyOnlyStats
+}
+
 public class PlayerStats : MonoBehaviour
 {
+    [Header("MODE")]
+    public PowerUpMode powerUpMode = PowerUpMode.itemStats;
+
     [Header("ENERGY")]
     
     public int energyRecharge = 5;
     public float energyZoneRecharge = 0.01f;
+    [Range(1f, 5f)]
+    public float energySpeedMultiplier = 1f;
 
     [Header("DAMAGE")]
     public int hitDamage = 15;
@@ -55,6 +66,13 @@ public class PlayerStats : MonoBehaviour
     public int bufferSize = 3;
     public Queue<ItemType> itemBuffer = new Queue<ItemType>();
 
+    [Header("DIFFICULTY")]
+    public int difficultyMultiplier = 1;
+    public float defficultyMaxSpeedFraction = 0.1f;
+    public float maxSpeedDifficultyIncrease = 0.2f;
+    
+
+    private float rubberbandMaxSpeedEffect = 0;
 
     private float currentMaxSpeed;
     private float currentRotationSpeed;
@@ -105,7 +123,8 @@ public class PlayerStats : MonoBehaviour
 
     void ApplyStats()
     {
-        currentMaxSpeed = maxSpeedKmH / 3.6f * maxSpeedMultiplier;
+
+        currentMaxSpeed = ((maxSpeedKmH / 3.6f * maxSpeedMultiplier) + (rubberbandMaxSpeedEffect * currentMaxSpeed * defficultyMaxSpeedFraction)) *  (1 + (difficultyMultiplier * maxSpeedDifficultyIncrease));
         currentAcceleration = acceleration * accelerationMultiplier;
         currentRotationSpeed = maxRotationSpeed * maxRotationSpeedMultiplier;
         currentRotationAcceleration = rotationAcceleration * rotationAccelerationMultiplier;
@@ -130,56 +149,68 @@ public class PlayerStats : MonoBehaviour
 
         // check for upgrade items to be applied
 
-        int manUpgradeAmount = 0;
-        int accUpgradeAmount = 0;
-        int spdUpgradeAmount = 0;
-
-        ItemType[] items = itemBuffer.ToArray();
-
-        for (int i = 0; i < items.Length; i++)
+        if(powerUpMode == PowerUpMode.itemStats)
         {
-            ItemType item = items[i];
+            int manUpgradeAmount = 0;
+            int accUpgradeAmount = 0;
+            int spdUpgradeAmount = 0;
 
-            int energyRequired = (i + 1) * 20;
+            ItemType[] items = itemBuffer.ToArray();
 
-            if (item == ItemType.UpgradeSpeed && energy >= energyRequired)
+            for (int i = 0; i < items.Length; i++)
             {
-                spdUpgradeAmount++;
+                ItemType item = items[i];
+
+                int energyRequired = (i + 1) * 20;
+
+                if (item == ItemType.UpgradeSpeed && energy >= energyRequired)
+                {
+                    spdUpgradeAmount++;
+                }
+                else if (item == ItemType.UpgradeAcceleration && energy >= energyRequired)
+                {
+                    accUpgradeAmount++;
+                }
+                else if (item == ItemType.UpgradeManeuverability && energy >= energyRequired)
+                {
+                    manUpgradeAmount++;
+                }
             }
-            else if (item == ItemType.UpgradeAcceleration && energy >= energyRequired)
-            {
-                accUpgradeAmount++;
-            }
-            else if (item == ItemType.UpgradeManeuverability && energy >= energyRequired)
-            {
-                manUpgradeAmount++;
-            }
+
+            float rotationSpeedTotalMultiplier = manUpgradeAmount * rotationSpeedItemMultiplier;
+            float rotationAccelerationTotalMultiplier = manUpgradeAmount * rotationAccelerationItemMultiplier;
+            float speedTotalMultiplier = spdUpgradeAmount * speedItemMultiplier;
+            float accelerationTotalMultiplier = accUpgradeAmount * accelerationItemMultiplier;
+
+            maxSpeedMultiplier += speedTotalMultiplier;
+            accelerationMultiplier += accelerationTotalMultiplier;
+            maxRotationSpeedMultiplier += rotationSpeedTotalMultiplier;
+            rotationAccelerationMultiplier += rotationAccelerationTotalMultiplier;
+        }else if(powerUpMode == PowerUpMode.energyOnlyStats)
+        {
+            float energyFactor = (energy / 100f) * energySpeedMultiplier;
+            maxSpeedMultiplier += energyFactor * speedItemMultiplier ;
         }
 
-        float rotationSpeedTotalMultiplier = manUpgradeAmount * rotationSpeedItemMultiplier;
-        float rotationAccelerationTotalMultiplier = manUpgradeAmount * rotationAccelerationItemMultiplier;
-        float speedTotalMultiplier = spdUpgradeAmount * speedItemMultiplier;
-        float accelerationTotalMultiplier = accUpgradeAmount * accelerationItemMultiplier;
-
-        maxSpeedMultiplier += speedTotalMultiplier;
-        accelerationMultiplier += accelerationTotalMultiplier;
-        maxRotationSpeedMultiplier += rotationSpeedTotalMultiplier;
-        rotationAccelerationMultiplier += rotationAccelerationTotalMultiplier;
 
         ApplyStats();
     }
 
     public void OnItemAcquired(ItemType type)
     {
-        if (type == ItemType.UpgradeManeuverability || type == ItemType.UpgradeSpeed || type == ItemType.UpgradeAcceleration)
+        if(powerUpMode == PowerUpMode.itemStats)
         {
-            AddItemToBuffer(type);
-            UpdateStats();
-        }else if (type == ItemType.EnergyRecharge)
-        {
-            Debug.Log("Energy acquired");
-            UpdateEnergy(energyRecharge);
-            UpdateStats();
+            if (type == ItemType.UpgradeManeuverability || type == ItemType.UpgradeSpeed || type == ItemType.UpgradeAcceleration)
+            {
+                AddItemToBuffer(type);
+                UpdateStats();
+            }
+            else if (type == ItemType.EnergyRecharge)
+            {
+                Debug.Log("Energy acquired");
+                UpdateEnergy(energyRecharge);
+                UpdateStats();
+            }
         }
     }
 
@@ -199,6 +230,20 @@ public class PlayerStats : MonoBehaviour
     {
         UpdateEnergy(-hitDamage * factor);
         UpdateStats();
+    }
+
+    public void OnRubberbandUpdated(int rubberbandLevel)
+    {
+        rubberbandMaxSpeedEffect = rubberbandLevel;
+
+        ApplyStats();
+    }
+
+    public void OnDifficultyUpdated(int newDifficultyLevel)
+    {
+        difficultyMultiplier = newDifficultyLevel;
+
+        ApplyStats();
     }
 
     private IEnumerator TurboCoroutine()

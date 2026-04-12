@@ -22,6 +22,7 @@ public class RaceSettings : MonoBehaviour
     private SceneReferences sceneReferences;
     private List<PlayerData> inputPlayerDataList;
     private RaceMode selectedRaceMode = RaceMode.Test;
+    private GlobalDifficulty selectedDifficulty = GlobalDifficulty.normal;
     private string selectedRaceTrack;
 
 
@@ -57,6 +58,17 @@ public class RaceSettings : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void SetSelectedDifficulty(GlobalDifficulty newDifficulty)
+    {
+        selectedDifficulty = newDifficulty;
+        Debug.Log("[RaceSettings] INFO: selected difficulty set to " + selectedDifficulty);
+    }
+
+    public GlobalDifficulty GetSelectedDifficulty()
+    {
+        return selectedDifficulty;
     }
 
     public RaceMode GetSelectedRaceMode()
