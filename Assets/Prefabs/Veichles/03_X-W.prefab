@@ -49,7 +49,6 @@ MonoBehaviour:
   particleEffect: {fileID: 7543776747358083616}
   engineFeedback: {fileID: 7094899892329913869}
   engineFeedback_2: {fileID: 0}
-  engineAudioSource: {fileID: 0}
   particlePower: 0
 --- !u!1 &7543776747358083616
 GameObject:
@@ -76,7 +75,7 @@ Transform:
   m_GameObject: {fileID: 7543776747358083616}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.37}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -105,7 +104,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 674789498328820868, guid: 1c12aab24f03cac4db39ff8411409559, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.383
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 674789498328820868, guid: 1c12aab24f03cac4db39ff8411409559, type: 3}
       propertyPath: m_LocalRotation.w

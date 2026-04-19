@@ -7483,6 +7483,7 @@ MonoBehaviour:
   - {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
   - {fileID: 4699924895700797138, guid: a3bb4ad6c635fd44dac73aa2e5772f91, type: 3}
   - {fileID: 4699924895700797138, guid: 267da2944cbf0b044896309ba451fb34, type: 3}
+  - {fileID: 3665708238735973177, guid: 0ac6d6988c6dc5043a5ea8bc159a216a, type: 3}
   defaultVeichleIndex: 0
   laps: 3
   defaultRaceTrackIndex: 0
