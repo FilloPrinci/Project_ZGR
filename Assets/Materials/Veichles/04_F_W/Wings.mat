@@ -130,9 +130,9 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Intensity: 0
-    - _MaxSmoothness: 0.6
+    - _MaxSmoothness: 0.8
     - _Metallic: 1
-    - _MinSmoothness: 0.13
+    - _MinSmoothness: 0.05
     - _Normal_Intensity: 1
     - _Normal_Offset: 0.1
     - _OcclusionStrength: 1

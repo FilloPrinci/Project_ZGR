@@ -651,14 +651,7 @@ public class PlayerController : MonoBehaviour
             {
                 collistionMovementFactor = playerStats.playerSpeedCollisionFactor;
                 damageFactor = playerStats.playerDamageFactor;
-                if (IsHuman())
-                {
-                    collistionBounceFactor = playerStats.playerBounceCollisionFactor * 0.8f;
-                }
-                else
-                {
-                    collistionBounceFactor = playerStats.playerBounceCollisionFactor * 1.2f;
-                }
+                collistionBounceFactor = playerStats.playerBounceCollisionFactor;
             }
             else if (lastCollisionType == CollisionTypeEnum.Obstacle)
             {

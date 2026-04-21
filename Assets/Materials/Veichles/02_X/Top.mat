@@ -117,9 +117,9 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Intensity: 0
-    - _MaxSmoothness: 0.6
+    - _MaxSmoothness: 0.8
     - _Metallic: 1
-    - _MinSmoothness: 0.13
+    - _MinSmoothness: 0.05
     - _Normal_Intensity: 1
     - _Normal_Offset: 0.1
     - _OcclusionStrength: 1
@@ -137,7 +137,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.16981131, g: 0.16981131, b: 0.16981131, a: 1}
+    - _Color: {r: 0.068634085, g: 0, b: 0.402, a: 1}
     - _EdgesColor: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GlowColor: {r: 2, g: 2, b: 2, a: 0}

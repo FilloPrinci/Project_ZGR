@@ -130,9 +130,9 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Intensity: 0
-    - _MaxSmoothness: 0.6
+    - _MaxSmoothness: 0.8
     - _Metallic: 1
-    - _MinSmoothness: 0.13
+    - _MinSmoothness: 0.05
     - _Normal_Intensity: 1
     - _Normal_Offset: 0.1
     - _OcclusionStrength: 1
@@ -151,7 +151,7 @@ Material:
     - _damage_smoothness: 0.8
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.3949359, g: 0.5430479, b: 0.6698113, a: 1}
+    - _Color: {r: 0.18062478, g: 0.3634528, b: 0.38679248, a: 1}
     - _EdgesColor: {r: 3.7761724, g: 3.7761724, b: 3.7761724, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GlowColor: {r: 2.9960787, g: 2.9960787, b: 2.9960787, a: 0}
