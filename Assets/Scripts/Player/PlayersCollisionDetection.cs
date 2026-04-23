@@ -85,44 +85,35 @@ public class PlayersCollisionDetection : MonoBehaviour
                 player.ClearPlayerCollisionInfo();
             }
 
+            // --- Replace inner pairwise collision loop: only set collision info when overlapping (do not clear on non-overlap) ---
             for (int i = 0; i < playerColliders.Count; i++)
             {
                 for (int j = i + 1; j < playerColliders.Count; j++)
                 {
-                        Collider colA = playerColliders[i];
-                        Collider colB = playerColliders[j];
+                    Collider colA = playerColliders[i];
+                    Collider colB = playerColliders[j];
 
-                        Vector3 direction;
-                        float distance;
+                    Vector3 direction;
+                    float distance;
 
-                        bool isOverlapping = Physics.ComputePenetration(
-                            colA, colA.transform.position, colA.transform.rotation,
-                            colB, colB.transform.position, colB.transform.rotation,
-                            out direction, out distance
-                        );
+                    bool isOverlapping = Physics.ComputePenetration(
+                        colA, colA.transform.position, colA.transform.rotation,
+                        colB, colB.transform.position, colB.transform.rotation,
+                        out direction, out distance
+                    );
 
-                        if (isOverlapping)
-                        {
-                            // Punto approssimativo della collisione
-                            Vector3 collisionPoint = colA.transform.position + direction * distance * 0.5f;
+                    if (isOverlapping)
+                    {
+                        // approximate collision point
+                        Vector3 collisionPoint = colA.transform.position + direction * distance * 0.5f;
 
-                            //Debug.Log($"Collision detected between {colA.name} and {colB.name}");
-                            //Debug.Log($"Direction: {direction}, Penetration distance: {distance}, Point: {collisionPoint}");
-
-
-                            colA.GetComponent<PlayerController>().SetPlayerCollisionInfo(new PlayerCollisionInfo(colB, collisionPoint, direction, distance, true));
-                            colB.GetComponent<PlayerController>().SetPlayerCollisionInfo(new PlayerCollisionInfo(colA, collisionPoint, -direction, distance, true));
-
-                            //colA.GetComponent<PlayerController>().onOtherPlayerCollisionDetected(colB);
-                            //colB.GetComponent<PlayerController>().onOtherPlayerCollisionDetected(colA);
-                        }
-                        else
-                        {
-                            colA.GetComponent<PlayerController>().SetPlayerCollisionInfo(new PlayerCollisionInfo(null, Vector3.zero, Vector3.zero, 0f, false));
-                            colB.GetComponent<PlayerController>().SetPlayerCollisionInfo(new PlayerCollisionInfo(null, Vector3.zero, Vector3.zero, 0f, false));
-                        }
-
-
+                        // set collision info for both involved players (do not clear here)
+                        var pcA = colA.GetComponent<PlayerController>();
+                        var pcB = colB.GetComponent<PlayerController>();
+                        if (pcA != null) pcA.SetPlayerCollisionInfo(new PlayerCollisionInfo(colB, collisionPoint, direction, distance, true));
+                        if (pcB != null) pcB.SetPlayerCollisionInfo(new PlayerCollisionInfo(colA, collisionPoint, -direction, distance, true));
+                    }
+                    // NOTE: do not set "false" here — players are cleared once at the top of Update.
                 }
             }
 
