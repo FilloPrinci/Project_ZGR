@@ -114,12 +114,13 @@ Material:
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _CoatSmoothness: 0.8
+    - _CoatSmoothness: 0.5
     - _Cull: 2
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
-    - _DetailsSmoothness: 0.5
+    - _DetailsMetallic: 0.2
+    - _DetailsSmoothness: 0.8
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
@@ -130,16 +131,16 @@ Material:
     - _GlossyReflections: 0
     - _Intensity: 0
     - _MaxSmoothness: 0.8
-    - _Metallic: 0.9
-    - _MinSmoothness: 0.1
-    - _Normal_Intensity: 0.5
-    - _Normal_Offset: 0.2
+    - _Metallic: 1
+    - _MinSmoothness: 0.05
+    - _Normal_Intensity: 1
+    - _Normal_Offset: 0.1
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _Smoothness: 0.9
+    - _Smoothness: 0.8
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -150,7 +151,7 @@ Material:
     - _damage_smoothness: 0.8
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.3949359, g: 0.5430479, b: 0.6698113, a: 1}
+    - _Color: {r: 0.18062478, g: 0.3634528, b: 0.38679248, a: 1}
     - _EdgesColor: {r: 3.7761724, g: 3.7761724, b: 3.7761724, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GlowColor: {r: 2.9960787, g: 2.9960787, b: 2.9960787, a: 0}
