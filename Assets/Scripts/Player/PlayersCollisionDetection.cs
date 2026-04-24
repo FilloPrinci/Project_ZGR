@@ -86,7 +86,7 @@ public class PlayersCollisionDetection : MonoBehaviour
             player.ClearPlayerCollisionInfo();
         }
 
-        // 🔥 SOLVER ITERATIVO
+        // ITERATIVE SOLVER
         for (int iteration = 0; iteration < solverIterations; iteration++)
         {
             // =========================
@@ -104,7 +104,7 @@ public class PlayersCollisionDetection : MonoBehaviour
                         colB, colB.transform.position, colB.transform.rotation,
                         out Vector3 direction, out float distance))
                     {
-                        // 🔥 blocca asse Y
+                        // lock Y axis
                         direction.y = 0;
                         if (direction.sqrMagnitude < 0.0001f) continue;
                         direction.Normalize();
@@ -120,7 +120,6 @@ public class PlayersCollisionDetection : MonoBehaviour
                             float factorA =0.5f;
                             float factorB = 0.5f;
 
-                            // 🔥 separazione condivisa
                             colA.transform.position += separation * factorA;
                             colB.transform.position -= separation * factorB;
 
@@ -163,7 +162,7 @@ public class PlayersCollisionDetection : MonoBehaviour
                 }
                 else if (iteration == solverIterations - 1)
                 {
-                    // reset solo all'ultima iterazione
+                    // reset only on last iteration
                     playerCol.GetComponent<PlayerController>()
                         .SetTrackCollisionInfo(
                             new PlayerCollisionInfo(null, Vector3.zero, Vector3.zero, 0f, false)
