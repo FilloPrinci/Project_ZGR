@@ -350,6 +350,19 @@ public class PlayerController : MonoBehaviour
 
     #region public attributes methods
 
+    public Camera GetPlayerCamera()
+    {
+        if (playerStructure != null)
+        {
+            return playerStructure.playerCamera.GetComponent<Camera>();
+        }
+        else
+        {
+            Debug.LogError("PlayerStructure reference is missing in PlayerController. Cannot get player camera.");
+            return null;
+        }
+            
+    }
     public BoxCollider GetCollider()
     {
         if(selfCollider == null)

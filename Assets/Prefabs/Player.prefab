@@ -222,6 +222,11 @@ MonoBehaviour:
   tiltSmoothSpeed: 10
   shakeDuration: 0.5
   shakeMagnitude: 0.2
+  playerCamera: {fileID: 0}
+  defaultFov: 60
+  raceBaseFov: 80
+  raceMaxFov: 100
+  turboAdditionalFOV: 20
   cameraPositionMode: 0
 --- !u!114 &3114235918088769195
 MonoBehaviour:
