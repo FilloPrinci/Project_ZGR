@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -12,6 +13,7 @@ public enum CameraMode {
 public class PlayerStructure : MonoBehaviour
 {
     public GameObject pivotPrefab;
+    public GameObject cameraPrefab;
     public PlayerController controller;
     public FeedBackManager feedBack;
     public GameObject canvasPrefab;
@@ -22,6 +24,7 @@ public class PlayerStructure : MonoBehaviour
     private GameObject canvasInstance;
     private GameObject pivotInstance;
     private VeichleSoundEffects soundEffects;
+    private PlayerUIMarkerSystem playerUIMarkerSystem;
 
     public GameObject GetCanvasInstance()
     {
@@ -40,6 +43,7 @@ public class PlayerStructure : MonoBehaviour
             canvasInstance = Instantiate(canvasPrefab);
             canvasInstance.GetComponent<RaceGUI>().currentPlayer = gameObject;
             playerCamera = SpawnCamera(pivotInstance.GetComponent<VeichleAnchors>().cameraPivot);
+
             
             canvasInstance.GetComponent<Canvas>().worldCamera = playerCamera.GetComponent<Camera>();
             canvasInstance.GetComponent<Canvas>().planeDistance = 0.5f;
@@ -54,13 +58,35 @@ public class PlayerStructure : MonoBehaviour
         return soundEffects;
     }
 
+    private void InitializePlayerCamera()
+    {
+        playerUIMarkerSystem = playerCamera.GetComponent<PlayerUIMarkerSystem>();
+        List<Transform> targets = new List<Transform>();
+        List<GameObject> allPlayerInstanceList = RaceManager.Instance.GetAllPlayerInstances();
+
+        foreach (GameObject playerInstance in allPlayerInstanceList)
+        {
+            if (playerInstance.GetComponent<PlayerStructure>().data.name != this.data.name)
+            {
+                targets.Add(playerInstance.transform);
+            }
+            else
+            {
+                Debug.Log("Skipping player " + playerInstance.GetComponent<PlayerStructure>().data.name + " for camera markers");
+            }
+        }
+
+        playerUIMarkerSystem.ManualInitialize(playerCamera.GetComponent<Camera>(), canvasInstance.GetComponent<RectTransform>(), targets);
+
+    }
+
     GameObject SpawnCamera(Transform anchor) {
-        GameObject cameraObject = new GameObject(data.name + "Camera");
-        Camera cam = cameraObject.AddComponent<Camera>();
+        GameObject cameraObject = Instantiate(cameraPrefab);
+        Camera cam = cameraObject.GetComponent<Camera>();
         cam.fieldOfView = defaultCameraFOV;
 
         // URP settings
-        var cameraData = cameraObject.AddComponent<UniversalAdditionalCameraData>();
+        var cameraData = cameraObject.GetComponent<UniversalAdditionalCameraData>();
         cameraData.renderPostProcessing = true;
         cameraData.antialiasing = AntialiasingMode.FastApproximateAntialiasing;
 
@@ -146,10 +172,18 @@ public class PlayerStructure : MonoBehaviour
 
         playerCamera.SetActive(true);
         canvasInstance.SetActive(true);
+
+        InitializePlayerCamera();
     }
 
     public void OnRaceEndPhase(int winnerIndex)
     {
+        if (playerUIMarkerSystem != null)
+        {
+            playerUIMarkerSystem.SetActive(false); // Disable markers for all players
+        }
+        
+
         Camera cam = playerCamera.GetComponent<Camera>();
 
         int playerIndex = (int)data.playerInputIndex;
