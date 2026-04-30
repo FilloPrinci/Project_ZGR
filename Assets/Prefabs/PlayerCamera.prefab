@@ -147,8 +147,8 @@ MonoBehaviour:
   behindMarkerPrefab: {fileID: 1624754769767026714, guid: 4434e4d73974dc045af863e2792a645a, type: 3}
   worldOffset: {x: 0, y: 0, z: 0}
   targets: []
-  nearFadeStart: 40
-  nearFadeEnd: 20
+  nearFadeStart: 15
+  nearFadeEnd: 7.5
   farFadeStart: 5
   farFadeEnd: 20
   fadeSpeed: 5

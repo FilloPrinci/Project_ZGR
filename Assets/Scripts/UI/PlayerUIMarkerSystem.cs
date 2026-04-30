@@ -1,12 +1,20 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using static UnityEditor.U2D.ScriptablePacker;
 
 class MarkerData
 {
-    public RectTransform rect;
-    public CanvasGroup canvasGroup;
+    public RectTransform frontRect;
+    public RectTransform behindRect;
+
+    public CanvasGroup frontCG;
+    public CanvasGroup behindCG;
+
+    public TextMeshProUGUI frontText;
+
     public float targetAlpha;
-    public bool isBehindMarker;
+    public PlayerController controller;
 }
 
 public class PlayerUIMarkerSystem : MonoBehaviour
@@ -23,12 +31,12 @@ public class PlayerUIMarkerSystem : MonoBehaviour
     public List<Transform> targets = new List<Transform>();
 
     [Header("Distance Fade (Front)")]
-    public float nearFadeStart = 50f; // A
-    public float nearFadeEnd = 10f;    // B
+    public float nearFadeStart = 50f;
+    public float nearFadeEnd = 10f;
 
     [Header("Distance Fade (Behind)")]
-    public float farFadeStart = 25f;  // C
-    public float farFadeEnd = 50f;    // D
+    public float farFadeStart = 25f;
+    public float farFadeEnd = 50f;
 
     [Header("Fade")]
     public float fadeSpeed = 5f;
@@ -39,51 +47,61 @@ public class PlayerUIMarkerSystem : MonoBehaviour
     void Start()
     {
         if (playerCamera != null && markerPrefab != null && targets.Count > 0)
-        {
             InitializeMarkers();
-        }
         else
-        {
             Debug.LogWarning("PlayerUIMarkerSystem: Missing references or targets.");
-        }
     }
 
     public void SetActive(bool isActive)
     {
         active = isActive;
+
         foreach (var marker in activeMarkers.Values)
         {
-            marker.canvasGroup.alpha = isActive ? marker.targetAlpha : 0f;
+            marker.frontCG.alpha = isActive ? marker.targetAlpha : 0f;
+            marker.behindCG.alpha = isActive ? marker.targetAlpha : 0f;
         }
     }
 
-    public void ManualInitialize(Camera cam, RectTransform canvas, List<Transform> targetList) {
+    public void ManualInitialize(Camera cam, RectTransform canvas, List<Transform> targetList)
+    {
         playerCamera = cam;
         canvasRect = canvas;
         targets = targetList;
-        if (playerCamera != null && markerPrefab != null && targets.Count > 0) {
+
+        if (playerCamera != null && markerPrefab != null && targets.Count > 0)
             InitializeMarkers();
-        } else { 
-            Debug.LogWarning("PlayerUIMarkerSystem: Missing references or targets. Markers will not be initialized.");
-        }
+        else
+            Debug.LogWarning("PlayerUIMarkerSystem: Missing references or targets.");
     }
 
     void InitializeMarkers()
     {
         foreach (var t in targets)
         {
-            if (t == null) continue;
-            if (activeMarkers.ContainsKey(t)) continue;
+            if (t == null || activeMarkers.ContainsKey(t))
+                continue;
 
-            RectTransform instance = Instantiate(markerPrefab, canvasRect);
-            CanvasGroup cg = instance.GetComponent<CanvasGroup>();
+            // FRONT
+            RectTransform frontInstance = Instantiate(markerPrefab, canvasRect);
+            CanvasGroup frontCG = frontInstance.GetComponent<CanvasGroup>();
+            TextMeshProUGUI frontText = frontInstance.GetComponentInChildren<TextMeshProUGUI>();
+
+            // BEHIND
+            RectTransform behindInstance = Instantiate(behindMarkerPrefab, canvasRect);
+            CanvasGroup behindCG = behindInstance.GetComponent<CanvasGroup>();
+
+            behindInstance.gameObject.SetActive(false);
 
             MarkerData data = new MarkerData
             {
-                rect = instance,
-                canvasGroup = cg,
+                frontRect = frontInstance,
+                behindRect = behindInstance,
+                frontCG = frontCG,
+                behindCG = behindCG,
+                frontText = frontText,
                 targetAlpha = 0f,
-                isBehindMarker = false
+                controller = t.GetComponent<PlayerController>()
             };
 
             activeMarkers.Add(t, data);
@@ -92,102 +110,98 @@ public class PlayerUIMarkerSystem : MonoBehaviour
 
     void LateUpdate()
     {
-        if (active)
+        if (!active || activeMarkers.Count == 0)
+            return;
+
+        foreach (var pair in activeMarkers)
         {
-            if (activeMarkers.Count == 0) return;
+            Transform target = pair.Key;
+            MarkerData marker = pair.Value;
 
-            foreach (var pair in activeMarkers)
+            if (target == null)
             {
-                Transform target = pair.Key;
-                MarkerData marker = pair.Value;
+                marker.targetAlpha = 0f;
+                continue;
+            }
 
-                if (target == null)
+            Vector3 worldPos = target.position + worldOffset;
+            Vector3 viewportPos = playerCamera.WorldToViewportPoint(worldPos);
+
+            bool isBehind = viewportPos.z < 0;
+            float distance = Vector3.Distance(playerCamera.transform.position, target.position);
+
+            float margin = 0.05f;
+
+            RectTransform activeRect;
+            CanvasGroup activeCG;
+
+            if (isBehind)
+            {
+                marker.frontRect.gameObject.SetActive(false);
+                marker.behindRect.gameObject.SetActive(true);
+
+                activeRect = marker.behindRect;
+                activeCG = marker.behindCG;
+
+                viewportPos.x = 1f - viewportPos.x;
+                viewportPos.x = Mathf.Clamp(viewportPos.x, margin, 1f - margin);
+                viewportPos.y = margin;
+
+                marker.targetAlpha = GetBehindAlpha(distance);
+            }
+            else
+            {
+                marker.frontRect.gameObject.SetActive(true);
+                marker.behindRect.gameObject.SetActive(false);
+
+                activeRect = marker.frontRect;
+                activeCG = marker.frontCG;
+
+                bool isInside =
+                    viewportPos.x >= 0 && viewportPos.x <= 1 &&
+                    viewportPos.y >= 0 && viewportPos.y <= 1;
+
+                if (isInside && IsVisible(target))
                 {
-                    marker.targetAlpha = 0f;
-                    continue;
-                }
-
-                Vector3 worldPos = target.position + worldOffset;
-                Vector3 viewportPos = playerCamera.WorldToViewportPoint(worldPos);
-
-                bool isBehind = viewportPos.z < 0;
-                float distance = Vector3.Distance(playerCamera.transform.position, target.position);
-
-                float margin = 0.05f; // margine in viewport (5%)
-
-                if (isBehind)
-                {
-                    SwapMarkerPrefab(marker, true);
-
-                    viewportPos.x = 1f - viewportPos.x;
                     viewportPos.x = Mathf.Clamp(viewportPos.x, margin, 1f - margin);
-                    viewportPos.y = margin;
+                    viewportPos.y = Mathf.Clamp(viewportPos.y, margin, 1f - margin);
 
-                    marker.targetAlpha = GetBehindAlpha(distance);
+                    marker.targetAlpha = GetFrontAlpha(distance);
+
+                    // TEXT UPDATE
+                    if (marker.frontText != null && marker.controller != null)
+                    {
+                        int position = marker.controller.GetCurrentPositionInRace();
+                        marker.frontText.text = position != 0 ? position.ToString() : "-";
+                    }
                 }
                 else
                 {
-                    SwapMarkerPrefab(marker, false);
-
-                    bool isInside =
-                        viewportPos.x >= 0 && viewportPos.x <= 1 &&
-                        viewportPos.y >= 0 && viewportPos.y <= 1;
-
-                    if (isInside && IsVisible(target))
-                    {
-                        viewportPos.x = Mathf.Clamp(viewportPos.x, margin, 1f - margin);
-                        viewportPos.y = Mathf.Clamp(viewportPos.y, margin, 1f - margin);
-
-                        marker.targetAlpha = GetFrontAlpha(distance);
-                    }
-                    else
-                    {
-                        marker.targetAlpha = 0f;
-                    }
+                    marker.targetAlpha = 0f;
                 }
-
-                // aggiorna posizione
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    canvasRect,
-                    playerCamera.ViewportToScreenPoint(viewportPos),
-                    playerCamera,
-                    out Vector2 localPos
-                );
-
-                marker.rect.localPosition = localPos;
-
-                // fade smooth
-                marker.canvasGroup.alpha = Mathf.Lerp(
-                    marker.canvasGroup.alpha,
-                    marker.targetAlpha,
-                    Time.deltaTime * fadeSpeed
-                );
             }
-        }        
-    }
 
-    void SwapMarkerPrefab(MarkerData marker, bool shouldBeBehind)
-    {
-        if (marker.isBehindMarker == shouldBeBehind)
-            return;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                canvasRect,
+                playerCamera.ViewportToScreenPoint(viewportPos),
+                playerCamera,
+                out Vector2 localPos
+            );
 
-        Destroy(marker.rect.gameObject);
+            activeRect.localPosition = localPos;
 
-        RectTransform newInstance = Instantiate(
-            shouldBeBehind ? behindMarkerPrefab : markerPrefab,
-            canvasRect
-        );
-
-        marker.rect = newInstance;
-        marker.canvasGroup = newInstance.GetComponent<CanvasGroup>();
-        marker.isBehindMarker = shouldBeBehind;
+            activeCG.alpha = Mathf.Lerp(
+                activeCG.alpha,
+                marker.targetAlpha,
+                Time.deltaTime * fadeSpeed
+            );
+        }
     }
 
     float GetFrontAlpha(float distance)
     {
         if (distance <= nearFadeEnd) return 0f;
         if (distance >= nearFadeStart) return 1f;
-
         return Mathf.InverseLerp(nearFadeEnd, nearFadeStart, distance);
     }
 
@@ -195,7 +209,6 @@ public class PlayerUIMarkerSystem : MonoBehaviour
     {
         if (distance <= farFadeStart) return 1f;
         if (distance >= farFadeEnd) return 0f;
-
         return 1f - Mathf.InverseLerp(farFadeStart, farFadeEnd, distance);
     }
 
@@ -206,9 +219,7 @@ public class PlayerUIMarkerSystem : MonoBehaviour
         float distance = Vector3.Distance(origin, target.position);
 
         if (Physics.Raycast(origin, direction, out RaycastHit hit, distance))
-        {
             return hit.transform == target;
-        }
 
         return true;
     }
