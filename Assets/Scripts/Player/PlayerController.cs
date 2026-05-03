@@ -102,6 +102,10 @@ public class PlayerController : MonoBehaviour
     private Vector3 localExitVector = Vector3.zero;
     private float collisionRotationVelocity = 0f;
 
+    // Collision rotation lockout to prevent excessive rotation from multiple collisions
+    private float lastCollisionRotationTime = -1f;
+    private const float collisionRotationLockout = 0.1f; // seconds between rotations
+
     private bool autoDrive = false;
     private float enginePower =0f;
     private Collider trackMainCollider;
@@ -115,7 +119,10 @@ public class PlayerController : MonoBehaviour
     private Vector3 selfColliderStartSize = Vector3.zero;
 
     private bool pauseMode = false;
-    
+
+
+
+
 
     // for CPU only
     private int rubberbandingLevel = 0;
@@ -157,7 +164,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                Debug.Log($"PlayerController Start for CPU player: {playerData.name} with index {playerData.cpuIndex}");
+                Debug.Log($"PlayerController Start for CPU player: {playerData.nameId} with index {playerData.cpuIndex}");
                 playerInputHandler = CPUInputHandlerManager.Instance.GetCPUInput(playerData.cpuIndex);
             }
 
@@ -266,7 +273,7 @@ public class PlayerController : MonoBehaviour
         if (other.tag.Equals("Checkpoint"))
         {
             // Checkpoint reached
-            raceManager.OnCheckpoint(playerData.name, other.gameObject);
+            raceManager.OnCheckpoint(playerData.nameId, other.gameObject);
         }
         else if (other.tag.Equals("Item"))
         {
@@ -343,6 +350,19 @@ public class PlayerController : MonoBehaviour
 
     #region public attributes methods
 
+    public Camera GetPlayerCamera()
+    {
+        if (playerStructure != null)
+        {
+            return playerStructure.playerCamera.GetComponent<Camera>();
+        }
+        else
+        {
+            Debug.LogError("PlayerStructure reference is missing in PlayerController. Cannot get player camera.");
+            return null;
+        }
+            
+    }
     public BoxCollider GetCollider()
     {
         if(selfCollider == null)
@@ -436,7 +456,7 @@ public class PlayerController : MonoBehaviour
 
     public PlayerRaceData GetCurrentRaceData()
     {
-        return raceManager.GetRaceData().GetPlayerRaceDataByID(playerData.name);
+        return raceManager.GetRaceData().GetPlayerRaceDataByID(playerData.nameId);
     }
 
     public int GetCurrentPositionInRace()
@@ -637,6 +657,13 @@ public class PlayerController : MonoBehaviour
         veichlePivot.rotation = smoothedRotation;
     }
 
+    private void SkipInterpolatePivotRotation()
+    {
+        Quaternion targetRotationQuat = currentRotation;
+
+        veichlePivot.rotation = targetRotationQuat;
+    }
+
     private Vector3 OnUpadteCollisionDetected(Vector3 collisionExitDirection, float time)
     {
         float collistionMovementFactor = 1f;
@@ -687,25 +714,64 @@ public class PlayerController : MonoBehaviour
             // impact origin is opposite to the exit direction
             Vector3 impactOriginLocal = -localExit;
 
-            // lateralOrigin > 0 => impact came from vehicle's right side; < 0 => from left
-            float lateralOrigin = impactOriginLocal.x;
+            // --- ROTATION: make player face the bounce direction slightly ---
+            // compute bounce direction (same reflection used for movement)
+            Vector3 incomingDir = (globalUpdateMovementVector.sqrMagnitude > 1e-6f) ? globalUpdateMovementVector.normalized : transform.forward;
+            Vector3 collisionNormal = collisionExitDirection.normalized;
+            Vector3 reflected = Vector3.Reflect(incomingDir, -collisionNormal);
 
-            if (Mathf.Abs(lateralOrigin) > 0.01f)
+            // reduce upward component (keep rotation on Y only)
+            reflected.y = 0;
+            if (reflected.sqrMagnitude > 0.0001f)
             {
-                float intensity = Mathf.Clamp01(Mathf.Abs(lateralOrigin)); // 0..1
+                reflected.Normalize();
 
-                // scale by impact speed relative to max speed
-                float speedFactor = Mathf.Clamp01(currentSpeed / Mathf.Max(1e-5f, maxSpeed));
+                // IMPORTANT: check lockout to prevent multiple rotations per frame
+                float timeSinceLastRotation = Time.time - lastCollisionRotationTime;
+                if (timeSinceLastRotation >= collisionRotationLockout)
+                {
+                    // compute angle between current forward and bounce direction (in degrees)
+                    float angleToReflected = Vector3.SignedAngle(transform.forward, reflected, Vector3.up);
 
-                // compute immediate rotation angle (gradi)
-                // negative sign to rotate away from the impact origin
-                float immediateAngle = -Mathf.Sign(lateralOrigin) * rotationMaxSpeed * collisionRotationFactor * intensity * speedFactor;
+                    // --- LATERAL IMPACT FILTERING ---
+                    // convert exit direction to local space to isolate lateral (X) component
+                    Vector3 localExitDir = transform.InverseTransformDirection(collisionExitDirection);
 
-                // apply immediate rotation
-                transform.Rotate(0f, immediateAngle, 0f, Space.Self);
+                    // lateral magnitude: how much the impact comes from left/right (vs front/back)
+                    // lateral = abs(X component), range 0..1
+                    float lateralMagnitude = Mathf.Abs(localExitDir.x) / Mathf.Max(0.0001f, localExitDir.magnitude);
 
-                // clear any residual collision rotation velocity so no decay is applied later
-                collisionRotationVelocity = 0f;
+                    // scale angle by lateral magnitude: if impact is purely front/back, lateralMagnitude ≈ 0
+                    // if impact is purely left/right, lateralMagnitude ≈ 1
+                    float adjustedAngle = angleToReflected * lateralMagnitude;
+
+                    // scale by speed ONLY (not intensity), so all collisions rotate noticeably
+                    float speedFactor = Mathf.Clamp01(currentSpeed / Mathf.Max(1e-5f, maxSpeed));
+
+                    // apply a significant fraction of the angle directly
+                    float rotationAmount = 0.6f; // tune: 0.3 = gentle, 0.6 = moderate, 0.9 = aggressive
+
+                    float immediateAngle = adjustedAngle * rotationAmount * Mathf.Max(speedFactor, 0.5f);
+
+                    // apply immediate rotation
+                    transform.Rotate(0f, immediateAngle, 0f, Space.Self);
+
+                    SkipInterpolatePivotRotation();
+
+                    collisionRotationVelocity = 0f;
+
+                    // update lockout timer
+                    lastCollisionRotationTime = Time.time;
+
+                    if (debugMode)
+                    {
+                        Debug.Log($"[Collision Rotation] angle={angleToReflected:F1}° lateral={lateralMagnitude:F2} adjusted={adjustedAngle:F1}° speedFactor={speedFactor:F2} final={immediateAngle:F1}°");
+                    }
+                }
+                else if (debugMode)
+                {
+                    Debug.Log($"[Collision Rotation] LOCKED OUT for {collisionRotationLockout - timeSinceLastRotation:F2}s more");
+                }
             }
 
             if (debugMode)

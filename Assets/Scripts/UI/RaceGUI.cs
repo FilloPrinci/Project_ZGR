@@ -1,6 +1,7 @@
 using NUnit.Framework.Constraints;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,6 +13,7 @@ public class RaceGUI : MonoBehaviour
 {
     [Header("Panels")]
     public GameObject resultsPanel;
+    public GameObject resultsPanelContent;
     public GameObject pauseMenuPanel;
     public GameObject raceDataPanel;
     public GameObject speedometerPanel;
@@ -22,7 +24,6 @@ public class RaceGUI : MonoBehaviour
 
     [Header("Texts")]
     public TextMeshProUGUI raceDataText;
-    public TextMeshProUGUI resultsDataText;
     public TextMeshProUGUI countdownText;
     public TextMeshProUGUI speedometerText;
     public TextMeshProUGUI positionResultText;
@@ -37,6 +38,7 @@ public class RaceGUI : MonoBehaviour
     public Color goldColor;
     public Color silverColor;
     public Color bronzeColor;
+    public Color highlightColor;
 
     public GameObject finishLabel;
     public RectTransform energyBar;
@@ -60,7 +62,7 @@ public class RaceGUI : MonoBehaviour
     private bool canShowCountdown = false;
     private bool canShowPauseMenu = false;
 
-    private string resultString;
+    private List<string> humanNameIdList;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -79,7 +81,7 @@ public class RaceGUI : MonoBehaviour
             {
                 itemsPanel.SetActive(true);
             }
-        }
+        }        
 
         sceneReferences = SceneReferences.Instance;
         raceSettings = RaceSettings.Instance;
@@ -87,14 +89,7 @@ public class RaceGUI : MonoBehaviour
         StartCoroutine(UpdateSpeedCoroutine(10f)); // 10Hz
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-        
-    }
-
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         ShowRaceDataLines();
         ShowRaceResults();
@@ -203,7 +198,7 @@ public class RaceGUI : MonoBehaviour
                 currentPositionPanel.SetActive(true);
             }
 
-            PlayerRaceData currentPlayerRaceData = raceManager.GetRaceData().GetPlayerRaceDataByID(currentPlayerData.name);
+            PlayerRaceData currentPlayerRaceData = raceManager.GetRaceData().GetPlayerRaceDataByID(currentPlayerData.nameId);
             string positionLine = "Position: " + currentPlayerRaceData.position;
             string currentLap = "Lap" + currentPlayerRaceData.currentLap + "/" + raceManager.maxLaps;
             string currentTime = "Current Lap Time: " + currentPlayerRaceData.GetCurrentLapTime();
@@ -254,11 +249,7 @@ public class RaceGUI : MonoBehaviour
             {
                 resultsPanel.SetActive(true);
             }
-
-            resultsDataText.text = resultString;
-
         }
-
     }
 
     void ShowPositionResult()
@@ -269,9 +260,6 @@ public class RaceGUI : MonoBehaviour
             {
                 positionResultPanel.SetActive(true);
             }
-
-            
-
         }
     }
 
@@ -310,8 +298,35 @@ public class RaceGUI : MonoBehaviour
     {
         this.canShowResults = canShowResults;
 
-        if (this.canShowResults) { 
-            resultString = GetRaceResultLines();
+        if (this.canShowResults) {
+
+            humanNameIdList = raceManager.GetAllPlayerInstances().ToArray().Where(player => player.GetComponent<PlayerController>().IsHuman()).Select(player => player.GetComponent<PlayerController>().playerData.nameId).ToList();
+
+            RaceData raceData = raceManager.GetRaceData();
+
+            UIListManager resultListManager = resultsPanelContent.GetComponent<UIListManager>();
+
+            List<PlayerRaceData> finalPlayerRaceDataList = raceData.GetFinalPlayerRaceDataList();
+
+            for (int i = 0; i < finalPlayerRaceDataList.Count; i++)
+            {
+                int position = i + 1;
+                string name = finalPlayerRaceDataList[i].playerData.displayName;
+                string totalTime = finalPlayerRaceDataList[i].GetTotalTime();
+                string bestTime = finalPlayerRaceDataList[i].GetBestLapTime();
+
+                if (humanNameIdList.Contains(finalPlayerRaceDataList[i].playerData.nameId)){
+                    resultListManager.AddRow(new List<string>() { position.ToString(), name, totalTime, bestTime }, highlightColor);
+                }
+                else
+                {
+                    resultListManager.AddRow(new List<string>() { position.ToString(), name, totalTime, bestTime });
+                }
+
+                
+            }
+
+            //resultString = GetRaceResultLines();
             canShowSpeedometer = false;
             canShowRaceDataLines = false;
             canShowStats = false;
@@ -325,7 +340,7 @@ public class RaceGUI : MonoBehaviour
     {
         this.canShowPositionResult = canShowPositionResults;
 
-        PlayerRaceData currentPlayerRaceData = raceManager.GetRaceData().GetFinalPlayerRaceDataByID(currentPlayerData.name);
+        PlayerRaceData currentPlayerRaceData = raceManager.GetRaceData().GetFinalPlayerRaceDataByID(currentPlayerData.nameId);
         string positionString = "" + currentPlayerRaceData.position;
 
         Color resultPositionColor = Color.grey;
@@ -366,38 +381,6 @@ public class RaceGUI : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(pauseMenuSelectionStart);
         }
-    }
-
-    string GetRaceResultLines()
-    {
-        List<string> playerLineList = new List<string>();
-
-        RaceData raceData = raceManager.GetRaceData();
-
-        string playerLine = $"P \t Name \t Time \t Best Time";
-        playerLineList.Add(playerLine);
-
-        List<PlayerRaceData> finalPlayerRaceDataList = raceData.GetFinalPlayerRaceDataList();
-
-        for (int i = 0; i < finalPlayerRaceDataList.Count; i++)
-        {
-            int position = i + 1;
-            string name = finalPlayerRaceDataList[i].playerData.name;
-            string totalTime = finalPlayerRaceDataList[i].GetTotalTime();
-            string bestTime = finalPlayerRaceDataList[i].GetBestLapTime();
-
-            playerLine = $"{position}\t{name}\t{totalTime}\t{bestTime}";
-            playerLineList.Add(playerLine);
-        }
-
-        string resultLinesString = "";
-
-        for (int i = 0; i < playerLineList.Count; i++)
-        {
-            resultLinesString += playerLineList[i] + "\n";
-        }
-
-        return resultLinesString;
     }
 
     public void SetItemPanelActive(int panelIndex, bool active)

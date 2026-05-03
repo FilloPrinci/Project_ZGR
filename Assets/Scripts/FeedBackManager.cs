@@ -21,6 +21,13 @@ public class FeedBackManager : MonoBehaviour
     public float shakeDuration = 0.5f;
     public float shakeMagnitude = 0.2f;
 
+    [Header("Camera Settings")]
+    public Camera playerCamera;
+    public float defaultFov = 60f;
+    public float raceBaseFov = 60f;
+    public float raceMaxFov = 80f;
+    public float turboAdditionalFOV = 10f;
+
     public CameraPositionMode cameraPositionMode = CameraPositionMode.Race;
 
     private Coroutine shakeCoroutine;
@@ -44,13 +51,51 @@ public class FeedBackManager : MonoBehaviour
 
     private List<Material> activeInstanceMaterials = new List<Material>();
 
+    private bool isHuman = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // PlayerController
+
         playerController = GetComponent<PlayerController>();
 
+        if(playerController == null)
+        {
+            Debug.LogError("FeedBackManager requires a PlayerController component on the same GameObject.");
+            return;
+        }
+
+        isHuman = playerController.IsHuman();
+
+        // Player Veichle
+
         playerVeichle = playerController.GetVeichleModel();
+
+        if(playerVeichle == null)
+        {
+            Debug.LogError("PlayerController does not have a valid VeichleModel assigned.");
+            return;
+        }
+
         steeringAmount = 0;
+
+        // Player Camera
+
+        if (isHuman)
+        {
+            playerCamera = playerController.GetPlayerCamera();
+
+            if (playerCamera == null)
+            {
+                Debug.LogError("PlayerController does not have a valid PlayerCamera assigned.");
+                return;
+            }
+
+            playerCamera.fieldOfView = raceBaseFov;
+        }
+
+        
 
         veichleAnchors = playerController.GetVeichleAnchors();
         cameraPositionMode = CameraPositionMode.Race;
@@ -75,6 +120,12 @@ public class FeedBackManager : MonoBehaviour
         {
             EngineFeedback();
             SteerFeedBack(steeringAmount);
+
+            if (isHuman)
+            {
+                ManageCameraFOV();
+            }
+            
         }
 
         if(cameraPositionMode == CameraPositionMode.RaceEnd)
@@ -82,6 +133,30 @@ public class FeedBackManager : MonoBehaviour
             veichleAnchors.cameraPivot.position = veichleAnchors.OutRace_CameraPivot.position;
             veichleAnchors.cameraPivot.rotation = veichleAnchors.OutRace_CameraPivot.rotation;
         }
+    }
+
+    private void ManageCameraFOV() {
+
+        float targetFOV = raceBaseFov;
+
+        float lerpTime = 1f;
+
+        if (cameraPositionMode == CameraPositionMode.RaceEnd)
+        {
+            targetFOV = defaultFov;
+        }
+        else
+        {
+            if (onTurbo)
+            {
+                targetFOV += turboAdditionalFOV;
+                lerpTime = 4f;
+            }
+        }
+
+
+        playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, deltaTime * lerpTime);
+
     }
 
     private void InitVisualEffects() { 

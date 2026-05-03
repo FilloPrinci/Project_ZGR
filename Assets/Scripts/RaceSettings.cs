@@ -141,14 +141,14 @@ public class RaceSettings : MonoBehaviour
     public void SetSelectedVeichleForPlayer(int playerIndex, GameObject veichlePrefab)
     {
         inputPlayerDataList[playerIndex].veichlePrefab = veichlePrefab;
-        Debug.Log("[RaceSettings] INFO: player " + inputPlayerDataList[playerIndex].name + " has selected veichle " + veichlePrefab.name);
+        Debug.Log("[RaceSettings] INFO: player " + inputPlayerDataList[playerIndex].nameId + " has selected veichle " + veichlePrefab.name);
     }
 
     public void ResetSettings()
     {
         inputPlayersAmount = 1;
         totalPlayersAmount = 10;
-        laps = 3;
+        //laps = 3;
         cpuPlayerDataList = new List<PlayerData>();
         inputPlayerDataList = new List<PlayerData>();
         selectedRaceMode = RaceMode.Test;
