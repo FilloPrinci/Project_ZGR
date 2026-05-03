@@ -66,13 +66,13 @@ public class PlayerStructure : MonoBehaviour
 
         foreach (GameObject playerInstance in allPlayerInstanceList)
         {
-            if (playerInstance.GetComponent<PlayerStructure>().data.name != this.data.name)
+            if (playerInstance.GetComponent<PlayerStructure>().data.nameId != this.data.nameId)
             {
                 targets.Add(playerInstance.transform);
             }
             else
             {
-                Debug.Log("Skipping player " + playerInstance.GetComponent<PlayerStructure>().data.name + " for camera markers");
+                Debug.Log("Skipping player " + playerInstance.GetComponent<PlayerStructure>().data.nameId + " for camera markers");
             }
         }
 
@@ -108,7 +108,7 @@ public class PlayerStructure : MonoBehaviour
 
     public void ActivatePlayerCamera(CameraMode mode)
     {
-        Debug.Log("Activating camera for player: " + data.name + " in mode: " + mode.ToString());
+        Debug.Log("Activating camera for player: " + data.nameId + " in mode: " + mode.ToString());
 
         Camera cam = playerCamera.GetComponent<Camera>();
 

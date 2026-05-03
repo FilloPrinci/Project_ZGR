@@ -115,7 +115,8 @@ MonoBehaviour:
   feedBack: {fileID: 2753818033003460965}
   canvasPrefab: {fileID: 8332201281868801339, guid: 210cef8cc7b01664f8ebf5becf555cf9, type: 3}
   data:
-    name: Player1
+    nameId: 
+    displayName: 
     veichlePrefab: {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
     playerInputIndex: 0
     cpuIndex: 15
@@ -180,7 +181,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerData:
-    name: 
+    nameId: 
+    displayName: 
     veichlePrefab: {fileID: 0}
     playerInputIndex: 0
     cpuIndex: 0
@@ -205,7 +207,7 @@ MonoBehaviour:
   collisionBounceDecelleration: 20
   collisionRotationFactor: 0.6
   collisionRotationDecay: 20
-  debugMode: 1
+  debugMode: 0
 --- !u!114 &2753818033003460965
 MonoBehaviour:
   m_ObjectHideFlags: 0

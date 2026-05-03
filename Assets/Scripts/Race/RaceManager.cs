@@ -50,6 +50,8 @@ public class RaceManager : MonoBehaviour
     public GameObject presentationManager;
     public PlayersCollisionDetection playersCollisionDetection;
 
+    public NamesLoader namesLoader;
+
     [Header("Default parameters")]
     public RaceMode mode;
     public List<PlayerData> playerDataList;
@@ -168,19 +170,40 @@ public class RaceManager : MonoBehaviour
         // Generating CPU Players if needed
         if (generateCPUPlayers)
         {
+
+            List<String> availableNames = new List<string>();
+
+            if (namesLoader != null)
+            {
+                availableNames = namesLoader.namesList;
+            }
+
             for (int i = 0; i < cpuPlayersAmount; i++)
             {
                 // Real CPU are after the player
                 if(i >= playerDataList.Count)
                 {
+                    string displayName = "CPU" + (i);
+
+                    if (availableNames.Count > 0)
+                    {
+                        int nameIndex = UnityEngine.Random.Range(0, availableNames.Count);
+                        string name = availableNames[nameIndex];
+                        availableNames.RemoveAt(nameIndex);
+                        displayName = name;
+                        
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[RaceManager] : No more names available for CPU players. Assigning default name for CPU player {i}");
+                    }
+
                     int veichleIndex = UnityEngine.Random.Range(0, avaiableVeichleList.Count);
 
-                    PlayerData cpuPlayerData = new PlayerData("CPU" + (i), avaiableVeichleList[veichleIndex], InputIndex.CPU);
+                    PlayerData cpuPlayerData = new PlayerData("CPU" + (i), avaiableVeichleList[veichleIndex], InputIndex.CPU, displayName);
                     cpuPlayerData.SetCPUIndex(i);
                     playerDataList.Add(cpuPlayerData);
                 }
-
-                    
             }
         }
 
@@ -317,7 +340,7 @@ public class RaceManager : MonoBehaviour
 
     public GameObject InstantiatePlayer(PlayerData playerData, Transform spawnPoint) {
 
-        Debug.Log($"[RaceManager] : Instantiating player {playerData.name} at position {spawnPoint.position}");
+        Debug.Log($"[RaceManager] : Instantiating player {playerData.nameId} at position {spawnPoint.position}");
 
         playerPrefab.GetComponent<PlayerStructure>().data = playerData;
         GameObject newPlayer = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
@@ -451,7 +474,7 @@ public class RaceManager : MonoBehaviour
 
         raceData.playerRaceDataList.Sort((a, b) => a.position.CompareTo(b.position));
 
-        Debug.Log("the winner is : " + raceData.playerRaceDataList[0].playerData.name + " (player index : " + (int)raceData.playerRaceDataList[0].playerData.playerInputIndex + " )");
+        Debug.Log("the winner is : " + raceData.playerRaceDataList[0].playerData.nameId + " (player index : " + (int)raceData.playerRaceDataList[0].playerData.playerInputIndex + " )");
 
         foreach (PlayerRaceData playerRaceData in raceData.playerRaceDataList)
         {
@@ -511,7 +534,7 @@ public class RaceManager : MonoBehaviour
 
         for (int i = 0; i< playerInstanceList.Count; i++)
         {
-            string playerId = playerInstanceList[i].GetComponent<PlayerStructure>().data.name;
+            string playerId = playerInstanceList[i].GetComponent<PlayerStructure>().data.nameId;
             if (playerId == id)
             {
                 playerInstance = playerInstanceList[i];
@@ -525,7 +548,7 @@ public class RaceManager : MonoBehaviour
     {
         foreach(PlayerRaceData playerRaceData in raceData.playerRaceDataList)
         {
-            GameObject playerInstance = GetPlayerInstanceFromID(playerRaceData.playerData.name);
+            GameObject playerInstance = GetPlayerInstanceFromID(playerRaceData.playerData.nameId);
 
             // calculate new checkpoint distance
             Vector3 newDistanceVector = playerInstance.transform.position - checkPointList[playerRaceData.nextCheckpointIndex].transform.position;
@@ -537,7 +560,7 @@ public class RaceManager : MonoBehaviour
 
     public void OnCheckpoint(string playerID, GameObject checkPointGameObject)
     {
-        int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.name == playerID);
+        int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.nameId == playerID);
         PlayerRaceData currentPlayerRaceData = raceData.playerRaceDataList[playerDataToUpdateIndex];
 
         if (checkPointGameObject.transform.parent?.gameObject == checkPointList[currentPlayerRaceData.nextCheckpointIndex])
@@ -623,7 +646,7 @@ public class RaceManager : MonoBehaviour
         {
             // CPU ended his race
 
-            PlayerRaceData CPURaceData = raceData.GetPlayerRaceDataByID(playerInstance.GetComponent<PlayerStructure>().data.name);
+            PlayerRaceData CPURaceData = raceData.GetPlayerRaceDataByID(playerInstance.GetComponent<PlayerStructure>().data.nameId);
 
             if (CPURaceData.inRace)
             {
@@ -792,7 +815,7 @@ public class RaceManager : MonoBehaviour
     {
         GameObject playerInstance =  GetPlayerInstanceFromPlayerRaceData(playerDaceData);
 
-        Debug.Log("Showing results for player " + playerInstance.GetComponent<PlayerStructure>().data.name);
+        Debug.Log("Showing results for player " + playerInstance.GetComponent<PlayerStructure>().data.nameId);
 
         if (playerInstance.GetComponent<PlayerStructure>().data.playerInputIndex != InputIndex.CPU)
         {
@@ -833,7 +856,7 @@ public class RaceManager : MonoBehaviour
 
     public GameObject GetPlayerInstanceFromPlayerRaceData(PlayerRaceData playerRaceData)
     {
-        string playerNae = playerRaceData.playerData.name;
+        string playerNae = playerRaceData.playerData.nameId;
 
         GameObject playerInstance = GetPlayerInstanceFromID(playerNae);
 

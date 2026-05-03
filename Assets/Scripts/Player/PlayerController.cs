@@ -164,7 +164,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                Debug.Log($"PlayerController Start for CPU player: {playerData.name} with index {playerData.cpuIndex}");
+                Debug.Log($"PlayerController Start for CPU player: {playerData.nameId} with index {playerData.cpuIndex}");
                 playerInputHandler = CPUInputHandlerManager.Instance.GetCPUInput(playerData.cpuIndex);
             }
 
@@ -273,7 +273,7 @@ public class PlayerController : MonoBehaviour
         if (other.tag.Equals("Checkpoint"))
         {
             // Checkpoint reached
-            raceManager.OnCheckpoint(playerData.name, other.gameObject);
+            raceManager.OnCheckpoint(playerData.nameId, other.gameObject);
         }
         else if (other.tag.Equals("Item"))
         {
@@ -456,7 +456,7 @@ public class PlayerController : MonoBehaviour
 
     public PlayerRaceData GetCurrentRaceData()
     {
-        return raceManager.GetRaceData().GetPlayerRaceDataByID(playerData.name);
+        return raceManager.GetRaceData().GetPlayerRaceDataByID(playerData.nameId);
     }
 
     public int GetCurrentPositionInRace()

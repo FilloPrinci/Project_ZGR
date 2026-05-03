@@ -239,7 +239,7 @@ public class CPUManager : MonoBehaviour
         for(int i = 0; i < cpuTransformList.Count; i++)
         {
             GameObject player = cpuTransformList[i].gameObject;
-            int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.name == player.GetComponent<PlayerController>().playerData.name);
+            int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.nameId == player.GetComponent<PlayerController>().playerData.nameId);
             int nextCheckpointIndex = raceData.playerRaceDataList[playerDataToUpdateIndex].nextCheckpointIndex;
 
             GameObject nextCheckpoint = checkPointList[nextCheckpointIndex];
