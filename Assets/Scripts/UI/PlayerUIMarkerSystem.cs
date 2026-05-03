@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using static UnityEditor.U2D.ScriptablePacker;
 
 class MarkerData
 {

@@ -89,7 +89,7 @@ public class RaceGUI : MonoBehaviour
         StartCoroutine(UpdateSpeedCoroutine(10f)); // 10Hz
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         ShowRaceDataLines();
         ShowRaceResults();
