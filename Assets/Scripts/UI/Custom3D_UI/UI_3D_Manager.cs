@@ -465,7 +465,7 @@ public class UI_3D_Manager : MonoBehaviour
         }
         else
         {
-            GroupName.text = selectionPhase.ToString();
+            GroupName.text = "Select your  C O R E";
             SelectionName.text = "";
         }
         
