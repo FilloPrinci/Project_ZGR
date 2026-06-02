@@ -84,6 +84,9 @@ public class PlayerStructure : MonoBehaviour
         GameObject cameraObject = Instantiate(cameraPrefab);
         Camera cam = cameraObject.GetComponent<Camera>();
         cam.fieldOfView = defaultCameraFOV;
+        cam.nearClipPlane = 0.3f;
+        cam.farClipPlane = 5000f;
+
 
         // URP settings
         var cameraData = cameraObject.GetComponent<UniversalAdditionalCameraData>();
