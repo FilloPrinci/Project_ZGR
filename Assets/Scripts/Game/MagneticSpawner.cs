@@ -90,19 +90,12 @@ public class MagneticSpawner : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            // Curvatura
-            if (Mathf.Abs(curvatureAngle) > 0.001f)
-            {
-                Quaternion curvatureRotation = Quaternion.AngleAxis(curvatureAngle, currentUp);
-                currentForward = curvatureRotation * currentForward;
-            }
-
-            // Movimento
-            currentPosition += currentForward * stepDistance + currentUp;
-
+            // Raycast from slightly above current position to find the surface.
+            // On the first iteration currentPosition is the spawner position,
+            // so the first element is placed directly below it.
             RaycastHit hit;
 
-            if (Physics.Raycast(currentPosition, -currentUp, out hit, rayDistance))
+            if (Physics.Raycast(currentPosition + currentUp, -currentUp, out hit, rayDistance))
             {
                 currentPosition = hit.point;
                 currentUp = hit.normal;
@@ -143,6 +136,16 @@ public class MagneticSpawner : MonoBehaviour
 
                 previous = obj;
                 currentForward = rotation * Vector3.forward;
+
+                // Avanza per la prossima iterazione — dopo aver piazzato l'elemento,
+                // così il primo parte dalla posizione dello spawner.
+                if (Mathf.Abs(curvatureAngle) > 0.001f)
+                {
+                    Quaternion curvatureRotation = Quaternion.AngleAxis(curvatureAngle, currentUp);
+                    currentForward = curvatureRotation * currentForward;
+                }
+
+                currentPosition += currentForward * stepDistance + currentUp;
             }
             else
             {
