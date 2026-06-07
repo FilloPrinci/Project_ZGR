@@ -118,7 +118,9 @@ public struct CPUJob : IJobParallelFor
             checkpointFactor = ComputeDistanceFactorEasy(checkpointDistance * checkpointDistance, 500);
         }
 
-        horizontalCheckpointTollerance = maxCheckpointTollerance / checkpointFactor;
+        horizontalCheckpointTollerance = checkpointFactor > 0f
+            ? maxCheckpointTollerance / checkpointFactor
+            : float.MaxValue;
 
 
         nearestRaceLinePoint[index] = raceLinePoints[index];

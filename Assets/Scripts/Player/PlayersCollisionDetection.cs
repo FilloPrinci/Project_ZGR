@@ -104,12 +104,14 @@ public class PlayersCollisionDetection : MonoBehaviour
                         colB, colB.transform.position, colB.transform.rotation,
                         out Vector3 direction, out float distance))
                     {
-                        // lock Y axis
-                        direction.y = 0;
-                        if (direction.sqrMagnitude < 0.0001f) continue;
-                        direction.Normalize();
+                        // Position separation: world-horizontal only.
+                        // Full 3D direction passed as collision normal so PlayerController
+                        // can project correctly in local space at any bank angle.
+                        Vector3 dirHoriz = new Vector3(direction.x, 0f, direction.z);
+                        if (dirHoriz.sqrMagnitude < 0.0001f) continue;
+                        dirHoriz.Normalize();
 
-                        Vector3 separation = direction * (distance + penetrationEpsilon);
+                        Vector3 separation = dirHoriz * (distance + penetrationEpsilon);
 
                         var pcA = colA.GetComponent<PlayerController>();
                         var pcB = colB.GetComponent<PlayerController>();
@@ -117,7 +119,7 @@ public class PlayersCollisionDetection : MonoBehaviour
                         if (pcA != null && pcB != null)
                         {
 
-                            float factorA =0.5f;
+                            float factorA = 0.5f;
                             float factorB = 0.5f;
 
                             colA.transform.position += separation * factorA;
@@ -145,13 +147,17 @@ public class PlayersCollisionDetection : MonoBehaviour
                     trackMainCollider, trackMainCollider.transform.position, trackMainCollider.transform.rotation,
                     out Vector3 direction, out float distance))
                 {
-                    direction.y = 0;
-                    if (direction.sqrMagnitude < 0.0001f) continue;
-                    direction.Normalize();
-
-                    Vector3 separation = direction * (distance + penetrationEpsilon);
-
-                    playerCol.transform.position += separation;
+                    // Position separation: world-horizontal only, so we don't fight the hover system.
+                    // Collision normal passed to PlayerController is the full 3D direction — at non-flat
+                    // bank angles the world-Y component maps to local-X (lateral), so stripping it here
+                    // would destroy the bounce/rotation signal. PlayerController filters via local-space
+                    // projection (localExitVector.y = 0 removes the transform.up component correctly).
+                    Vector3 dirHoriz = new Vector3(direction.x, 0f, direction.z);
+                    if (dirHoriz.sqrMagnitude > 0.0001f)
+                    {
+                        dirHoriz.Normalize();
+                        playerCol.transform.position += dirHoriz * (distance + penetrationEpsilon);
+                    }
 
                     Vector3 collisionPoint = playerCol.transform.position + direction * distance * 0.5f;
 

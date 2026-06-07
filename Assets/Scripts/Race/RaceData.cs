@@ -19,7 +19,6 @@ public class PlayerRaceData
     public PlayerData playerData;
     public int position;
     public string time;
-    public int currentSectorIndex;
     public int nextCheckpointIndex;
     public float currentCheckpointDistance;
     public int currentLap;
@@ -28,12 +27,11 @@ public class PlayerRaceData
     public List<TimeData> lapTimes = new List<TimeData>();
     public bool inRace = true;
 
-    public PlayerRaceData(PlayerData playerData, int position, string time, int currentSectorIndex, int nextCheckpointIndex, float currentCheckpointDistance, int currentLap, bool inRace)
+    public PlayerRaceData(PlayerData playerData, int position, string time, int nextCheckpointIndex, float currentCheckpointDistance, int currentLap, bool inRace)
     {
         this.playerData = playerData;
         this.position = position;
         this.time = time;
-        this.currentSectorIndex = currentSectorIndex;
         this.nextCheckpointIndex = nextCheckpointIndex;
         this.currentCheckpointDistance = currentCheckpointDistance;
         this.currentLap = currentLap;
@@ -141,7 +139,7 @@ public class RaceData
                 return lapComparison;
 
             // Then, sort by sector index (descending)
-            int sectorComparison = b.currentSectorIndex.CompareTo(a.currentSectorIndex);
+            int sectorComparison = b.nextCheckpointIndex.CompareTo(a.nextCheckpointIndex);
             if (sectorComparison != 0)
                 return sectorComparison;
 

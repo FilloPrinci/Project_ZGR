@@ -147,6 +147,8 @@ public class CPUManager : MonoBehaviour
     {
         if (JOB_IO_cpuAccelerate.IsCreated) JOB_IO_cpuAccelerate.Dispose();
         if (JOB_IO_cpuSteer.IsCreated) JOB_IO_cpuSteer.Dispose();
+        if (JOB_I_cpuCurrentSpeed.IsCreated) JOB_I_cpuCurrentSpeed.Dispose();
+        if (JOB_I_cpuInCorner.IsCreated) JOB_I_cpuInCorner.Dispose();
     }
 
     // Draw gizmos to debug nearest distances
@@ -217,8 +219,6 @@ public class CPUManager : MonoBehaviour
     #region PRIVATE METHODS
     private void UpdateCPUData()
     {
-
-        // Update CPU transforms
         List<GameObject> players = raceManager.GetAllPlayerInstances();
 
         List<Transform> cpuTransformList = new List<Transform>();
@@ -228,15 +228,11 @@ public class CPUManager : MonoBehaviour
 
         foreach (GameObject player in players)
         {
-            
-                // collect CPU transforms
-                cpuTransformList.Add(player.transform);
-                // collect CPU current speed
-                cpuSpeedList.Add(player.GetComponent<PlayerController>().GetCurrentSpeed());
-                // collect CPU next checkpoint transform
+            cpuTransformList.Add(player.transform);
+            cpuSpeedList.Add(player.GetComponent<PlayerController>().GetCurrentSpeed());
         }
 
-        for(int i = 0; i < cpuTransformList.Count; i++)
+        for (int i = 0; i < cpuTransformList.Count; i++)
         {
             GameObject player = cpuTransformList[i].gameObject;
             int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.nameId == player.GetComponent<PlayerController>().playerData.nameId);
@@ -244,37 +240,35 @@ public class CPUManager : MonoBehaviour
 
             GameObject nextCheckpoint = checkPointList[nextCheckpointIndex];
 
-            //Debug.Log("next checkpoint for player" + player.GetComponent<PlayerController>().playerData.name + " is: " + nextCheckpoint.name);
-
             if (nextCheckpoint != null)
             {
                 nextRaceLinePositionList.Add(nextCheckpoint.transform);
                 CheckpointType checkpointType = nextCheckpoint.GetComponent<CheckpointType>();
-                if (checkpointType != null)
-                {
-                    if (checkpointType.checkpointType == CheckpointTypeEnum.CornerMid || checkpointType.checkpointType == CheckpointTypeEnum.CornerEnd)
-                        cpuInCornerList.Add(true);
-                    else
-                        cpuInCornerList.Add(false);
-                }
+                bool isCorner = checkpointType != null &&
+                                (checkpointType.checkpointType == CheckpointTypeEnum.CornerMid ||
+                                 checkpointType.checkpointType == CheckpointTypeEnum.CornerEnd);
+                cpuInCornerList.Add(isCorner);
             }
         }
 
-
-        if (cpuTransformList.Count != cpuCount && cpuSpeedList.Count != cpuCount)
+        if (cpuTransformList.Count != cpuCount || cpuSpeedList.Count != cpuCount)
         {
             Debug.LogWarning($"CPUManager: Expected {cpuCount} CPU players, but found {cpuTransformList.Count} in TransformList and {cpuSpeedList.Count} in speedList.");
         }
         else
         {
             JOB_I_cpuTransforms = cpuTransformList.ToArray();
+
+            if (JOB_I_cpuCurrentSpeed.IsCreated) JOB_I_cpuCurrentSpeed.Dispose();
             JOB_I_cpuCurrentSpeed = new NativeArray<float>(cpuSpeedList.ToArray(), Allocator.Persistent);
+
             JOB_I_nextRaceLineTransforms = nextRaceLinePositionList.ToArray();
+
+            if (JOB_I_cpuInCorner.IsCreated) JOB_I_cpuInCorner.Dispose();
             JOB_I_cpuInCorner = new NativeArray<bool>(cpuInCornerList.ToArray(), Allocator.Persistent);
         }
 
         JOB_I_maxSpeed = players[0].GetComponent<PlayerController>().maxSpeed;
-
     }
 
     private void RunCPUJob(float time)

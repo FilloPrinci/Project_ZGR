@@ -632,8 +632,17 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyVectorsToLocalPosition(Vector3 localMovement, Vector3 localBounce, Vector3 localExitVector)
     {
-        localBounce.y = 0; // Ensure no vertical movement is applied from bounce vector
-        localExitVector.y = 0; // Ensure no vertical movement is applied from exit vector
+        // Remove the transform.up component but preserve full magnitude so wall bounces
+        // at non-flat bank angles don't lose force (at 90° bank the y component can be
+        // dominant, and simply zeroing it would make the bounce near-zero).
+        float bounceMagnitude = localBounce.magnitude;
+        localBounce.y = 0f;
+        if (localBounce.sqrMagnitude > 0.0001f)
+            localBounce = localBounce.normalized * bounceMagnitude;
+        else
+            localBounce = Vector3.zero;
+
+        localExitVector.y = 0f;
 
         Vector3 rotatedLocalBounce = transform.rotation * localBounce;
         Vector3 rotatedLocalExitVector = transform.rotation * localExitVector;
@@ -714,58 +723,41 @@ public class PlayerController : MonoBehaviour
             // impact origin is opposite to the exit direction
             Vector3 impactOriginLocal = -localExit;
 
-            // --- ROTATION: make player face the bounce direction slightly ---
-            // compute bounce direction (same reflection used for movement)
-            Vector3 incomingDir = (globalUpdateMovementVector.sqrMagnitude > 1e-6f) ? globalUpdateMovementVector.normalized : transform.forward;
-            Vector3 collisionNormal = collisionExitDirection.normalized;
-            Vector3 reflected = Vector3.Reflect(incomingDir, -collisionNormal);
+            // --- ROTATION: deflect vehicle yaw based on the collision normal ---
+            // Everything is computed in local space so the result is correct at any track angle.
+            // localExit is already available above; project it onto the vehicle's horizontal plane (XZ).
+            Vector3 localExitHorizontal = new Vector3(localExit.x, 0f, localExit.z);
+            float localExitHorizMag = localExitHorizontal.magnitude;
 
-            // reduce upward component (keep rotation on Y only)
-            reflected.y = 0;
-            if (reflected.sqrMagnitude > 0.0001f)
+            // Lateral magnitude: how much the XZ impact comes from left/right vs front/back (0..1).
+            // Use localExitHorizMag as denominator, not the full 3D magnitude — otherwise the
+            // transform.up component dilutes lateralMagnitude to near-zero at non-flat bank angles.
+            float lateralMagnitude = Mathf.Abs(localExit.x) / Mathf.Max(0.0001f, localExitHorizMag);
+
+            if (localExitHorizontal.sqrMagnitude > 0.0001f)
             {
-                reflected.Normalize();
+                localExitHorizontal.Normalize();
 
                 // IMPORTANT: check lockout to prevent multiple rotations per frame
                 float timeSinceLastRotation = Time.time - lastCollisionRotationTime;
                 if (timeSinceLastRotation >= collisionRotationLockout)
                 {
-                    // compute angle between current forward and bounce direction (in degrees)
-                    float angleToReflected = Vector3.SignedAngle(transform.forward, reflected, Vector3.up);
+                    // Reflect local forward (always Vector3.forward in local space) off the horizontal
+                    // collision normal. Avoids world-space ambiguity at intermediate track angles.
+                    Vector3 reflectedLocalForward = Vector3.Reflect(Vector3.forward, -localExitHorizontal);
+                    float angleToReflected = Mathf.Atan2(reflectedLocalForward.x, reflectedLocalForward.z) * Mathf.Rad2Deg;
 
-                    // --- LATERAL IMPACT FILTERING ---
-                    // convert exit direction to local space to isolate lateral (X) component
-                    Vector3 localExitDir = transform.InverseTransformDirection(collisionExitDirection);
-
-                    // lateral magnitude: how much the impact comes from left/right (vs front/back)
-                    // lateral = abs(X component), range 0..1
-                    float lateralMagnitude = Mathf.Abs(localExitDir.x) / Mathf.Max(0.0001f, localExitDir.magnitude);
-
-                    // scale angle by lateral magnitude: if impact is purely front/back, lateralMagnitude ≈ 0
-                    // if impact is purely left/right, lateralMagnitude ≈ 1
-                    float adjustedAngle = angleToReflected * lateralMagnitude;
-
-                    // scale by speed ONLY (not intensity), so all collisions rotate noticeably
                     float speedFactor = Mathf.Clamp01(currentSpeed / Mathf.Max(1e-5f, maxSpeed));
+                    float immediateAngle = angleToReflected * lateralMagnitude * collisionRotationFactor * Mathf.Max(speedFactor, 0.5f);
 
-                    // apply a significant fraction of the angle directly
-                    float rotationAmount = 0.6f; // tune: 0.3 = gentle, 0.6 = moderate, 0.9 = aggressive
-
-                    float immediateAngle = adjustedAngle * rotationAmount * Mathf.Max(speedFactor, 0.5f);
-
-                    // apply immediate rotation
                     transform.Rotate(0f, immediateAngle, 0f, Space.Self);
-
                     SkipInterpolatePivotRotation();
-
                     collisionRotationVelocity = 0f;
-
-                    // update lockout timer
                     lastCollisionRotationTime = Time.time;
 
                     if (debugMode)
                     {
-                        Debug.Log($"[Collision Rotation] angle={angleToReflected:F1}° lateral={lateralMagnitude:F2} adjusted={adjustedAngle:F1}° speedFactor={speedFactor:F2} final={immediateAngle:F1}°");
+                        Debug.Log($"[Collision Rotation] angle={angleToReflected:F1}° lateral={lateralMagnitude:F2} speedFactor={speedFactor:F2} final={immediateAngle:F1}°");
                     }
                 }
                 else if (debugMode)

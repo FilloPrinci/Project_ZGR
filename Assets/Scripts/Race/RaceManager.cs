@@ -228,7 +228,7 @@ public class RaceManager : MonoBehaviour
 
                 for(int i = 0; i < playerDataList.Count; i++)
                 {
-                    playerRaceDataList.Add(new PlayerRaceData(playerDataList[i], 0, "", 0, 0, 0, 1, true));
+                    playerRaceDataList.Add(new PlayerRaceData(playerDataList[i], 0, "", 0, 0, 1, true));
 
                 }
 
@@ -565,28 +565,21 @@ public class RaceManager : MonoBehaviour
 
         if (checkPointGameObject.transform.parent?.gameObject == checkPointList[currentPlayerRaceData.nextCheckpointIndex])
         {
-            currentPlayerRaceData.currentSectorIndex++;
+            currentPlayerRaceData.nextCheckpointIndex++;
 
             // check if player has completed the lap
-            if (currentPlayerRaceData.currentSectorIndex > checkPointList.Count - 1 )
+            if (currentPlayerRaceData.nextCheckpointIndex > checkPointList.Count - 1)
             {
-                // player has completed the lap
-
-                currentPlayerRaceData.currentSectorIndex = 0;
+                currentPlayerRaceData.nextCheckpointIndex = 0;
                 currentPlayerRaceData.currentLap++;
 
                 raceData.SetLapTimeForPlayer(playerDataToUpdateIndex);
 
                 if (currentPlayerRaceData.currentLap > maxLaps && currentPlayerRaceData.inRace)
                 {
-                    // player has finished the race
                     managePlayerRaceEnd(currentPlayerRaceData);
-
-
                 }
             }
-                
-            currentPlayerRaceData.nextCheckpointIndex = currentPlayerRaceData.currentSectorIndex;
 
 
         }
