@@ -598,9 +598,19 @@ public class PlayerController : MonoBehaviour
             //globalUpdateMovementVector = globalBounceVector;
             Debug.DrawLine(transform.position, transform.position + exitVector, Color.red, 0, false);
 
-            // bounce vector in local coordinates
+            // Bounce vector in local space — strip transform.up (local Y) immediately so
+            // the decay in subsequent frames operates on the correct planar magnitude.
             localBounceVector = transform.InverseTransformDirection(globalBounceVector);
+            float bounceMag = localBounceVector.magnitude;
+            localBounceVector.y = 0f;
+            if (localBounceVector.sqrMagnitude > 0.0001f)
+                localBounceVector = localBounceVector.normalized * bounceMag;
+            else
+                localBounceVector = Vector3.zero;
+
+            // Exit push — strip transform.up so the wall push is purely lateral/forward.
             localExitVector = transform.InverseTransformDirection(exitVector);
+            localExitVector.y = 0f;
 
             // block player from entering the wall by moving it out of the collision
             //transform.position += exitVector;
@@ -632,24 +642,11 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyVectorsToLocalPosition(Vector3 localMovement, Vector3 localBounce, Vector3 localExitVector)
     {
-        // Remove the transform.up component but preserve full magnitude so wall bounces
-        // at non-flat bank angles don't lose force (at 90° bank the y component can be
-        // dominant, and simply zeroing it would make the bounce near-zero).
-        float bounceMagnitude = localBounce.magnitude;
-        localBounce.y = 0f;
-        if (localBounce.sqrMagnitude > 0.0001f)
-            localBounce = localBounce.normalized * bounceMagnitude;
-        else
-            localBounce = Vector3.zero;
-
-        localExitVector.y = 0f;
-
+        // localBounce.y and localExitVector.y are guaranteed 0 (stripped at assignment in Race()).
         Vector3 rotatedLocalBounce = transform.rotation * localBounce;
         Vector3 rotatedLocalExitVector = transform.rotation * localExitVector;
 
-
         Vector3 totalLocalMovement = localMovement + rotatedLocalBounce + rotatedLocalExitVector;
-
         transform.localPosition += totalLocalMovement;
     }
 
@@ -875,7 +872,8 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            transform.position += Vector3.down * gravityFallbackSpeed * time;
+            // Fall along local down (relative to current vehicle tilt, not world gravity).
+            transform.position -= transform.up * gravityFallbackSpeed * time;
         }
     }
 
@@ -915,7 +913,8 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            transform.position += Vector3.down * gravityFallbackSpeed * time;
+            // Fall along local down (relative to current vehicle tilt, not world gravity).
+            transform.position -= transform.up * gravityFallbackSpeed * time;
         }
     }
 

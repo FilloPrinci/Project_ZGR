@@ -288,14 +288,16 @@ public class CPUManager : MonoBehaviour
         NativeArray<Vector3> forwardDirections = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
         NativeArray<Vector3> rightDirections = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
 
-        NativeArray<Vector3> raceLinePoints = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
+        NativeArray<Vector3> raceLinePoints   = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
+        NativeArray<Vector3> raceLineForwards = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
         NativeArray<int> errorValueList = new NativeArray<int>(cpuCount, Allocator.TempJob);
 
 
         for (int i = 0; i < cpuCount; i++)
         {
 
-            raceLinePoints[i] = JOB_I_nextRaceLineTransforms[i].transform.position;
+            raceLinePoints[i]   = JOB_I_nextRaceLineTransforms[i].transform.position;
+            raceLineForwards[i] = JOB_I_nextRaceLineTransforms[i].transform.forward;
             errorValueList[i] = Random.Range(0, 11);
 
 
@@ -327,7 +329,8 @@ public class CPUManager : MonoBehaviour
             minCheckpointTollerance = minCheckpointTollerance,
             forwardDirections = forwardDirections,
             rightDirections = rightDirections,
-            raceLinePoints = raceLinePoints,
+            raceLinePoints   = raceLinePoints,
+            raceLineForwards = raceLineForwards,
             inCorner = JOB_I_cpuInCorner,
             cpuLevelList = JOB_I_cpuLevel,
             errorValueList = errorValueList,
@@ -400,6 +403,8 @@ public class CPUManager : MonoBehaviour
         rightVertices.Dispose();
         rightTriangles.Dispose();
         positions.Dispose();
+        raceLinePoints.Dispose();
+        raceLineForwards.Dispose();
         nearestLeft.Dispose();
         nearestRight.Dispose();
         nearestRaceLinePoint.Dispose();

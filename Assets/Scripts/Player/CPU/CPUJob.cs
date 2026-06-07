@@ -25,6 +25,7 @@ public struct CPUJob : IJobParallelFor
     [ReadOnly] public NativeArray<Vector3> forwardDirections;
     [ReadOnly] public NativeArray<Vector3> rightDirections;
     [ReadOnly] public NativeArray<Vector3> raceLinePoints;
+    [ReadOnly] public NativeArray<Vector3> raceLineForwards;
     [ReadOnly] public NativeArray<bool> inCorner;
     [ReadOnly] public NativeArray<int> cpuLevelList;
     [ReadOnly] public NativeArray<int> errorValueList;
@@ -106,29 +107,29 @@ public struct CPUJob : IJobParallelFor
         bool limitAllert = false;
         if (leftDist < scaledLimit || rightDist < scaledLimit) limitAllert = true;
 
-        // Compute Race line steering
+        // Compute Race line steering.
+        // Project a look-ahead point 20 m beyond the checkpoint along its forward direction.
+        // This keeps lateral guidance active even when the CPU is right on top of the checkpoint
+        // — critical for tight corners where all key points are clustered within 20 m.
         float raceLineBasedSteer = 0f;
         float horizontalCheckpointTollerance = maxCheckpointTollerance;
 
-        float checkpointDistance = Mathf.Abs((vehiclePosition - raceLinePoints[index]).magnitude);
-        float checkpointFactor = 0f;
+        const float raceLineLookAhead = 20f;
+        Vector3 raceLineTarget = raceLinePoints[index] + raceLineForwards[index] * raceLineLookAhead;
 
-        if (checkpointDistance > 20f)
-        {
-            checkpointFactor = ComputeDistanceFactorEasy(checkpointDistance * checkpointDistance, 500);
-        }
+        float targetDistance   = (vehiclePosition - raceLineTarget).magnitude;
+        float checkpointFactor = ComputeDistanceFactorEasy(targetDistance * targetDistance, 500f);
 
         horizontalCheckpointTollerance = checkpointFactor > 0f
             ? maxCheckpointTollerance / checkpointFactor
             : float.MaxValue;
 
-
-        nearestRaceLinePoint[index] = raceLinePoints[index];
-        float horizontalOffset = HorizontalOffset(vehiclePosition, right, nearestRaceLinePoint[index]);
-        HorizontalZone nearestRaceLinePointZone = HorizontalRelativeTo(vehiclePosition, right, nearestRaceLinePoint[index], horizontalCheckpointTollerance);
+        nearestRaceLinePoint[index] = raceLineTarget;
+        float horizontalOffset = HorizontalOffset(vehiclePosition, right, raceLineTarget);
+        HorizontalZone nearestRaceLinePointZone = HorizontalRelativeTo(vehiclePosition, right, raceLineTarget, horizontalCheckpointTollerance);
         if (nearestRaceLinePointZone == HorizontalZone.Center)
         {
-            horizontalOffset = 0f; // ignore small offsets when the point is in front
+            horizontalOffset = 0f;
         }
         else
         {

@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -60,6 +59,19 @@ public class RaceManager : MonoBehaviour
 
     [Header("Audio parameters")]
     public AudioSource sountrackAudioSource;
+
+    [Header("Checkpoint Generation")]
+    public TextAsset checkpointSourceCSV;
+    public Vector3 csvWorldOffset = Vector3.zero;
+    public GameObject checkpointSourceCurve;
+    public Transform finishLine;
+    [Range(1, 3)] public int checkpointDensityMultiplier = 1;
+    public float checkpointWidth = 20f;
+    public float checkpointHeight = 5f;
+    [Range(0.1f, 45f)] public float cornerCurvatureThreshold = 0.5f;
+    [Range(3f, 400f)] public float maxAngularStep = 10f;
+    [Range(10f, 400f)] public float straightCheckpointSpacing = 30f;
+    [Range(0f, 30f)] public float cornerMergeThreshold = 8f;
 
     private RacePhase currentRacePhase;
     private List<GameObject> playerInstanceList;
@@ -894,5 +906,551 @@ public class RaceManager : MonoBehaviour
 
         return null;
     }
+
+#if UNITY_EDITOR
+    // =====================================================
+    // CHECKPOINT GENERATION FROM CURVE
+    // Right-click RaceManager in Inspector → Generate Checkpoints from Curve
+    // Requires: checkpointSourceCurve (FBX bezier exported without bevel from Blender)
+    //           checkPointListParent (existing parent GO for checkpoint hierarchy)
+    // =====================================================
+
+    [ContextMenu("Generate Checkpoints from Curve")]
+    public void GenerateCheckpointsFromCurve()
+    {
+        if (checkpointSourceCurve == null && checkpointSourceCSV == null)
+        {
+            Debug.LogError("[RaceManager] Assign either checkpointSourceCSV or checkpointSourceCurve.");
+            return;
+        }
+        if (checkPointListParent == null)
+        {
+            Debug.LogError("[RaceManager] checkPointListParent not set.");
+            return;
+        }
+
+        List<Vector3> rawPoints = ExtractCurvePoints(checkpointSourceCurve);
+        if (rawPoints == null || rawPoints.Count < 2)
+        {
+            Debug.LogError("[RaceManager] Could not extract curve points.");
+            return;
+        }
+
+        const float resampleStep = 0.5f;
+        List<Vector3> path = ResamplePolyline(rawPoints, resampleStep);
+        if (path.Count < 3)
+        {
+            Debug.LogError("[RaceManager] Resampled path too short.");
+            return;
+        }
+
+        float[] curvatures = ComputeSmoothedCurvatures(path, resampleStep);
+
+        // ── Pass 1: place all checkpoints, all typed Item ─────────────────
+        // Only placement triggers (angular accumulator + distance fallback).
+        // No type-specific forced indices — type assignment happens in pass 2.
+        float straightInterval = straightCheckpointSpacing / checkpointDensityMultiplier;
+        float angularThreshold = maxAngularStep / checkpointDensityMultiplier;
+        const float minSpacing = 3f;
+        float distSinceLast = straightInterval;
+        float angularAcc    = 0f;
+        Vector3 lastPos     = Vector3.positiveInfinity;
+
+        var placed = new List<(int pathIndex, Vector3 pos, Vector3 fwd)>();
+
+        for (int i = 0; i < path.Count; i++)
+        {
+            if (i > 0 && i < path.Count - 1)
+            {
+                Vector3 d1 = (path[i]     - path[i - 1]).normalized;
+                Vector3 d2 = (path[i + 1] - path[i]).normalized;
+                angularAcc += Vector3.Angle(d1, d2);
+            }
+            distSinceLast += resampleStep;
+
+            if (angularAcc < angularThreshold && distSinceLast < straightInterval) continue;
+            if ((path[i] - lastPos).sqrMagnitude < minSpacing * minSpacing) continue;
+
+            int prev = Mathf.Max(i - 1, 0);
+            int next = Mathf.Min(i + 1, path.Count - 1);
+            Vector3 fwd = (path[next] - path[prev]).normalized;
+            if (fwd.sqrMagnitude < 0.001f) fwd = Vector3.forward;
+
+            placed.Add((i, path[i], fwd));
+            lastPos       = path[i];
+            distSinceLast = 0f;
+            angularAcc    = 0f;
+        }
+
+        // ── Pass 2: assign corner types ───────────────────────────────────
+        // A checkpoint is "in a corner" when the smoothed curvature at its path
+        // index meets the threshold. Consecutive in-corner checkpoints form a run:
+        //   run length 1  → CornerStart (directed entry with no apex/exit needed)
+        //   run length 2  → CornerStart + CornerEnd
+        //   run length 3+ → CornerStart, CornerMid…, CornerEnd
+        var types = new CheckpointTypeEnum[placed.Count];
+        for (int i = 0; i < placed.Count; i++)
+            types[i] = CheckpointTypeEnum.Item;
+
+        // For each placed checkpoint compute the peak curvature in the window that
+        // spans from the midpoint to the previous checkpoint to the midpoint to the next.
+        // This ensures a corner peak is attributed to the nearest checkpoint even when
+        // the checkpoint landed tens of meters away from the geometric peak.
+        float[] windowPeakCurv = new float[placed.Count];
+        for (int i = 0; i < placed.Count; i++)
+        {
+            int lo = i == 0
+                ? 0
+                : (placed[i - 1].pathIndex + placed[i].pathIndex) / 2;
+            int hi = i == placed.Count - 1
+                ? curvatures.Length - 1
+                : (placed[i].pathIndex + placed[i + 1].pathIndex) / 2;
+
+            float peak = 0f;
+            for (int k = lo; k <= hi; k++)
+                if (curvatures[k] > peak) peak = curvatures[k];
+            windowPeakCurv[i] = peak;
+        }
+
+        // Diagnostic log
+        float maxPathCurvFound = 0f;
+        foreach (float c in curvatures) if (c > maxPathCurvFound) maxPathCurvFound = c;
+        int aboveThreshold = 0;
+        var curvLog = new System.Text.StringBuilder();
+        curvLog.AppendLine($"[RaceManager] Pass 2 — {placed.Count} checkpoints, threshold={cornerCurvatureThreshold:F2}°/m, maxPathCurv={maxPathCurvFound:F2}°/m");
+        for (int i = 0; i < placed.Count; i++)
+        {
+            bool isCorner = windowPeakCurv[i] >= cornerCurvatureThreshold;
+            if (isCorner) aboveThreshold++;
+            curvLog.AppendLine($"  cp{i:D3} pathIdx={placed[i].pathIndex} windowPeak={windowPeakCurv[i]:F2}°/m {(isCorner ? ">>> CORNER" : "")}");
+        }
+        curvLog.AppendLine($"  Above threshold: {aboveThreshold}/{placed.Count}");
+        Debug.Log(curvLog.ToString());
+
+        int p = 0;
+        while (p < placed.Count)
+        {
+            if (windowPeakCurv[p] < cornerCurvatureThreshold) { p++; continue; }
+
+            int runStart = p;
+            while (p < placed.Count && windowPeakCurv[p] >= cornerCurvatureThreshold) p++;
+            int runEnd = p - 1;
+            int runLen = runEnd - runStart + 1;
+
+            if (runLen == 1)
+            {
+                types[runStart] = CheckpointTypeEnum.CornerStart;
+            }
+            else
+            {
+                types[runStart] = CheckpointTypeEnum.CornerStart;
+                types[runEnd]   = CheckpointTypeEnum.CornerEnd;
+                for (int k = runStart + 1; k < runEnd; k++)
+                    types[k] = CheckpointTypeEnum.CornerMid;
+
+                // Compact corner: if run spans less than cornerMergeThreshold,
+                // override CornerMid forwards to point from entry toward exit.
+                if (cornerMergeThreshold > 0f)
+                {
+                    float runDist = Vector3.Distance(placed[runStart].pos, placed[runEnd].pos);
+                    if (runDist < cornerMergeThreshold)
+                    {
+                        Vector3 throughDir = (placed[runEnd].pos - placed[runStart].pos).normalized;
+                        if (throughDir.sqrMagnitude > 0.001f)
+                            for (int k = runStart + 1; k < runEnd; k++)
+                                placed[k] = (placed[k].pathIndex, placed[k].pos, throughDir);
+                    }
+                }
+            }
+        }
+
+        // ── Commit ────────────────────────────────────────────────────────
+        for (int i = checkPointListParent.transform.childCount - 1; i >= 0; i--)
+            UnityEditor.Undo.DestroyObjectImmediate(checkPointListParent.transform.GetChild(i).gameObject);
+
+        int cpIndex = 0;
+        for (int i = 0; i < placed.Count; i++)
+            CreateCheckpointGO(placed[i].pos, placed[i].fwd, types[i], cpIndex++);
+
+        if (finishLine != null)
+            CreateCheckpointGO(finishLine.position, finishLine.forward, CheckpointTypeEnum.Item, cpIndex++);
+        else
+            Debug.LogWarning("[RaceManager] finishLine not set — lap detection will not work correctly.");
+
+        checkPointList.Clear();
+        for (int i = 0; i < checkPointListParent.transform.childCount; i++)
+            checkPointList.Add(checkPointListParent.transform.GetChild(i).gameObject);
+
+        UnityEditor.EditorUtility.SetDirty(gameObject);
+
+        int nStarts = 0, nMids = 0, nEnds = 0;
+        for (int i = 0; i < types.Length; i++)
+        {
+            if (types[i] == CheckpointTypeEnum.CornerStart) nStarts++;
+            else if (types[i] == CheckpointTypeEnum.CornerMid) nMids++;
+            else if (types[i] == CheckpointTypeEnum.CornerEnd) nEnds++;
+        }
+        Debug.Log($"[RaceManager] Generated {cpIndex} checkpoints — {nStarts} corners (Start/Mid/End: {nStarts}/{nMids}/{nEnds}), finish at index {cpIndex - 1}.");
+    }
+
+    private List<Vector3> ExtractCurvePoints(GameObject curveGO)
+    {
+        // --- 0. CSV exported from Blender via Python script (most reliable) ---
+        // curveGO may be null when only the CSV is used
+        if (checkpointSourceCSV != null)
+        {
+            var pts = new List<Vector3>();
+            foreach (string raw in checkpointSourceCSV.text.Split('\n'))
+            {
+                string line = raw.Trim();
+                if (string.IsNullOrEmpty(line)) continue;
+                string[] parts = line.Split(',');
+                if (parts.Length == 3
+                    && float.TryParse(parts[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float x)
+                    && float.TryParse(parts[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float y)
+                    && float.TryParse(parts[2], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float z))
+                {
+                    pts.Add(new Vector3(x, y, z) - csvWorldOffset);
+                }
+            }
+            if (pts.Count >= 2)
+            {
+                Debug.Log($"[RaceManager] CSV: {pts.Count} points loaded.");
+                return pts;
+            }
+            Debug.LogWarning("[RaceManager] CSV assigned but no valid points found.");
+        }
+
+        // --- 1. Try to read from a MeshFilter (FBX mesh or converted curve) ---
+        if (curveGO == null) return null;
+        MeshFilter mf = curveGO.GetComponentInChildren<MeshFilter>();
+        if (mf != null && mf.sharedMesh != null && mf.sharedMesh.vertexCount > 0)
+        {
+            Mesh mesh = mf.sharedMesh;
+            Matrix4x4 l2w = mf.transform.localToWorldMatrix;
+
+            if (mesh.triangles.Length > 0)
+            {
+                // Tube/ribbon mesh (curve exported with bevel from Blender).
+                // Extract spine by grouping vertices into cross-section rings and averaging each ring.
+                Debug.LogWarning("[RaceManager] Curve mesh has faces — using ring-centroid spine extraction. " +
+                    "For best results, export from Blender with Object > Convert > Mesh (no bevel).");
+                return ExtractSpineFromTubeMesh(mesh, l2w);
+            }
+
+            // Edge-only mesh (bezier converted to mesh without bevel) — vertices are path points.
+            const float epsilon = 0.01f;
+            List<Vector3> unique = new List<Vector3>();
+            foreach (Vector3 v in mesh.vertices)
+            {
+                Vector3 w = l2w.MultiplyPoint3x4(v);
+                bool isDup = false;
+                for (int i = 0; i < unique.Count; i++)
+                    if ((w - unique[i]).sqrMagnitude < epsilon * epsilon) { isDup = true; break; }
+                if (!isDup) unique.Add(w);
+            }
+            if (unique.Count >= 2)
+                return OrderByNearestNeighbour(unique);
+        }
+
+        // --- 2. Fallback: child transforms as waypoints (empties placed along spline in Blender) ---
+        if (curveGO.transform.childCount >= 2)
+        {
+            Debug.Log("[RaceManager] No mesh found — reading child transforms as waypoints.");
+            List<Vector3> childPositions = new List<Vector3>();
+            for (int i = 0; i < curveGO.transform.childCount; i++)
+                childPositions.Add(curveGO.transform.GetChild(i).position);
+            return childPositions;
+        }
+
+        // --- Nothing worked ---
+        Debug.LogError(
+            $"[RaceManager] No curve data found on '{curveGO.name}'.\n" +
+            "In Blender, do ONE of the following before exporting FBX:\n" +
+            "  A) Select the bezier curve → Object > Convert > Mesh  (recommended)\n" +
+            "  B) Set Bevel Depth > 0 in Object Data Properties and enable Apply Modifiers in FBX export\n" +
+            "  C) Place Empty objects as children of the curve object along the path");
+        return null;
+    }
+
+    // Extracts the centerline spine from a tube mesh (bezier curve with bevel from Blender).
+    // Step 1: classify edges as circumferential (short) or longitudinal (long).
+    // Step 2: find cross-section rings via connected components of short edges.
+    // Step 3: build ring adjacency graph via long edges — topology-based, no FBX vertex order assumptions.
+    // Step 4: chain-traverse the ring graph to get spine order.
+    private List<Vector3> ExtractSpineFromTubeMesh(Mesh mesh, Matrix4x4 l2w)
+    {
+        Vector3[] verts = mesh.vertices;
+        int n = verts.Length;
+
+        Vector3[] world = new Vector3[n];
+        for (int i = 0; i < n; i++)
+            world[i] = l2w.MultiplyPoint3x4(verts[i]);
+
+        int[] tris = mesh.triangles;
+
+        // Collect unique edges with (min,max) tuple key
+        var edgeLengths = new Dictionary<(int, int), float>();
+        for (int t = 0; t < tris.Length; t += 3)
+        {
+            for (int e = 0; e < 3; e++)
+            {
+                int a = tris[t + e];
+                int b = tris[t + (e + 1) % 3];
+                var key = a < b ? (a, b) : (b, a);
+                if (!edgeLengths.ContainsKey(key))
+                    edgeLengths[key] = (world[a] - world[b]).magnitude;
+            }
+        }
+
+        if (edgeLengths.Count == 0) return null;
+
+        var lengths = new List<float>(edgeLengths.Values);
+        lengths.Sort();
+        // Find the largest gap in the sorted edge-length distribution — separates the circumferential
+        // (short, ~bevel perimeter) from longitudinal (long, ring-to-ring) populations.
+        // Midpoint (min+max)*0.5 breaks when tight curve sections have ring spacing < threshold.
+        float shortThreshold = lengths[lengths.Count - 1]; // fallback: treat all as short
+        float maxGap = 0f;
+        for (int g = 1; g < lengths.Count; g++)
+        {
+            float gap = lengths[g] - lengths[g - 1];
+            if (gap > maxGap) { maxGap = gap; shortThreshold = (lengths[g - 1] + lengths[g]) * 0.5f; }
+        }
+
+        // Build adjacency for circumferential (short) edges only
+        var shortAdj = new Dictionary<int, List<int>>();
+        foreach (var kv in edgeLengths)
+        {
+            if (kv.Value >= shortThreshold) continue;
+            int a = kv.Key.Item1, b = kv.Key.Item2;
+            if (!shortAdj.ContainsKey(a)) shortAdj[a] = new List<int>();
+            if (!shortAdj.ContainsKey(b)) shortAdj[b] = new List<int>();
+            shortAdj[a].Add(b);
+            shortAdj[b].Add(a);
+        }
+
+        // Find rings via connected components of short edges
+        var ringCentroids  = new List<Vector3>();
+        var ringVertexLists = new List<List<int>>();
+        var visited = new HashSet<int>();
+
+        for (int i = 0; i < n; i++)
+        {
+            if (visited.Contains(i)) continue;
+
+            var ring = new List<int>();
+            var queue = new Queue<int>();
+            queue.Enqueue(i);
+            visited.Add(i);
+
+            while (queue.Count > 0)
+            {
+                int v = queue.Dequeue();
+                ring.Add(v);
+                if (!shortAdj.ContainsKey(v)) continue;
+                foreach (int nb in shortAdj[v])
+                    if (!visited.Contains(nb)) { visited.Add(nb); queue.Enqueue(nb); }
+            }
+
+            if (ring.Count < 2) continue;
+
+            Vector3 centroid = Vector3.zero;
+            foreach (int idx in ring) centroid += world[idx];
+            ringCentroids.Add(centroid / ring.Count);
+            ringVertexLists.Add(ring);
+        }
+
+        int numRings = ringCentroids.Count;
+        if (numRings < 2) return null;
+
+        // Map each vertex to its ring index
+        int[] vertexToRing = new int[n];
+        for (int r = 0; r < numRings; r++)
+            foreach (int v in ringVertexLists[r])
+                vertexToRing[v] = r;
+
+        // Build ring adjacency graph from long (longitudinal) edges
+        var ringAdj = new List<HashSet<int>>(numRings);
+        for (int r = 0; r < numRings; r++) ringAdj.Add(new HashSet<int>());
+
+        foreach (var kv in edgeLengths)
+        {
+            if (kv.Value < shortThreshold) continue;
+            int ra = vertexToRing[kv.Key.Item1];
+            int rb = vertexToRing[kv.Key.Item2];
+            if (ra != rb) { ringAdj[ra].Add(rb); ringAdj[rb].Add(ra); }
+        }
+
+        // Start from a degree-1 ring (endpoint of open curve); fall back to ring 0 for closed loops
+        int startRing = 0;
+        for (int r = 0; r < numRings; r++)
+            if (ringAdj[r].Count == 1) { startRing = r; break; }
+
+        // Chain traversal: each ring connects to at most 2 neighbors (prev / next along spine)
+        var orderedResult = new List<Vector3>(numRings);
+        var visitedRings  = new HashSet<int>();
+        int cur = startRing;
+        while (cur >= 0)
+        {
+            orderedResult.Add(ringCentroids[cur]);
+            visitedRings.Add(cur);
+            int next = -1;
+            foreach (int adj in ringAdj[cur])
+                if (!visitedRings.Contains(adj)) { next = adj; break; }
+            cur = next;
+        }
+
+        Debug.Log($"[RaceManager] Tube spine: {orderedResult.Count}/{numRings} rings ordered via topology.");
+        return orderedResult;
+    }
+
+    private List<Vector3> OrderByNearestNeighbour(List<Vector3> pts)
+    {
+        List<Vector3> ordered = new List<Vector3>(pts.Count);
+        bool[] visited = new bool[pts.Count];
+        int cur = 0;
+        visited[0] = true;
+        ordered.Add(pts[0]);
+
+        for (int step = 1; step < pts.Count; step++)
+        {
+            float best = float.MaxValue;
+            int next = -1;
+            for (int j = 0; j < pts.Count; j++)
+            {
+                if (visited[j]) continue;
+                float d = (pts[j] - pts[cur]).sqrMagnitude;
+                if (d < best) { best = d; next = j; }
+            }
+            if (next < 0) break;
+            visited[next] = true;
+            ordered.Add(pts[next]);
+            cur = next;
+        }
+
+        return ordered;
+    }
+
+    private List<Vector3> ResamplePolyline(List<Vector3> pts, float step)
+    {
+        List<Vector3> result = new List<Vector3> { pts[0] };
+        float acc = 0f;
+
+        for (int i = 1; i < pts.Count; i++)
+        {
+            float segLen = (pts[i] - pts[i - 1]).magnitude;
+            if (segLen < 0.0001f) continue;
+            acc += segLen;
+
+            while (acc >= step)
+            {
+                acc -= step;
+                float t = 1f - acc / segLen;
+                result.Add(Vector3.Lerp(pts[i - 1], pts[i], t));
+            }
+        }
+
+        return result;
+    }
+
+    private float[] ComputeSmoothedCurvatures(List<Vector3> pts, float step)
+    {
+        int n = pts.Count;
+        float[] raw = new float[n];
+
+        for (int i = 1; i < n - 1; i++)
+        {
+            Vector3 d1 = (pts[i]     - pts[i - 1]).normalized;
+            Vector3 d2 = (pts[i + 1] - pts[i]).normalized;
+            raw[i] = Vector3.Angle(d1, d2) / step; // degrees per meter
+        }
+
+        // 11-point moving average
+        float[] smoothed = new float[n];
+        const int half = 5;
+        for (int i = 0; i < n; i++)
+        {
+            float sum = 0f;
+            int count = 0;
+            for (int j = Mathf.Max(0, i - half); j <= Mathf.Min(n - 1, i + half); j++)
+            {
+                sum += raw[j];
+                count++;
+            }
+            smoothed[i] = sum / count;
+        }
+
+        return smoothed;
+    }
+
+    private List<(int start, int mid, int end)> FindCornerRegions(float[] curvatures, float threshold)
+    {
+        var corners = new List<(int, int, int)>();
+        int n = curvatures.Length;
+        bool inCorner = false;
+        int cStart = 0, cMid = 0;
+        float peak = 0f;
+
+        for (int i = 0; i < n; i++)
+        {
+            if (!inCorner && curvatures[i] >= threshold)
+            {
+                inCorner = true;
+                cStart = i;
+                cMid = i;
+                peak = curvatures[i];
+            }
+            else if (inCorner)
+            {
+                if (curvatures[i] > peak) { peak = curvatures[i]; cMid = i; }
+
+                if (curvatures[i] < threshold || i == n - 1)
+                {
+                    inCorner = false;
+                    int cEnd = (i - 1 > cMid) ? i - 1 : cMid;
+                    corners.Add((cStart, cMid, cEnd));
+                }
+            }
+        }
+
+        if (inCorner)
+            corners.Add((cStart, cMid, n - 1));
+
+        return corners;
+    }
+
+    private void CreateCheckpointGO(Vector3 position, Vector3 forward, CheckpointTypeEnum type, int index)
+    {
+        int layer = LayerMask.NameToLayer("IgnoreHoverRaycast");
+        if (layer == -1)
+        {
+            Debug.LogWarning("[RaceManager] Layer 'IgnoreHoverRaycast' not found. Add it in Project Settings > Tags and Layers.");
+            layer = 0;
+        }
+
+        GameObject cpGO = new GameObject($"Checkpoint_{index:D3}");
+        UnityEditor.Undo.RegisterCreatedObjectUndo(cpGO, "Generate Checkpoint");
+        cpGO.transform.SetParent(checkPointListParent.transform, true);
+        cpGO.transform.position = position;
+        cpGO.transform.rotation = Quaternion.LookRotation(forward, Vector3.up);
+        cpGO.layer = layer;
+
+        CheckpointType ct = cpGO.AddComponent<CheckpointType>();
+        ct.checkpointType = type;
+
+        GameObject triggerGO = new GameObject("Trigger");
+        UnityEditor.Undo.RegisterCreatedObjectUndo(triggerGO, "Generate Checkpoint Trigger");
+        triggerGO.transform.SetParent(cpGO.transform, false);
+        triggerGO.layer = layer;
+
+        try { triggerGO.tag = "Checkpoint"; }
+        catch { Debug.LogWarning("[RaceManager] Tag 'Checkpoint' not defined. Add it in Project Settings > Tags and Layers."); }
+
+        BoxCollider col = triggerGO.AddComponent<BoxCollider>();
+        col.isTrigger = true;
+        col.size = new Vector3(checkpointWidth, checkpointHeight, 1f);
+    }
+#endif
 
 }

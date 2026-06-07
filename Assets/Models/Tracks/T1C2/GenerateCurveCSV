@@ -1,0 +1,30 @@
+import bpy
+
+obj = bpy.context.active_object
+curve = obj.data
+
+# Temporarily zero bevel to get clean spine vertices
+saved = curve.bevel_depth
+curve.bevel_depth = 0
+bpy.context.view_layer.update()
+
+depsgraph = bpy.context.evaluated_depsgraph_get()
+eval_obj  = obj.evaluated_get(depsgraph)
+mesh      = eval_obj.to_mesh()
+
+# Blender→Unity axis swap: Blender(x,y,z) → Unity(x,z,y)
+lines = []
+for v in mesh.vertices:
+    p = obj.matrix_world @ v.co
+    lines.append(f"{p.x},{p.z},{p.y}")
+
+eval_obj.to_mesh_clear()
+curve.bevel_depth = saved
+bpy.context.view_layer.update()
+
+# Save alongside the .blend file — copy it into your Unity Assets folder
+path = bpy.path.abspath("//curve_points.csv")
+with open(path, 'w') as f:
+    f.write('\n'.join(lines))
+
+print(f"Exported {len(lines)} points → {path}")
