@@ -64,6 +64,7 @@ public class RaceManager : MonoBehaviour
     public TextAsset checkpointSourceCSV;
     public Vector3 csvWorldOffset = Vector3.zero;
     public GameObject checkpointSourceCurve;
+    public GameObject checkpointPrefab;
     public Transform finishLine;
     [Range(1, 3)] public int checkpointDensityMultiplier = 1;
     public float checkpointWidth = 20f;
@@ -1429,27 +1430,56 @@ public class RaceManager : MonoBehaviour
             layer = 0;
         }
 
-        GameObject cpGO = new GameObject($"Checkpoint_{index:D3}");
-        UnityEditor.Undo.RegisterCreatedObjectUndo(cpGO, "Generate Checkpoint");
-        cpGO.transform.SetParent(checkPointListParent.transform, true);
-        cpGO.transform.position = position;
-        cpGO.transform.rotation = Quaternion.LookRotation(forward, Vector3.up);
-        cpGO.layer = layer;
+        Quaternion rotation = Quaternion.LookRotation(forward, Vector3.up);
+        GameObject cpGO;
 
-        CheckpointType ct = cpGO.AddComponent<CheckpointType>();
-        ct.checkpointType = type;
+        if (checkpointPrefab != null)
+        {
+            cpGO = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(checkpointPrefab, checkPointListParent.transform);
+            UnityEditor.Undo.RegisterCreatedObjectUndo(cpGO, "Generate Checkpoint");
+            cpGO.transform.position = position;
+            cpGO.transform.rotation = rotation;
+        }
+        else
+        {
+            cpGO = new GameObject();
+            UnityEditor.Undo.RegisterCreatedObjectUndo(cpGO, "Generate Checkpoint");
+            cpGO.transform.SetParent(checkPointListParent.transform, true);
+            cpGO.transform.position = position;
+            cpGO.transform.rotation = rotation;
 
-        GameObject triggerGO = new GameObject("Trigger");
-        UnityEditor.Undo.RegisterCreatedObjectUndo(triggerGO, "Generate Checkpoint Trigger");
-        triggerGO.transform.SetParent(cpGO.transform, false);
-        triggerGO.layer = layer;
+            cpGO.AddComponent<CheckpointType>();
 
-        try { triggerGO.tag = "Checkpoint"; }
-        catch { Debug.LogWarning("[RaceManager] Tag 'Checkpoint' not defined. Add it in Project Settings > Tags and Layers."); }
+            GameObject triggerGO = new GameObject("Trigger");
+            UnityEditor.Undo.RegisterCreatedObjectUndo(triggerGO, "Generate Checkpoint Trigger");
+            triggerGO.transform.SetParent(cpGO.transform, false);
 
-        BoxCollider col = triggerGO.AddComponent<BoxCollider>();
-        col.isTrigger = true;
-        col.size = new Vector3(checkpointWidth, checkpointHeight, 1f);
+            try { triggerGO.tag = "Checkpoint"; }
+            catch { Debug.LogWarning("[RaceManager] Tag 'Checkpoint' not defined. Add it in Project Settings > Tags and Layers."); }
+
+            BoxCollider col = triggerGO.AddComponent<BoxCollider>();
+            col.isTrigger = true;
+        }
+
+        cpGO.name = $"Checkpoint_{index:D3}";
+
+        // Apply layer and collider size to the whole hierarchy.
+        // When using a prefab the trigger collider is expected to already be
+        // present and tagged "Checkpoint" — we only update its size here.
+        foreach (Transform t in cpGO.GetComponentsInChildren<Transform>(true))
+        {
+            t.gameObject.layer = layer;
+
+            BoxCollider col = t.GetComponent<BoxCollider>();
+            if (col != null && col.isTrigger)
+                col.size = new Vector3(checkpointWidth, checkpointHeight, 1f);
+        }
+
+        CheckpointType ct = cpGO.GetComponentInChildren<CheckpointType>();
+        if (ct != null)
+            ct.checkpointType = type;
+        else
+            Debug.LogWarning($"[RaceManager] Checkpoint_{index:D3}: no CheckpointType component found. Add one to the prefab.");
     }
 #endif
 
