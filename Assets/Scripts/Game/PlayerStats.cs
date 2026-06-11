@@ -60,7 +60,7 @@ public class PlayerStats : MonoBehaviour
     public float turboMaxSpeedMultiplier = 0.5f;
     public float turboAccelerationMultiplier = 1.0f;
     public bool onTurbo = false;
-    public int turboDuration = 2;
+    public float turboDuration = 2f;
 
     [Header("ITEMS SLOTS")]
     public int bufferSize = 3;
@@ -71,6 +71,8 @@ public class PlayerStats : MonoBehaviour
     public float defficultyMaxSpeedFraction = 0.1f;
     public float maxSpeedDifficultyIncrease = 0.2f;
     
+
+    private Coroutine turboCoroutine;
 
     private float rubberbandMaxSpeedEffect = 0;
 
@@ -223,7 +225,9 @@ public class PlayerStats : MonoBehaviour
 
     public void StartTurbo()
     {
-        StartCoroutine(TurboCoroutine());
+        if (turboCoroutine != null)
+            StopCoroutine(turboCoroutine);
+        turboCoroutine = StartCoroutine(TurboCoroutine());
     }
 
     public void OnDamage(float factor = 1f)
@@ -252,6 +256,7 @@ public class PlayerStats : MonoBehaviour
         UpdateStats();
         yield return new WaitForSeconds(turboDuration);
         onTurbo = false;
+        turboCoroutine = null;
         UpdateStats();
     }
 }
