@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FinishLineHologram
+  m_Name: CheckerboardFlag
   m_Shader: {fileID: -6465566751694194690, guid: 2e8e91b9eab23244ebf65e61516f10e0, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -54,7 +54,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Internal_Texture:
-        m_Texture: {fileID: 10309, guid: 0000000000000000f000000000000000, type: 0}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -78,7 +78,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ScrollEffect:
-        m_Texture: {fileID: 2800000, guid: ce1c4ba666e89b645a3a8e4ef4519ba4, type: 3}
+        m_Texture: {fileID: 2800000, guid: 50520533c91c30f43a5274f3db0c7f15, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -115,7 +115,7 @@ Material:
     - _DstBlend: 1
     - _DstBlendAlpha: 1
     - _EnvironmentReflections: 1
-    - _Fuzziness: 1.5
+    - _Fuzziness: 0.8
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -124,7 +124,7 @@ Material:
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Range: -0.5
+    - _Range: 1
     - _ReceiveShadows: 0
     - _Rotation: 0
     - _Smoothness: 0.5
@@ -138,17 +138,17 @@ Material:
     - _ZWrite: 0
     - _ZWriteControl: 0
     m_Colors:
-    - _Albedo_Color: {r: 0.2735849, g: 0.2735849, b: 0.2735849, a: 1}
+    - _Albedo_Color: {r: 0, g: 0, b: 0, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 1.1353016, g: 1.1353016, b: 1.1353016, a: 1}
     - _Emission_Color: {r: 5.3403134, g: 5.3403134, b: 5.3403134, a: 1}
     - _Offset: {r: 0, g: 0, b: 0, a: 0}
-    - _Scroll_TIling: {r: 1, g: 10, b: 0, a: 0}
+    - _Scroll_TIling: {r: 30, g: 1, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _Speed: {r: 0, g: -10, b: 0, a: 0}
+    - _Speed: {r: 1, g: -1, b: 0, a: 0}
     - _TIling: {r: 1, g: 1, b: 0, a: 0}
-    - _Tiling: {r: 20, g: 2, b: 0, a: 0}
+    - _Tiling: {r: 30, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &6140452503243417179

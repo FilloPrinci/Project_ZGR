@@ -74,6 +74,9 @@ public class RaceManager : MonoBehaviour
     [Range(10f, 400f)] public float straightCheckpointSpacing = 30f;
     [Range(0f, 30f)] public float cornerMergeThreshold = 8f;
 
+    [Header("FinishLine")]
+    public FinishLineManager finishLineManager;
+
     private RacePhase currentRacePhase;
     private List<GameObject> playerInstanceList;
     private List<int> sectorList;
@@ -476,6 +479,7 @@ public class RaceManager : MonoBehaviour
         HideCountdownForAllPlayers();
         raceData.StartRace();
         StartCoroutine(UpdateRankingCoroutine());
+        finishLineManager.SetGreenFlag();
     }
 
     private void OnRaceEnd()
@@ -580,6 +584,8 @@ public class RaceManager : MonoBehaviour
         {
             currentPlayerRaceData.nextCheckpointIndex++;
 
+
+
             // check if player has completed the lap
             if (currentPlayerRaceData.nextCheckpointIndex > checkPointList.Count - 1)
             {
@@ -591,6 +597,18 @@ public class RaceManager : MonoBehaviour
                 if (currentPlayerRaceData.currentLap > maxLaps && currentPlayerRaceData.inRace)
                 {
                     managePlayerRaceEnd(currentPlayerRaceData);
+                }
+            }
+            else
+            {
+                if (currentPlayerRaceData.nextCheckpointIndex + 1 > checkPointList.Count - 1)
+                {
+                    // last checkpoint
+                    if (currentPlayerRaceData.currentLap == maxLaps && currentPlayerRaceData.inRace)
+                    {
+                        // finishing the race
+                        finishLineManager.SetCheckerboardFlag();
+                    }
                 }
             }
 
