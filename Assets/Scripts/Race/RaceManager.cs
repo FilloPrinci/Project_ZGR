@@ -10,7 +10,8 @@ public enum RaceMode
     Test,
     TimeTrial,
     RaceSingleplayer,
-    RaceMultiplayer
+    RaceMultiplayer,
+    SpectatorRace
 }
 
 public enum RacePhase 
@@ -98,6 +99,11 @@ public class RaceManager : MonoBehaviour
     public RacePhase GetCurrentRacePhase()
     {
         return currentRacePhase;   
+    }
+
+    public RaceMode GetCurrentRaceMode()
+    {
+        return mode;
     }
 
     public int GetHumanPlayersAmount()
@@ -275,6 +281,9 @@ public class RaceManager : MonoBehaviour
 
                         addPlayerInstances();
 
+                        break;
+                    case RaceMode.SpectatorRace:
+                        addPlayerInstances();
                         break;
                 }
             }
@@ -525,6 +534,8 @@ public class RaceManager : MonoBehaviour
             case RaceMode.RaceSingleplayer:
                 break;
             case RaceMode.RaceMultiplayer:
+                break;
+            case RaceMode.SpectatorRace:
                 break;
 
 

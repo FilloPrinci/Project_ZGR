@@ -249,6 +249,15 @@ public class PlayerController : MonoBehaviour
         }
         else if (raceManager.GetCurrentRacePhase() == RacePhase.Race || raceManager.GetCurrentRacePhase() == RacePhase.Results)
         {
+            if(raceManager.GetCurrentRaceMode() == RaceMode.SpectatorRace)
+            {
+                if (IsHuman())
+                {
+                    SetAutoDrive(true);
+                }
+                
+            }
+
             Race();
         }
 
@@ -479,15 +488,19 @@ public class PlayerController : MonoBehaviour
                return veichlePivot.gameObject;
     }
 
-    public void EndRace()
+    public void SetAutoDrive(bool autoDrive)
     {
-        if (!autoDrive)
-        {
-            autoDrive = true;
-        }
+        this.autoDrive = autoDrive;
 
         // update input
         playerInputHandler = CPUInputHandlerManager.Instance.GetCPUInput(playerData.cpuIndex);
+    }
+
+    public void EndRace()
+    {
+        SetAutoDrive(true);
+
+
 
         //update camera
         feedBackManager.TriggerEndRaceCameraView();
