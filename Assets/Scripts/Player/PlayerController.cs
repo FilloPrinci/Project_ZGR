@@ -490,10 +490,13 @@ public class PlayerController : MonoBehaviour
 
     public void SetAutoDrive(bool autoDrive)
     {
-        this.autoDrive = autoDrive;
+        if (!this.autoDrive)
+        {
+            this.autoDrive = autoDrive;
 
-        // update input
-        playerInputHandler = CPUInputHandlerManager.Instance.GetCPUInput(playerData.cpuIndex);
+            // update input
+            playerInputHandler = CPUInputHandlerManager.Instance.GetCPUInput(playerData.cpuIndex);
+        }
     }
 
     public void EndRace()

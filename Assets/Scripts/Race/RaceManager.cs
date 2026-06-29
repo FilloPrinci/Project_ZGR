@@ -433,15 +433,12 @@ public class RaceManager : MonoBehaviour
         {
             PlayerStructure instanceStructure = playerInstnce.GetComponent<PlayerStructure>();
             if (instanceStructure.data.playerInputIndex != InputIndex.CPU) {
-                if (mode != RaceMode.RaceMultiplayer) {
-                    
-
-                    instanceStructure.ActivatePlayerCamera(CameraMode.SinglePlayer);
-                }
-                else
-                {
+                
                     Debug.Log("[RaceManager] : Activating multiplayer camera mode... humanPlayersAmount: " + humanPlayersAmount);
-
+                    if(humanPlayersAmount == 1)
+                    {
+                        instanceStructure.ActivatePlayerCamera(CameraMode.SinglePlayer);
+                    }
                     if (humanPlayersAmount == 2)
                     {
                         instanceStructure.ActivatePlayerCamera(CameraMode.MultiPlayer2);
@@ -452,7 +449,6 @@ public class RaceManager : MonoBehaviour
                     {
                         instanceStructure.ActivatePlayerCamera(CameraMode.MultiPlayer4);
                     }
-                }
             }
         }
 
