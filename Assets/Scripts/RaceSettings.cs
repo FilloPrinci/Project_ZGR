@@ -45,7 +45,7 @@ public class RaceSettings : MonoBehaviour
     {
         sceneReferences = SceneReferences.Instance;
         inputPlayerDataList = new List<PlayerData>();
-        selectedRaceTrack = sceneReferences.raceTrackSceneList[defaultRaceTrackIndex];
+        selectedRaceTrack = sceneReferences.trackSceneDataList[defaultRaceTrackIndex].sceneName;
 
         if (veichlePrefabList.Count == 0)
         {
