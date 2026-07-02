@@ -96,15 +96,18 @@ public class UI_GroupComponent : MonoBehaviour
             {
                 newPositionList[i] = positionList[i];
 
-
                 currentPositionList[i] = graphicComponent.GetInstantiatedPanel().transform.localPosition;
                 currentPositionList[i] = Utils.ExpDecay(currentPositionList[i], newPositionList[i], moveSpeed, deltaTime);
 
                 // refresh positions
                 graphicComponent.GetInstantiatedPanel().transform.localPosition = currentPositionList[i];
-                graphicComponent.GetInstantiatedIcon().transform.localPosition = currentPositionList[i] + graphicComponent.IconOffset;
 
-                if(graphicComponent.GetInstantiatedText() != null)
+                if (graphicComponent.GetInstantiatedIcon() != null)
+                {
+                    graphicComponent.GetInstantiatedIcon().transform.localPosition = currentPositionList[i] + graphicComponent.IconOffset;
+                }
+
+                if (graphicComponent.GetInstantiatedText() != null)
                 {
                     graphicComponent.GetInstantiatedText().transform.localPosition = currentPositionList[i] + graphicComponent.TextOffset;
                 }
@@ -125,7 +128,11 @@ public class UI_GroupComponent : MonoBehaviour
                 }
 
                 graphicComponent.GetInstantiatedPanel().transform.localScale = Vector3.one * currentPanelSizeList[i];
-                graphicComponent.GetInstantiatedIcon().transform.localScale = Vector3.one * currentIconSizeList[i];
+
+                if (graphicComponent.GetInstantiatedIcon() != null)
+                {
+                    graphicComponent.GetInstantiatedIcon().transform.localScale = Vector3.one * currentIconSizeList[i];
+                }
             }
         }
 
@@ -151,8 +158,11 @@ public class UI_GroupComponent : MonoBehaviour
                     UI_GraphicComponent graphicComponent = component.GraphicComponent;
 
                     graphicComponent.GetInstantiatedPanel().SetActive(false);
-                    graphicComponent.GetInstantiatedIcon().SetActive(false);
-                    if(graphicComponent.GetInstantiatedText() != null)
+                    if (graphicComponent.GetInstantiatedIcon() != null)
+                    {
+                        graphicComponent.GetInstantiatedIcon().SetActive(false);
+                    }
+                    if (graphicComponent.GetInstantiatedText() != null)
                     {
                         graphicComponent.GetInstantiatedText().SetActive(false);
                     }
@@ -178,7 +188,10 @@ public class UI_GroupComponent : MonoBehaviour
                     UI_GraphicComponent graphicComponent = component.GraphicComponent;
 
                     graphicComponent.GetInstantiatedPanel().SetActive(true);
-                    graphicComponent.GetInstantiatedIcon().SetActive(true);
+                    if (graphicComponent.GetInstantiatedIcon() != null)
+                    {
+                        graphicComponent.GetInstantiatedIcon().SetActive(true);
+                    }
                 }
             }
         }
@@ -255,16 +268,22 @@ public class UI_GroupComponent : MonoBehaviour
 
                 if (graphicComponent != null)
                 {
-
                     if (graphicComponent.Panel != null)
                     {
                         graphicComponent.SetInstantiatedPanel(Instantiate(graphicComponent.Panel, newInstancePosition, transform.rotation, transform));
                     }
                     if (graphicComponent.Icon != null)
                     {
-                        graphicComponent.SetInstantiatedIcon(Instantiate(graphicComponent.Icon, newInstancePosition + Vector3.forward * graphicComponent.IconOffset.z, transform.rotation, transform));
+                        GameObject iconInstance = Instantiate(graphicComponent.Icon, newInstancePosition + Vector3.forward * graphicComponent.IconOffset.z, transform.rotation, transform);
+                        graphicComponent.SetInstantiatedIcon(iconInstance);
+
+                        if (graphicComponent.previewSprite != null)
+                        {
+                            SpriteRenderer sr = iconInstance.GetComponentInChildren<SpriteRenderer>();
+                            if (sr != null) sr.sprite = graphicComponent.previewSprite;
+                        }
                     }
-                    if(graphicComponent.TextGUI != null)
+                    if (graphicComponent.TextGUI != null)
                     {
                         graphicComponent.SetInstantiatedText(Instantiate(graphicComponent.TextGUI, newInstancePosition + graphicComponent.TextOffset, transform.rotation, transform));
                         graphicComponent.SetTextString(graphicComponent.text);

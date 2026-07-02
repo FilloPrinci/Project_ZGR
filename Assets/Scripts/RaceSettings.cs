@@ -135,7 +135,8 @@ public class RaceSettings : MonoBehaviour
 
     public void OnRaceTrackSelect(int trackIndex)
     {
-        selectedRaceTrack = sceneReferences.raceTrackSceneList[trackIndex];
+        selectedRaceTrack = sceneReferences.trackSceneDataList[trackIndex].sceneName;
+        Debug.Log("[RaceSettings] INFO: selected track set to " + selectedRaceTrack);
     }
 
     public void SetSelectedVeichleForPlayer(int playerIndex, GameObject veichlePrefab)
@@ -152,6 +153,5 @@ public class RaceSettings : MonoBehaviour
         cpuPlayerDataList = new List<PlayerData>();
         inputPlayerDataList = new List<PlayerData>();
         selectedRaceMode = RaceMode.Test;
-        selectedRaceTrack = sceneReferences.raceTrackSceneList[defaultRaceTrackIndex];
     }
 }

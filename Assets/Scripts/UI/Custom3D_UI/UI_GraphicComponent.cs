@@ -9,6 +9,7 @@ public class UI_GraphicComponent
     public GameObject Icon;
     public GameObject TextGUI;
     public string text;
+    public Sprite previewSprite;
     public float IconSize = 1.0f;
     public Vector3 IconOffset = new(0, 0, -0.2f);
     public Vector3 TextOffset = new(-0.5f, 0, -0.2f);
