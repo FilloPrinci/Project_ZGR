@@ -76,6 +76,12 @@ public class PresentationManager : MonoBehaviour
     void Start()
     {
         globalRaceCanvasInstance = Instantiate(globalRaceCanvasPrefab);
+        Canvas raceCanvas = globalRaceCanvasInstance.GetComponent<Canvas>();
+        if (raceCanvas != null)
+        {
+            raceCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            raceCanvas.sortingOrder = 1000;
+        }
 
         if (presentationPointList != null && presentationPointList.Count > 0)
             currentCameraPoint = presentationPointList[0].GetComponent<RotateCameraPoint>().cameraPoint;
@@ -86,7 +92,7 @@ public class PresentationManager : MonoBehaviour
         else
         {
             Debug.Log("[PresentationManager] : RaceSettings Instance found, using player configured settings");
-            globalRaceCanvasInstance.GetComponent<GlobalRaceCanvasStructure>().raceTrackNameText.text = currentRaceSettings.GetSelectedRaceTrack();
+            globalRaceCanvasInstance.GetComponent<GlobalRaceCanvasStructure>().raceTrackNameText.text = currentRaceSettings.GetSelectedRaceTrackDisplayName();
         }
     }
 

@@ -1,5 +1,7 @@
 using UnityEngine;
+using UnityEngine.Scripting;
 
+[Preserve]
 public class TrackSelectionButton : Button
 {
     public int trackIndex = 0;

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -95,6 +96,8 @@ public class UI_GroupComponent : MonoBehaviour
             if (graphicComponent != null)
             {
                 newPositionList[i] = positionList[i];
+
+                if (graphicComponent.GetInstantiatedPanel() == null) continue;
 
                 currentPositionList[i] = graphicComponent.GetInstantiatedPanel().transform.localPosition;
                 currentPositionList[i] = Utils.ExpDecay(currentPositionList[i], newPositionList[i], moveSpeed, deltaTime);
@@ -283,18 +286,39 @@ public class UI_GroupComponent : MonoBehaviour
                             if (sr != null) sr.sprite = graphicComponent.previewSprite;
                         }
                     }
+                    else if (graphicComponent.previewSprite != null)
+                    {
+                        GameObject spriteGO = new GameObject("PreviewSprite");
+                        spriteGO.transform.SetParent(transform);
+                        spriteGO.transform.localPosition = newInstancePosition + graphicComponent.IconOffset;
+                        spriteGO.transform.rotation = transform.rotation;
+                        spriteGO.transform.localScale = Vector3.one * graphicComponent.IconSize;
+                        SpriteRenderer sr = spriteGO.AddComponent<SpriteRenderer>();
+                        sr.sprite = graphicComponent.previewSprite;
+                        graphicComponent.SetInstantiatedIcon(spriteGO);
+                    }
                     if (graphicComponent.TextGUI != null)
                     {
                         graphicComponent.SetInstantiatedText(Instantiate(graphicComponent.TextGUI, newInstancePosition + graphicComponent.TextOffset, transform.rotation, transform));
                         graphicComponent.SetTextString(graphicComponent.text);
+
+                        if (graphicComponent.fontSize > 0f)
+                        {
+                            TMP_Text tmp = graphicComponent.GetInstantiatedText().GetComponentInChildren<TMP_Text>();
+                            if (tmp != null)
+                            {
+                                tmp.enableAutoSizing = false;
+                                tmp.fontSize = graphicComponent.fontSize;
+                            }
+                        }
                     }
                 }
 
                 positionList.Add(newInstancePosition);
                 newPositionList.Add(newInstancePosition);
                 currentPositionList.Add(newInstancePosition);
-                currentIconSizeList.Add(1f);
-                newIconSizeList.Add(1f);
+                currentIconSizeList.Add(graphicComponent.IconSize);
+                newIconSizeList.Add(graphicComponent.IconSize);
                 currentPanelSizeList.Add(1f);
                 newPanelSizeList.Add(1f);
             }

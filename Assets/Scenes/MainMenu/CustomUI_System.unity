@@ -1358,8 +1358,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DynamicTrackGroupPopulator
   panelPrefab: {fileID: 1425986839947724955, guid: 67cf72e6e06647a47b4e6b73bbe7be45, type: 3}
-  iconPrefab: {fileID: 1014520105036327642, guid: e4d5218d002e6ba469e08b661dea6809, type: 3}
-  textPrefab: {fileID: 8369334184204427710, guid: e5b6d52b70db52242a183791bfccd584, type: 3}
+  imageOffset: {x: 0, y: 0, z: -0.2}
+  targetImageWorldSize: 0.5
   nextGroupComponent: {fileID: 677944416}
 --- !u!114 &292307880 stripped
 MonoBehaviour:
@@ -6381,6 +6381,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1687320450}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &642240948 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+  m_PrefabInstance: {fileID: 1361860150}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e779b169458182b48b7c1295b83642a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &675279188 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
@@ -7252,7 +7263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e3b9722ed0277f46a599ce976dbe453, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextGroupComponent: {fileID: 292307880}
+  nextGroupComponent: {fileID: 642240948}
   onConfirm:
     m_PersistentCalls:
       m_Calls: []
@@ -11091,7 +11102,7 @@ GameObject:
   - component: {fileID: 2078941303}
   - component: {fileID: 2078941304}
   m_Layer: 0
-  m_Name: NavigateToPlayOptions
+  m_Name: NavigateTotrackSelection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11124,7 +11135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e3b9722ed0277f46a599ce976dbe453, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextGroupComponent: {fileID: 677944416}
+  nextGroupComponent: {fileID: 292307880}
   onConfirm:
     m_PersistentCalls:
       m_Calls: []
@@ -11342,6 +11353,14 @@ PrefabInstance:
       propertyPath: trackSceneDataList.Array.data[1].displayName
       value: SpaceTower
       objectReference: {fileID: 0}
+    - target: {fileID: 546066280509134150, guid: 66fd4fa56239d4242a88521fffe2c4f6, type: 3}
+      propertyPath: trackSceneDataList.Array.data[0].previewImage
+      value: 
+      objectReference: {fileID: 21300000, guid: 3eb671f8b87ed3d42b3250dd4c3b433c, type: 3}
+    - target: {fileID: 546066280509134150, guid: 66fd4fa56239d4242a88521fffe2c4f6, type: 3}
+      propertyPath: trackSceneDataList.Array.data[1].previewImage
+      value: 
+      objectReference: {fileID: 21300000, guid: 4bc422ef279c2f04c84d7210ee4b3792, type: 3}
     - target: {fileID: 783816978416713370, guid: 66fd4fa56239d4242a88521fffe2c4f6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

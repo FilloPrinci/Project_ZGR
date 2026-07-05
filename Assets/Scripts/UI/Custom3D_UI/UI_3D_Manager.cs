@@ -575,9 +575,25 @@ public class UI_3D_Manager : MonoBehaviour
         // if all players are ready
         if (canProceed)
         {
-            // TODO: select track
-            // for now let's skip to race start
             string raceTracSceneName = _raceSettings.GetSelectedRaceTrack();
+
+            bool sceneExists = false;
+            for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+            {
+                string path = SceneUtility.GetScenePathByBuildIndex(i);
+                if (System.IO.Path.GetFileNameWithoutExtension(path) == raceTracSceneName)
+                {
+                    sceneExists = true;
+                    break;
+                }
+            }
+
+            if (!sceneExists)
+            {
+                Debug.LogError($"[UI_3D_Manager] La scena '{raceTracSceneName}' non è in Build Settings! Aggiungila tramite File → Build Settings.");
+                return;
+            }
+
             SceneManager.LoadSceneAsync(raceTracSceneName);
         }
     }

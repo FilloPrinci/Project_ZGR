@@ -24,6 +24,7 @@ public class RaceSettings : MonoBehaviour
     private RaceMode selectedRaceMode = RaceMode.Test;
     private GlobalDifficulty selectedDifficulty = GlobalDifficulty.normal;
     private string selectedRaceTrack;
+    private string selectedRaceTrackDisplayName;
 
 
     private void Awake()
@@ -81,6 +82,11 @@ public class RaceSettings : MonoBehaviour
         return selectedRaceTrack;
     }
 
+    public string GetSelectedRaceTrackDisplayName()
+    {
+        return !string.IsNullOrEmpty(selectedRaceTrackDisplayName) ? selectedRaceTrackDisplayName : selectedRaceTrack;
+    }
+
     public List<PlayerData> GetAllPlayerDataList()
     {
         List<PlayerData> completePlayerDataList = new List<PlayerData>();
@@ -135,7 +141,9 @@ public class RaceSettings : MonoBehaviour
 
     public void OnRaceTrackSelect(int trackIndex)
     {
-        selectedRaceTrack = sceneReferences.trackSceneDataList[trackIndex].sceneName;
+        TrackSceneData trackData = sceneReferences.trackSceneDataList[trackIndex];
+        selectedRaceTrack = trackData.sceneName;
+        selectedRaceTrackDisplayName = trackData.displayName;
         Debug.Log("[RaceSettings] INFO: selected track set to " + selectedRaceTrack);
     }
 

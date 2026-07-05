@@ -7,13 +7,21 @@ public class CameraController : MonoBehaviour
     public float positionSmoothSpeed = 60f;
     public float rotationSmoothSpeed = 20f;
 
+    [Header("Countdown Camera")]
+    public Vector3 countdownPositionOffset = new Vector3(0f, -0.5f, 0.2f);
+    public float countdownPitchAngle = 3f;
+    public float raceTransitionDuration = 8f;
+
     private float deltaTime = 0;
+
+    private bool inCountdownMode = false;
+    private bool inTransition = false;
+    private float transitionElapsed = 0f;
+    private Vector3 transitionCurrentOffset = Vector3.zero;
 
     void Update()
     {
         deltaTime = Time.deltaTime;
-
-       
     }
 
     private void Start()
@@ -28,24 +36,59 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    private void LateUpdate()
+    public void EnterCountdownCameraMode()
     {
-        if ( cameraDesiredPosition == null) return;
-
-        Vector3 targetPosition = cameraDesiredPosition.position;
-
-        transform.position = targetPosition;
-
-        // Smoothly interpolate to the final rotation
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            cameraDesiredPosition.rotation,
-            1 - Mathf.Exp(-rotationSmoothSpeed * deltaTime)
-        );
+        inCountdownMode = true;
+        inTransition = false;
     }
 
-    float ExpDecay(float a, float b, float decay, float deltaTime)
+    public void ExitCountdownCameraMode()
     {
-        return Mathf.Lerp(a, b, 1 - Mathf.Exp(-decay * deltaTime));
+        inCountdownMode = false;
+        inTransition = true;
+        transitionElapsed = 0f;
+        transitionCurrentOffset = cameraDesiredPosition.TransformDirection(countdownPositionOffset);
+    }
+
+    private void LateUpdate()
+    {
+        if (cameraDesiredPosition == null) return;
+
+        if (inCountdownMode)
+        {
+            float yaw = cameraDesiredPosition.rotation.eulerAngles.y;
+            transform.SetPositionAndRotation(
+                cameraDesiredPosition.position + cameraDesiredPosition.TransformDirection(countdownPositionOffset),
+                Quaternion.Euler(countdownPitchAngle, yaw, 0f));
+        }
+        else if (inTransition)
+        {
+            transitionElapsed += deltaTime;
+            float t = Mathf.Clamp01(transitionElapsed / raceTransitionDuration);
+            float smooth = t * t * (3f - 2f * t);
+
+            float posSpeed = Mathf.Lerp(1f, 10f, smooth);
+            float rotSpeed = Mathf.Lerp(1f, rotationSmoothSpeed, smooth);
+
+            transitionCurrentOffset = Vector3.Lerp(transitionCurrentOffset, Vector3.zero, 1f - Mathf.Exp(-posSpeed * deltaTime));
+            transform.SetPositionAndRotation(
+                cameraDesiredPosition.position + transitionCurrentOffset,
+                Quaternion.Slerp(transform.rotation, cameraDesiredPosition.rotation, 1f - Mathf.Exp(-rotSpeed * deltaTime)));
+
+            if (t >= 1f)
+            {
+                inTransition = false;
+                transitionCurrentOffset = Vector3.zero;
+            }
+        }
+        else
+        {
+            transform.position = cameraDesiredPosition.position;
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                cameraDesiredPosition.rotation,
+                1 - Mathf.Exp(-rotationSmoothSpeed * deltaTime)
+            );
+        }
     }
 }

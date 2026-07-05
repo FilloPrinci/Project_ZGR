@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public enum RaceMode
 {
@@ -452,6 +453,9 @@ public class RaceManager : MonoBehaviour
             }
         }
 
+        ForEachHumanCameraController(cc => cc.EnterCountdownCameraMode());
+        StartCoroutine(FadeInPlayerCameras(0.5f));
+
         CountdownManager countdownManager = CountdownManager.Instance;
 
         if (countdownManager != null) {
@@ -461,7 +465,7 @@ public class RaceManager : MonoBehaviour
         }
         else
         {
-            // Skipping the countdown 
+            // Skipping the countdown
             TriggerRaceEvent(RacePhaseEvent.RaceStart);
         }
 
@@ -469,6 +473,8 @@ public class RaceManager : MonoBehaviour
 
     private void OnRaceStart()
     {
+        ForEachHumanCameraController(cc => cc.ExitCountdownCameraMode());
+
         AudioListener presentationCameraAudioListener = mainCamera.GetComponent<AudioListener>();
             if (presentationCameraAudioListener != null) {
             Destroy(presentationCameraAudioListener);
@@ -1507,5 +1513,50 @@ public class RaceManager : MonoBehaviour
             Debug.LogWarning($"[RaceManager] Checkpoint_{index:D3}: no CheckpointType component found. Add one to the prefab.");
     }
 #endif
+
+    private void ForEachHumanCameraController(System.Action<CameraController> action)
+    {
+        foreach (GameObject p in playerInstanceList)
+        {
+            PlayerController ctrl = p.GetComponent<PlayerController>();
+            if (ctrl == null || !ctrl.IsHuman()) continue;
+            Camera cam = ctrl.GetPlayerCamera();
+            if (cam == null) continue;
+            CameraController cc = cam.GetComponent<CameraController>();
+            if (cc != null) action(cc);
+        }
+    }
+
+    private IEnumerator FadeInPlayerCameras(float duration)
+    {
+        GameObject fadeGO = new GameObject("CountdownFadeIn");
+        Canvas canvas = fadeGO.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 500;
+        fadeGO.AddComponent<CanvasScaler>();
+
+        GameObject panel = new GameObject("FadePanel");
+        panel.transform.SetParent(fadeGO.transform, false);
+        Image img = panel.AddComponent<Image>();
+        img.color = Color.black;
+        RectTransform rect = img.rectTransform;
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.sizeDelta = Vector2.zero;
+
+        CanvasGroup cg = fadeGO.AddComponent<CanvasGroup>();
+        cg.alpha = 1f;
+        cg.blocksRaycasts = false;
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            cg.alpha = 1f - (elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        cg.alpha = 0f;
+        Destroy(fadeGO);
+    }
 
 }
