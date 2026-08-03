@@ -102,7 +102,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Scrolling:
-        m_Texture: {fileID: 2800000, guid: a69b482bb9112f043892e2cb36df9357, type: 3}
+        m_Texture: {fileID: 2800000, guid: a6f46770f95c5d246b527e372f4470c0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Smoothness:
@@ -146,9 +146,9 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
-    - _MetallicMultiplier: 0.3
+    - _MetallicMultiplier: 1
     - _NoiseMultiplier: 0
-    - _NormalMultiplier: 0
+    - _NormalMultiplier: 0.4
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0
@@ -156,7 +156,7 @@ Material:
     - _ReceiveShadows: 1
     - _Scale: 0
     - _Smoothness: 0.5
-    - _SmoothnessMultiplier: 0.9
+    - _SmoothnessMultiplier: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -166,7 +166,7 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _AlbedoMultiplier: {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 1}
+    - _AlbedoMultiplier: {r: 0.6132076, g: 0.6132076, b: 0.6132076, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
@@ -174,10 +174,10 @@ Material:
     - _Offset: {r: 0, g: 0, b: 0, a: 0}
     - _ScrollOffset: {r: 0, g: 0, b: 0, a: 0}
     - _ScrollSpeed: {r: 0, g: -1, b: 0, a: 0}
-    - _ScrollTiling: {r: 1, g: 4, b: 0, a: 0}
+    - _ScrollTiling: {r: 1, g: 8, b: 0, a: 0}
     - _ScrolledAlbedoMultiplier: {r: 0, g: 0, b: 0, a: 1}
     - _ScrolledEmissionMultiplier: {r: 0, g: 3.9999995, b: 1.7920778, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _Tiling: {r: 1, g: 2, b: 0, a: 0}
+    - _Tiling: {r: 1, g: 2.5, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
