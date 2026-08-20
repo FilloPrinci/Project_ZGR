@@ -134,6 +134,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3277258650045332553, guid: 1c12aab24f03cac4db39ff8411409559, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 3908989186168001215, guid: 1c12aab24f03cac4db39ff8411409559, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 7764686239469365431, guid: 1c12aab24f03cac4db39ff8411409559, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 8385348149202060318, guid: 1c12aab24f03cac4db39ff8411409559, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 8753046516151280429, guid: 1c12aab24f03cac4db39ff8411409559, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 7228619771791946108, guid: 1c12aab24f03cac4db39ff8411409559, type: 3}

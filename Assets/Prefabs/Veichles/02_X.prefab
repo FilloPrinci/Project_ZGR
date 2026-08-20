@@ -172,6 +172,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7454251041112410542}
     m_Modifications:
+    - target: {fileID: 81157819647196193, guid: bcd356d3cb3216f4d9f6e6d49369b4fa, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 3137526346335244032, guid: bcd356d3cb3216f4d9f6e6d49369b4fa, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 3601480355508892234, guid: bcd356d3cb3216f4d9f6e6d49369b4fa, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 5079206424747003560, guid: bcd356d3cb3216f4d9f6e6d49369b4fa, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -215,6 +227,14 @@ PrefabInstance:
     - target: {fileID: 5563959817277346834, guid: bcd356d3cb3216f4d9f6e6d49369b4fa, type: 3}
       propertyPath: m_Name
       value: 02_X_Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 5610932062626664782, guid: bcd356d3cb3216f4d9f6e6d49369b4fa, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 9154334565200919177, guid: bcd356d3cb3216f4d9f6e6d49369b4fa, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -253,6 +253,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4577449809383049447}
     m_Modifications:
+    - target: {fileID: 348564801145478838, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 1040760550795379954, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 1766078212555546700, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 2023270114374694915, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 2023270114374694915, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -261,6 +277,18 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 982869189e42d1845b92846470bdaf73, type: 2}
+    - target: {fileID: 2217955774316033669, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 2876259979588782952, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 5389799022908187463, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 5389799022908187463, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -320,6 +348,10 @@ PrefabInstance:
     - target: {fileID: 7584117980190526055, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744941300592216334, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
       objectReference: {fileID: 0}
     - target: {fileID: 7744941300592216334, guid: d75f9fbed99d9834a960f08eeb5305a9, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'

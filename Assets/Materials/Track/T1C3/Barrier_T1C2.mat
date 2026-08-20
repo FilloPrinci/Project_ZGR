@@ -18,7 +18,7 @@ Material:
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 1
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: 3001
   stringTagMap:
     RenderType: Transparent
   disabledShaderPasses:
@@ -51,7 +51,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _DetailTexture:
         m_Texture: {fileID: 2800000, guid: b490943e16993b24cb9548676180565d, type: 3}
-        m_Scale: {x: 2, y: 1}
+        m_Scale: {x: 4, y: 1}
         m_Offset: {x: 0, y: 0.25}
     - _EmissionMap:
         m_Texture: {fileID: 10305, guid: 0000000000000000f000000000000000, type: 0}
@@ -106,7 +106,7 @@ Material:
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
-    - _Blend: 0
+    - _Blend: 2
     - _BlendModePreserveSpecular: 0
     - _BumpScale: 1
     - _CastShadows: 0
@@ -116,20 +116,20 @@ Material:
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
-    - _DstBlend: 10
-    - _DstBlendAlpha: 10
+    - _DstBlend: 1
+    - _DstBlendAlpha: 1
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _H_Speed: -1.5
+    - _H_Speed: -1
     - _Lerp: 0
     - _Metallic: 0
     - _Mult: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0
-    - _QueueOffset: 0
+    - _QueueOffset: 1
     - _ReceiveShadows: 0
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0

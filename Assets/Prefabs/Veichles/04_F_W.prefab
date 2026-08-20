@@ -90,6 +90,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7891910914063474266}
     m_Modifications:
+    - target: {fileID: 844350678337036961, guid: 8b5f500bf710bad41a0e11c3f556f001, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 4624925165937432548, guid: 8b5f500bf710bad41a0e11c3f556f001, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 6587540830160107794, guid: 8b5f500bf710bad41a0e11c3f556f001, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 7139157390241593078, guid: 8b5f500bf710bad41a0e11c3f556f001, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 8360380542329942885, guid: 8b5f500bf710bad41a0e11c3f556f001, type: 3}
       propertyPath: m_Name
       value: 04_F_W_Model
