@@ -4,7 +4,7 @@ public class PlayerSoundManager : MonoBehaviour
 {
     private bool isHuman = false;
 
-    private VeichleSoundEffects soundEffects;
+    private VehicleSoundEffects soundEffects;
 
     private AudioSource engineAudioSource;
     private bool boostMode = false;
@@ -36,7 +36,7 @@ public class PlayerSoundManager : MonoBehaviour
         currentEnginePower = enginePower;
     }
 
-    public void Setup(bool isHuman, VeichleSoundEffects soundEffects)
+    public void Setup(bool isHuman, VehicleSoundEffects soundEffects)
     {
         this.isHuman = isHuman;
         this.soundEffects = soundEffects;

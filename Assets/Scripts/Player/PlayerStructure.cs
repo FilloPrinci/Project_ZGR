@@ -23,7 +23,7 @@ public class PlayerStructure : MonoBehaviour
 
     private GameObject canvasInstance;
     private GameObject pivotInstance;
-    private VeichleSoundEffects soundEffects;
+    private VehicleSoundEffects soundEffects;
     private PlayerUIMarkerSystem playerUIMarkerSystem;
 
     public GameObject GetCanvasInstance()
@@ -34,7 +34,7 @@ public class PlayerStructure : MonoBehaviour
     void Awake()
     {
         pivotInstance = Instantiate(pivotPrefab);
-        controller.veichlePivot = pivotInstance.transform;
+        controller.vehiclePivot = pivotInstance.transform;
         controller.playerData = data;
         controller.playerStructure = this;
 
@@ -42,7 +42,7 @@ public class PlayerStructure : MonoBehaviour
         {
             canvasInstance = Instantiate(canvasPrefab);
             canvasInstance.GetComponent<RaceGUI>().currentPlayer = gameObject;
-            playerCamera = SpawnCamera(pivotInstance.GetComponent<VeichleAnchors>().cameraPivot);
+            playerCamera = SpawnCamera(pivotInstance.GetComponent<VehicleAnchors>().cameraPivot);
 
             
             canvasInstance.GetComponent<Canvas>().worldCamera = playerCamera.GetComponent<Camera>();
@@ -50,10 +50,10 @@ public class PlayerStructure : MonoBehaviour
             canvasInstance.SetActive(false);
         }
 
-        soundEffects = pivotInstance.GetComponent<VeichleSoundEffects>();
+        soundEffects = pivotInstance.GetComponent<VehicleSoundEffects>();
     }
 
-    public VeichleSoundEffects GetSoundEffects()
+    public VehicleSoundEffects GetSoundEffects()
     {
         return soundEffects;
     }

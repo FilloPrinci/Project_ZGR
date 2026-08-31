@@ -57,7 +57,7 @@ public class RaceManager : MonoBehaviour
     public RaceMode mode;
     public List<PlayerData> playerDataList;
     public int maxLaps;
-    public  List<GameObject> avaiableVeichleList;
+    public  List<GameObject> avaiableVehicleList;
 
     [Header("Audio parameters")]
     public AudioSource sountrackAudioSource;
@@ -221,9 +221,9 @@ public class RaceManager : MonoBehaviour
                         Debug.LogWarning($"[RaceManager] : No more names available for CPU players. Assigning default name for CPU player {i}");
                     }
 
-                    int veichleIndex = UnityEngine.Random.Range(0, avaiableVeichleList.Count);
+                    int vehicleIndex = UnityEngine.Random.Range(0, avaiableVehicleList.Count);
 
-                    PlayerData cpuPlayerData = new PlayerData("CPU" + (i), avaiableVeichleList[veichleIndex], InputIndex.CPU, displayName);
+                    PlayerData cpuPlayerData = new PlayerData("CPU" + (i), avaiableVehicleList[vehicleIndex], InputIndex.CPU, displayName);
                     cpuPlayerData.SetCPUIndex(i);
                     playerDataList.Add(cpuPlayerData);
                 }
@@ -358,7 +358,7 @@ public class RaceManager : MonoBehaviour
             maxLaps = currentRaceSettings.laps;
             playerDataList = currentRaceSettings.GetAllPlayerDataList();
             mode = currentRaceSettings.GetSelectedRaceMode();
-            avaiableVeichleList = currentRaceSettings.veichlePrefabList;
+            avaiableVehicleList = currentRaceSettings.vehiclePrefabList;
             gameObject.GetComponent<RaceDifficultyManager>().difficulty = currentRaceSettings.GetSelectedDifficulty();
         }
 

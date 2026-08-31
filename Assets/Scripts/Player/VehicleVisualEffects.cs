@@ -12,7 +12,7 @@ public class GlowEffectSettings
     public Color glowColor;
 }
 
-public class VeichleVisualEffects : MonoBehaviour
+public class VehicleVisualEffects : MonoBehaviour
 {
     [Header("Material Filter")]
     public Shader targetShader;

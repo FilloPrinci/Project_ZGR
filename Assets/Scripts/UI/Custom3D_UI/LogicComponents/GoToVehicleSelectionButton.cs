@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GoToVeichleSelectionButton : Button
+public class GoToVehicleSelectionButton : Button
 {
     public int playersAmount = 1;
 
@@ -10,7 +10,7 @@ public class GoToVeichleSelectionButton : Button
         Debug.Log("Navigate to Vehicle Selection");
         if (_manager != null)
         {
-            _manager.StartVeichleSelection(playersAmount);
+            _manager.StartVehicleSelection(playersAmount);
             
         }
     }

@@ -2,7 +2,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VeichleEffects : MonoBehaviour
+public class VehicleEffects : MonoBehaviour
 {
     public GameObject particleEffect;
     public EngineFeedback engineFeedback;

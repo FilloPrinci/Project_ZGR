@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 public enum SelectionType
 {
-    Veichle,
+    Vehicle,
     Track,
     Mode
 }
@@ -25,11 +25,11 @@ public class SelectionManager : MonoBehaviour
     private RaceSettings currentRaceSettings;
     private SceneReferences sceneReferences;
     private GameSettings gameSettings;
-    private int veichleSelectedAmount = 0;
+    private int vehicleSelectedAmount = 0;
 
     private SelectionType[] selectionPhases = new SelectionType[]
     {
-        SelectionType.Veichle,
+        SelectionType.Vehicle,
         SelectionType.Track,
         SelectionType.Mode
     };
@@ -165,13 +165,13 @@ public class SelectionManager : MonoBehaviour
         }
     }
 
-    private void StartVeichleSelection() {
+    private void StartVehicleSelection() {
         if(gameSettings == null)
         {
             gameSettings = GameSettings.Instance;
         }
 
-        Debug.Log("[SelectionManager] INFO: Starting veichle selection phase");
+        Debug.Log("[SelectionManager] INFO: Starting vehicle selection phase");
 
         if (selectorList.Count == 0)
         {
@@ -220,7 +220,7 @@ public class SelectionManager : MonoBehaviour
         {
             if (selector != null)
             {
-                selector.SetActive(false); // Hide veichle selectors
+                selector.SetActive(false); // Hide vehicle selectors
             }
             else
             {
@@ -235,9 +235,9 @@ public class SelectionManager : MonoBehaviour
 
     public void StartSelection()
     {
-        if (currentSelectionPhase == SelectionType.Veichle)
+        if (currentSelectionPhase == SelectionType.Vehicle)
         {
-            StartVeichleSelection();
+            StartVehicleSelection();
         }
         else if (currentSelectionPhase == SelectionType.Track)
         {
@@ -248,22 +248,22 @@ public class SelectionManager : MonoBehaviour
         
     }
 
-    public void OnVeichleSelected()
+    public void OnVehicleSelected()
     {
-        veichleSelectedAmount++;
-        if (veichleSelectedAmount >= currentRaceSettings.inputPlayersAmount)
+        vehicleSelectedAmount++;
+        if (vehicleSelectedAmount >= currentRaceSettings.inputPlayersAmount)
         {
-            // All veichles selected, move to the next selection phase
+            // All vehicles selected, move to the next selection phase
             MoveToNextSelectionPhase();
         }
     }
 
-    public void OnVeichleUnselect()
+    public void OnVehicleUnselect()
     {
-        veichleSelectedAmount--;
-        if (veichleSelectedAmount < 0)
+        vehicleSelectedAmount--;
+        if (vehicleSelectedAmount < 0)
         {
-            veichleSelectedAmount = 0; // Prevent negative count
+            vehicleSelectedAmount = 0; // Prevent negative count
         }
     }
 

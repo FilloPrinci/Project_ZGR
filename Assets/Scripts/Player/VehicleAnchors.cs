@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class VeichleAnchors : MonoBehaviour
+public class VehicleAnchors : MonoBehaviour
 {
     public Transform pivot;
     public Transform cameraPivot;

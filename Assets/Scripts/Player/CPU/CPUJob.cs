@@ -18,7 +18,7 @@ public struct CPUJob : IJobParallelFor
     [ReadOnly] public float maxSpeed;
     [ReadOnly] public float lookAheadForwardMultiplier;
     [ReadOnly] public float lookAheadRightMultiplier;
-    [ReadOnly] public float lookAheadVeichleMultiplier;
+    [ReadOnly] public float lookAheadVehicleMultiplier;
     [ReadOnly] public float maxCheckpointTollerance;
     [ReadOnly] public float minCheckpointTollerance;
     [ReadOnly] public NativeArray<Vector3> positions;
@@ -47,7 +47,7 @@ public struct CPUJob : IJobParallelFor
     // Distances thresholds
     public float limitDistance;
     public float safeDistance;
-    public float otherVeichleSafeDistance;
+    public float otherVehicleSafeDistance;
 
     // =========================
     // ENUM DEFINITIONS
@@ -140,7 +140,7 @@ public struct CPUJob : IJobParallelFor
         NativeArray<Vector3> otherCPUpositions = new NativeArray<Vector3>();
         otherCPUpositions = RemoveAt(positions, index, Allocator.Temp);
 
-        Vector3 nearestPlayerSensorPosition = vehiclePosition + (forward * speedFactor * lookAheadVeichleMultiplier);
+        Vector3 nearestPlayerSensorPosition = vehiclePosition + (forward * speedFactor * lookAheadVehicleMultiplier);
 
         Vector3 nearestPlayer = NearestPointFromList(nearestPlayerSensorPosition, otherCPUpositions);
         float nearestPlayerHOffset = float.MaxValue;
@@ -151,9 +151,9 @@ public struct CPUJob : IJobParallelFor
         }
 
         // check and avoid collision with other player if cpu level is > 2
-        if (Mathf.Abs(nearestPlayerHOffset) < otherVeichleSafeDistance && cpuLevel > 2)
+        if (Mathf.Abs(nearestPlayerHOffset) < otherVehicleSafeDistance && cpuLevel > 2)
         {
-            float steerFactor = ComputeDistanceFactorEasy(nearestPlayerHOffset * nearestPlayerHOffset, otherVeichleSafeDistance);
+            float steerFactor = ComputeDistanceFactorEasy(nearestPlayerHOffset * nearestPlayerHOffset, otherVehicleSafeDistance);
 
             if(nearestPlayerHOffset > 0f)
             {

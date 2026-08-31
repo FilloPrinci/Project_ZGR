@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 2146168348288732619}
   - component: {fileID: 3290600673439278925}
   m_Layer: 0
-  m_Name: TestVeichle
+  m_Name: TestVehicle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -172,7 +172,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: caf23174fe732de4cb46623435702892, type: 2}
     - target: {fileID: 919132149155446097, guid: 177a58d6f6f34c948b7d5c7a5e43ca8d, type: 3}
       propertyPath: m_Name
-      value: Veichle_01
+      value: Vehicle_01
       objectReference: {fileID: 0}
     - target: {fileID: 1592858093979481046, guid: 177a58d6f6f34c948b7d5c7a5e43ca8d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'

@@ -1817,7 +1817,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: OnVeichleSelected
+      value: OnVehicleSelected
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
@@ -1849,7 +1849,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4415591399233122766, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_Name
-      value: VeichleSelector_3
+      value: VehicleSelector_3
       objectReference: {fileID: 0}
     - target: {fileID: 4536793443373279285, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: playerIndex
@@ -4770,7 +4770,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: OnVeichleSelected
+      value: OnVehicleSelected
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
@@ -4802,7 +4802,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4415591399233122766, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_Name
-      value: VeichleSelector_2
+      value: VehicleSelector_2
       objectReference: {fileID: 0}
     - target: {fileID: 4536793443373279285, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: playerIndex
@@ -11156,7 +11156,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[14].m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: OnVeichleSelected
+      value: OnVehicleSelected
       objectReference: {fileID: 0}
     - target: {fileID: 1436301037151036804, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_ActionEvents.Array.data[15].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
@@ -11188,7 +11188,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4415591399233122766, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_Name
-      value: VeichleSelector_4
+      value: VehicleSelector_4
       objectReference: {fileID: 0}
     - target: {fileID: 4536793443373279285, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: playerIndex
@@ -11968,11 +11968,11 @@ MonoBehaviour:
   totalPlayersAmount: 10
   laps: 3
   cpuPlayerDataList: []
-  veichlePrefabList:
+  vehiclePrefabList:
   - {fileID: 3346691742127910471, guid: 707e6ec3d45ef77418c41b948a5920d4, type: 3}
   - {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
   - {fileID: 4699924895700797138, guid: a3bb4ad6c635fd44dac73aa2e5772f91, type: 3}
-  defaultVeichleIndex: 0
+  defaultVehicleIndex: 0
   defaultRaceTrackIndex: 1
 --- !u!4 &1650133777
 Transform:
@@ -13155,18 +13155,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4415591399233122766, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: m_Name
-      value: VeichleSelector_1
+      value: VehicleSelector_1
       objectReference: {fileID: 0}
     - target: {fileID: 4536793443373279285, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
       propertyPath: scaleFactor
       value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 4536793443373279285, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
-      propertyPath: veichlePrefabList.Array.size
+      propertyPath: vehiclePrefabList.Array.size
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4536793443373279285, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
-      propertyPath: 'veichlePrefabList.Array.data[2]'
+      propertyPath: 'vehiclePrefabList.Array.data[2]'
       value: 
       objectReference: {fileID: 3416946221655606573, guid: 1d78c1a18cc5e964da0b851a9e8983b2, type: 3}
     - target: {fileID: 6290624711345801424, guid: 9e5181419502c8743ace3b1310b910db, type: 3}
@@ -13313,7 +13313,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1958967651}
   m_Layer: 0
-  m_Name: VeichleSelection
+  m_Name: VehicleSelection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

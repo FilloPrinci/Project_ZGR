@@ -18,11 +18,11 @@ public class CPUManager : MonoBehaviour
 
     public float forwardLookAheadMultiplier = 10f;
     public float forwardLookSteerMultiplier = 2f;
-    public float forwardLookotherVeichlesMultiplier = 1.5f;
+    public float forwardLookotherVehiclesMultiplier = 1.5f;
 
     public float borderLimitDistance = 2f;
     public float borderSafeDistance = 6f;
-    public float otherVeichleSafeDistance = 3f;
+    public float otherVehicleSafeDistance = 3f;
 
     public float maxCheckpointTollerance = 5f;
     public float minCheckpointTollerance = 1f;
@@ -207,11 +207,11 @@ public class CPUManager : MonoBehaviour
             Gizmos.color = new Color(0f, 1f, 0f, 0.25f);
             Gizmos.DrawWireSphere(forwardSensorPoistion, scaledSafe);
 
-            Vector3 forwardOtherVeichleSensorPosition = carPos + (forward * speedFactor * forwardLookotherVeichlesMultiplier);
+            Vector3 forwardOtherVehicleSensorPosition = carPos + (forward * speedFactor * forwardLookotherVehiclesMultiplier);
 
-            // Other veichle safe zone
+            // Other vehicle safe zone
             Gizmos.color = new Color(0.9f, 0.1f, 0.1f, 0.25f);
-            Gizmos.DrawWireSphere(forwardOtherVeichleSensorPosition, otherVeichleSafeDistance);
+            Gizmos.DrawWireSphere(forwardOtherVehicleSensorPosition, otherVehicleSafeDistance);
         }
     }
     #endregion
@@ -324,7 +324,7 @@ public class CPUManager : MonoBehaviour
             positions = positions,
             lookAheadForwardMultiplier = forwardLookAheadMultiplier,
             lookAheadRightMultiplier = forwardLookSteerMultiplier,
-            lookAheadVeichleMultiplier = forwardLookotherVeichlesMultiplier,
+            lookAheadVehicleMultiplier = forwardLookotherVehiclesMultiplier,
             maxCheckpointTollerance = maxCheckpointTollerance,
             minCheckpointTollerance = minCheckpointTollerance,
             forwardDirections = forwardDirections,
@@ -351,7 +351,7 @@ public class CPUManager : MonoBehaviour
 
             limitDistance = borderLimitDistance,
             safeDistance = borderSafeDistance,
-            otherVeichleSafeDistance = otherVeichleSafeDistance
+            otherVehicleSafeDistance = otherVehicleSafeDistance
         };
 
         JobHandle handle = job.Schedule(cpuCount, 10);

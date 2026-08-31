@@ -19,7 +19,7 @@ enum SlectionDirection
 enum SelectionPhase
 {
     Menu,
-    Veichle,
+    Vehicle,
     Track
 }
 
@@ -72,25 +72,25 @@ public class UI_3D_Manager : MonoBehaviour
     public float cameraMoveSpeed = 5f;
     public float cameraRotateSpeed = 5f;
     public Transform cameraDefaultPosition;
-    public Transform cameraVeichleSelectionPosition;
-    public Transform cameraVeichleSelectionPosition_1P;
-    public Transform cameraVeichleSelectionPosition_2P;
-    public Transform cameraVeichleSelectionPosition_3P;
-    public Transform cameraVeichleSelectionPosition_4P;
+    public Transform cameraVehicleSelectionPosition;
+    public Transform cameraVehicleSelectionPosition_1P;
+    public Transform cameraVehicleSelectionPosition_2P;
+    public Transform cameraVehicleSelectionPosition_3P;
+    public Transform cameraVehicleSelectionPosition_4P;
 
     [Header("Audio")]
     public MenuSoundManager menuSoundManager;
 
-    [Header("Veichle Selection")]
-    public GameObject veichleSelectionPrefab;
-    public List<Transform> veichleSelectionPositionList;
+    [Header("Vehicle Selection")]
+    public GameObject vehicleSelectionPrefab;
+    public List<Transform> vehicleSelectionPositionList;
     
 
     private SelectionPhase selectionPhase = SelectionPhase.Menu;
 
     private UI_GroupComponent Current_UI_GroupCompoment;
     private List<UI_GroupComponent> UI_GroupComponent_Stack;
-    private List<GameObject> veichleSelectorInstanceList;
+    private List<GameObject> vehicleSelectorInstanceList;
 
     private RaceSettings _raceSettings;
     private GameSettings _gameSettings;
@@ -278,12 +278,12 @@ public class UI_3D_Manager : MonoBehaviour
                 UpdateOverlay();
             }
         }
-        else if (selectionPhase == SelectionPhase.Veichle) {
-            if (veichleSelectorInstanceList.Count > 0)
+        else if (selectionPhase == SelectionPhase.Vehicle) {
+            if (vehicleSelectorInstanceList.Count > 0)
             {
-                GameObject playerVeichleSelector = veichleSelectorInstanceList[playerIndex];
-                if (playerVeichleSelector != null) {
-                    playerVeichleSelector.GetComponent<UI_3D_VeichleSelector>().SelectRight();
+                GameObject playerVehicleSelector = vehicleSelectorInstanceList[playerIndex];
+                if (playerVehicleSelector != null) {
+                    playerVehicleSelector.GetComponent<UI_3D_VehicleSelector>().SelectRight();
                     
                 }
             }
@@ -304,13 +304,13 @@ public class UI_3D_Manager : MonoBehaviour
                 UpdateOverlay();
             }
         }
-        else if (selectionPhase == SelectionPhase.Veichle)
+        else if (selectionPhase == SelectionPhase.Vehicle)
         {
-            if (veichleSelectorInstanceList.Count > 0) {
-                GameObject playerVeichleSelector = veichleSelectorInstanceList[playerIndex];
-                if (playerVeichleSelector != null)
+            if (vehicleSelectorInstanceList.Count > 0) {
+                GameObject playerVehicleSelector = vehicleSelectorInstanceList[playerIndex];
+                if (playerVehicleSelector != null)
                 {
-                    playerVeichleSelector.GetComponent<UI_3D_VeichleSelector>().SelectLeft();
+                    playerVehicleSelector.GetComponent<UI_3D_VehicleSelector>().SelectLeft();
                 }
             }
         }
@@ -363,14 +363,14 @@ public class UI_3D_Manager : MonoBehaviour
                 UpdateOverlay();
             }
         }
-        else if (selectionPhase == SelectionPhase.Veichle)
+        else if (selectionPhase == SelectionPhase.Vehicle)
         {
-            if (veichleSelectorInstanceList.Count > 0)
+            if (vehicleSelectorInstanceList.Count > 0)
             {
-                GameObject playerVeichleSelector = veichleSelectorInstanceList[playerIndex];
-                if (playerVeichleSelector != null)
+                GameObject playerVehicleSelector = vehicleSelectorInstanceList[playerIndex];
+                if (playerVehicleSelector != null)
                 {
-                    playerVeichleSelector.GetComponent<UI_3D_VeichleSelector>().ConfirmSelection();
+                    playerVehicleSelector.GetComponent<UI_3D_VehicleSelector>().ConfirmSelection();
                 }
             }
         }
@@ -424,28 +424,28 @@ public class UI_3D_Manager : MonoBehaviour
 
             UpdateOverlay();
         }
-        else if (selectionPhase == SelectionPhase.Veichle)
+        else if (selectionPhase == SelectionPhase.Vehicle)
         {
-            if (veichleSelectorInstanceList.Count > 0)
+            if (vehicleSelectorInstanceList.Count > 0)
             {
-                GameObject playerVeichleSelector = veichleSelectorInstanceList[playerIndex];
-                if (playerVeichleSelector != null)
+                GameObject playerVehicleSelector = vehicleSelectorInstanceList[playerIndex];
+                if (playerVehicleSelector != null)
                 {
-                    playerVeichleSelector.GetComponent<UI_3D_VeichleSelector>().CancelSelection();
+                    playerVehicleSelector.GetComponent<UI_3D_VehicleSelector>().CancelSelection();
                 }
             }
         }
     }
 
-    public void ManageBackFromVeichleSelection(int playerIndex)
+    public void ManageBackFromVehicleSelection(int playerIndex)
     {
         ShowAllPreviousSelection();
 
-        if (veichleSelectorInstanceList.Count > 0)
+        if (vehicleSelectorInstanceList.Count > 0)
         {
-            for (int i = 0; i < veichleSelectorInstanceList.Count; i++)
+            for (int i = 0; i < vehicleSelectorInstanceList.Count; i++)
             {
-                DestroyImmediate(veichleSelectorInstanceList[i]);
+                DestroyImmediate(vehicleSelectorInstanceList[i]);
             }
             selectionPhase = SelectionPhase.Menu;
             ManageBackSelection(playerIndex);
@@ -471,7 +471,7 @@ public class UI_3D_Manager : MonoBehaviour
         
     }
 
-    public void StartVeichleSelection(int playersAmount = 1)
+    public void StartVehicleSelection(int playersAmount = 1)
     {
 
         if(_raceSettings != null)
@@ -500,73 +500,73 @@ public class UI_3D_Manager : MonoBehaviour
         UI_GroupComponent_Stack.Add(Current_UI_GroupCompoment);
         Current_UI_GroupCompoment = null;
 
-        // Show Veichle selection
+        // Show Vehicle selection
 
-        if(veichleSelectorInstanceList == null)
+        if(vehicleSelectorInstanceList == null)
         {
-            veichleSelectorInstanceList = new List<GameObject>();
+            vehicleSelectorInstanceList = new List<GameObject>();
         }
         else
         {
-            if (veichleSelectorInstanceList.Count > 0)
+            if (vehicleSelectorInstanceList.Count > 0)
             {
-                veichleSelectorInstanceList.Clear();
+                vehicleSelectorInstanceList.Clear();
             }
         }
         
         for (int i = 0; i < playersAmount; i++)
         {
 
-            GameObject veichleSelectionInstance = Instantiate(veichleSelectionPrefab, veichleSelectionPositionList[i]);
-            veichleSelectionInstance.GetComponent<UI_3D_VeichleSelector>().SetMainCamera(mainCamera);
-            veichleSelectionInstance.GetComponent<UI_3D_VeichleSelector>().playerIndex = i;
-            veichleSelectorInstanceList.Add(veichleSelectionInstance);
+            GameObject vehicleSelectionInstance = Instantiate(vehicleSelectionPrefab, vehicleSelectionPositionList[i]);
+            vehicleSelectionInstance.GetComponent<UI_3D_VehicleSelector>().SetMainCamera(mainCamera);
+            vehicleSelectionInstance.GetComponent<UI_3D_VehicleSelector>().playerIndex = i;
+            vehicleSelectorInstanceList.Add(vehicleSelectionInstance);
         }
 
        
-        Vector3 updatedVeichleCameraPosition = cameraVeichleSelectionPosition.position;
-        Quaternion updatedVeichleCameraRotation = cameraVeichleSelectionPosition.rotation;
+        Vector3 updatedVehicleCameraPosition = cameraVehicleSelectionPosition.position;
+        Quaternion updatedVehicleCameraRotation = cameraVehicleSelectionPosition.rotation;
 
         if (playersAmount == 1)
         {
-            updatedVeichleCameraPosition = cameraVeichleSelectionPosition_1P.position;
-            updatedVeichleCameraRotation = cameraVeichleSelectionPosition_1P.rotation;
+            updatedVehicleCameraPosition = cameraVehicleSelectionPosition_1P.position;
+            updatedVehicleCameraRotation = cameraVehicleSelectionPosition_1P.rotation;
         }else if (playersAmount == 2)
         {
-            updatedVeichleCameraPosition = cameraVeichleSelectionPosition_2P.position;
-            updatedVeichleCameraRotation = cameraVeichleSelectionPosition_2P.rotation;
+            updatedVehicleCameraPosition = cameraVehicleSelectionPosition_2P.position;
+            updatedVehicleCameraRotation = cameraVehicleSelectionPosition_2P.rotation;
         }
         else if (playersAmount == 3)
         {
-            updatedVeichleCameraPosition = cameraVeichleSelectionPosition_3P.position;
-            updatedVeichleCameraRotation = cameraVeichleSelectionPosition_3P.rotation;
+            updatedVehicleCameraPosition = cameraVehicleSelectionPosition_3P.position;
+            updatedVehicleCameraRotation = cameraVehicleSelectionPosition_3P.rotation;
         }
         else if (playersAmount == 4)
         {
-            updatedVeichleCameraPosition = cameraVeichleSelectionPosition_4P.position;
-            updatedVeichleCameraRotation = cameraVeichleSelectionPosition_4P.rotation;
+            updatedVehicleCameraPosition = cameraVehicleSelectionPosition_4P.position;
+            updatedVehicleCameraRotation = cameraVehicleSelectionPosition_4P.rotation;
         }
 
-        updatedVeichleCameraPosition = CalculateCameraVeichlePosition(veichleSelectionPositionList[0].position, veichleSelectionPositionList[playersAmount - 1].position, updatedVeichleCameraPosition);
+        updatedVehicleCameraPosition = CalculateCameraVehiclePosition(vehicleSelectionPositionList[0].position, vehicleSelectionPositionList[playersAmount - 1].position, updatedVehicleCameraPosition);
 
         // Move Camera
-        desideredCameraPosition = updatedVeichleCameraPosition;
-        desideredCameraRotation = updatedVeichleCameraRotation;
+        desideredCameraPosition = updatedVehicleCameraPosition;
+        desideredCameraRotation = updatedVehicleCameraRotation;
 
-        selectionPhase = SelectionPhase.Veichle;
+        selectionPhase = SelectionPhase.Vehicle;
 
         HideAllPreviousSelection();
     }
 
-    public void OnVeichleSelectionReady()
+    public void OnVehicleSelectionReady()
     {
         // check if all players are ready to proceed
         bool canProceed = true;
 
-        for (int i = 0; i < veichleSelectorInstanceList.Count; i++)
+        for (int i = 0; i < vehicleSelectorInstanceList.Count; i++)
         {
 
-            if (!veichleSelectorInstanceList[i].GetComponent<UI_3D_VeichleSelector>().selectionCompleted)
+            if (!vehicleSelectorInstanceList[i].GetComponent<UI_3D_VehicleSelector>().selectionCompleted)
             {
                 canProceed = false;
             }
@@ -598,7 +598,7 @@ public class UI_3D_Manager : MonoBehaviour
         }
     }
 
-    private Vector3 CalculateCameraVeichlePosition(Vector3 firstPosition, Vector3 lastPosition, Vector3 defaultPosition)
+    private Vector3 CalculateCameraVehiclePosition(Vector3 firstPosition, Vector3 lastPosition, Vector3 defaultPosition)
     {
         Vector3 origin = firstPosition;
         Vector3 avgPosition = (lastPosition - firstPosition) / 2;

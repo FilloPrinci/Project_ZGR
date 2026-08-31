@@ -11,8 +11,8 @@ public class RaceSettings : MonoBehaviour
     public int inputPlayersAmount = 1;
     public int totalPlayersAmount = 10;
     public List<PlayerData> cpuPlayerDataList;
-    public List<GameObject> veichlePrefabList;
-    public int defaultVeichleIndex = 0;
+    public List<GameObject> vehiclePrefabList;
+    public int defaultVehicleIndex = 0;
     
 
     [Header("Race")]
@@ -48,9 +48,9 @@ public class RaceSettings : MonoBehaviour
         inputPlayerDataList = new List<PlayerData>();
         selectedRaceTrack = sceneReferences.trackSceneDataList[defaultRaceTrackIndex].sceneName;
 
-        if (veichlePrefabList.Count == 0)
+        if (vehiclePrefabList.Count == 0)
         {
-            Debug.LogError("[RaceSettings] ERROR: veichlePrefabList is empty");
+            Debug.LogError("[RaceSettings] ERROR: vehiclePrefabList is empty");
             return;
         }
     }
@@ -99,7 +99,7 @@ public class RaceSettings : MonoBehaviour
     public void OnSinglePlayerSelect()
     {
         inputPlayersAmount = 1;
-        PlayerData inputPlayerData = new PlayerData("Player1", veichlePrefabList[defaultVeichleIndex], InputIndex.HID0);
+        PlayerData inputPlayerData = new PlayerData("Player1", vehiclePrefabList[defaultVehicleIndex], InputIndex.HID0);
         inputPlayerDataList.Add(inputPlayerData);
     }
 
@@ -126,17 +126,17 @@ public class RaceSettings : MonoBehaviour
 
         for (int i = 0; i < inputPlayersAmount; i++) {
             string playerName = $"Player{i + 1}";
-            GameObject playrVeichle = veichlePrefabList[defaultVeichleIndex];
+            GameObject playrVehicle = vehiclePrefabList[defaultVehicleIndex];
             InputIndex playerInputIndex = (InputIndex)i;
-            PlayerData inputPlayerData = new PlayerData(playerName, playrVeichle, playerInputIndex);
+            PlayerData inputPlayerData = new PlayerData(playerName, playrVehicle, playerInputIndex);
 
             inputPlayerDataList.Add(inputPlayerData);
         }
     }
 
-    public void OnVeichleSelect(int playerIndex, int veichleIndex)
+    public void OnVehicleSelect(int playerIndex, int vehicleIndex)
     {
-        inputPlayerDataList[playerIndex].veichlePrefab = veichlePrefabList[veichleIndex];
+        inputPlayerDataList[playerIndex].vehiclePrefab = vehiclePrefabList[vehicleIndex];
     }
 
     public void OnRaceTrackSelect(int trackIndex)
@@ -147,10 +147,10 @@ public class RaceSettings : MonoBehaviour
         Debug.Log("[RaceSettings] INFO: selected track set to " + selectedRaceTrack);
     }
 
-    public void SetSelectedVeichleForPlayer(int playerIndex, GameObject veichlePrefab)
+    public void SetSelectedVehicleForPlayer(int playerIndex, GameObject vehiclePrefab)
     {
-        inputPlayerDataList[playerIndex].veichlePrefab = veichlePrefab;
-        Debug.Log("[RaceSettings] INFO: player " + inputPlayerDataList[playerIndex].nameId + " has selected veichle " + veichlePrefab.name);
+        inputPlayerDataList[playerIndex].vehiclePrefab = vehiclePrefab;
+        Debug.Log("[RaceSettings] INFO: player " + inputPlayerDataList[playerIndex].nameId + " has selected vehicle " + vehiclePrefab.name);
     }
 
     public void ResetSettings()

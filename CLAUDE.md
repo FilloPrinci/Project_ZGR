@@ -17,7 +17,7 @@ Gioco di corse arcade multiplayer (1-4 giocatori) con supporto gamepad e tastier
 - **Singleton**: `RaceManager`, `GameSettings`, `RaceSettings`, `SceneReferences`, `SelectionManager`, `UI_3D_Manager`, `CountdownManager`, `CPUInputHandlerManager`
 - **Unity Jobs**: `CPUJob : IJobParallelFor` per AI parallela a 10Hz
 - **Exponential Decay**: `Utils.ExpDecay()` usato pervasivamente per interpolazioni smooth (posizione, rotazione, FOV, scale)
-- **MaterialPropertyBlock**: Glow dinamico senza istanze materiale (`VeichleVisualEffects`)
+- **MaterialPropertyBlock**: Glow dinamico senza istanze materiale (`VehicleVisualEffects`)
 - **Coroutines**: Animazioni menu, countdown, ranking update, effetti audio/visivi
 
 ### Flusso Principale
@@ -61,11 +61,11 @@ Startup → GameSettings/RaceSettings (DontDestroyOnLoad)
 |--------|-------|
 | `PlayerController.cs` ★ | Core controller (944 LOC); hover magnetico, steering, collisioni, turbo, rubber-band |
 | `PlayerStructure.cs` | Container componenti giocatore; istanzia pivot, camera, canvas |
-| `VeichleAnchors.cs` | Punti ancoraggio camera (normale, turbo, post-gara) |
-| `VeichleEffects.cs` | Particelle motore scalate su potenza |
-| `VeichleSoundEffects.cs` | Container AudioSource collisione/motore |
+| `VehicleAnchors.cs` | Punti ancoraggio camera (normale, turbo, post-gara) |
+| `VehicleEffects.cs` | Particelle motore scalate su potenza |
+| `VehicleSoundEffects.cs` | Container AudioSource collisione/motore |
 | `PlayersCollisionDetection.cs` | Solver collisioni iterativo (3 iter) via `Physics.ComputePenetration()` |
-| `Veichle.cs` | Wrapper dati per prefab veicolo |
+| `Vehicle.cs` | Wrapper dati per prefab veicolo |
 
 **Hover System** (in `PlayerController`): raycast downward sulla `hoverRaycastMask`, mantiene `hoverHeight` dal suolo con forza magnetica simulata.
 
@@ -74,7 +74,7 @@ Startup → GameSettings/RaceSettings (DontDestroyOnLoad)
 | Script | Scopo |
 |--------|-------|
 | `FeedBackManager.cs` | Centralizza tilt veicolo, shake camera, FOV dinamico, posizione camera turbo |
-| `VeichleVisualEffects.cs` | Effetti glow (collisione, ricarica energia) via `MaterialPropertyBlock` |
+| `VehicleVisualEffects.cs` | Effetti glow (collisione, ricarica energia) via `MaterialPropertyBlock` |
 | `EngineFeedback.cs` | Scala visiva modello motore in base a potenza e boost mode |
 | `PlayerSoundManager.cs` | Audio motore (pitch/volume), collisioni; spatial 3D per AI, 2D per umano |
 | `Speedometer.cs` | Velocità km/h calcolata ogni 0.1s con media mobile (3 campioni) |
@@ -99,7 +99,7 @@ Startup → GameSettings/RaceSettings (DontDestroyOnLoad)
 **AI Decision Logic** (in `CPUJob.Execute()`):
 - In curva: priorità sensori laterali (distanza confine left/right)
 - In rettilineo: priorità race-line (target 20m avanti sul checkpoint path)
-- Collision avoidance: devia se AI vicina entro `otherVeichleSafeDistance`
+- Collision avoidance: devia se AI vicina entro `otherVehicleSafeDistance`
 
 ### Gara (`Assets/Scripts/Race/`, `Assets/Scripts/Coutdown/`, `Assets/Scripts/Game/`)
 
@@ -124,9 +124,9 @@ Startup → GameSettings/RaceSettings (DontDestroyOnLoad)
 | `UI_GraphicComponent.cs` | Dati visivi elemento (Panel, Icon, Text) |
 | `UI_Logic_Component.cs` | Abstract base per logica menu |
 | `Button.cs` | Naviga a gruppo successivo o esegue onConfirm |
-| `GoToVeichleSelectionButton.cs` | Bottone specializzato per avviare selezione veicolo multiplayer |
+| `GoToVehicleSelectionButton.cs` | Bottone specializzato per avviare selezione veicolo multiplayer |
 | `LogicActions.cs` | Azioni menu: difficoltà, risoluzione, FPS cap, qualità, modalità input |
-| `UI_3D_VeichleSelector.cs` | Widget selezione veicolo singolo giocatore con rotazione e feedback visivo |
+| `UI_3D_VehicleSelector.cs` | Widget selezione veicolo singolo giocatore con rotazione e feedback visivo |
 | `RaceGUI.cs` | HUD gara: velocità, posizione, energia, item, pausa, risultati (469 LOC) |
 | `UIListManager.cs` | Tabella risultati finali |
 | `PlayerUIMarkerSystem.cs` | Marker altri giocatori con fade distanza e occlusione raycast |
@@ -223,10 +223,10 @@ enum CameraPositionMode { Normal, Turbo }
 
 ## Note Tecniche Importanti
 
-- **Typo nei nomi**: Molti identifier usano `Veichle` (non `Vehicle`) — mantenere per coerenza
+- **Naming veicolo**: gli identifier usano `Vehicle` (in precedenza era presente il typo `Veichle`, corretto in tutto il codebase il 2026-08-31 — mantenere `Vehicle` per coerenza)
 - **Split-screen**: `CameraManager.GetViewportRect()` calcola `Rect` viewport per 1P (full), 2P (left/right), 3P (top-left, top-right, bottom-full), 4P (quadranti)
 - **Rubber-banding**: `RaceDifficultyManager` usa `goFasterLevel`/`goSlowerLevel` per adattare moltiplicatori AI ogni secondo
 - **Energia**: in `PlayerStats`, mode `itemStats` usa item buffer (`Queue<ItemType>`, size 3); mode `energyOnlyStats` usa solo energia senza item
 - **Checkpoint generation**: `RaceManager.GenerateCheckpointsFromCurve()` è un metodo Editor (~1000 LOC) che genera checkpoint da CSV Blender
 - **Spatial audio**: AI usa 3D spatial blend, umani usano 2D; volume scalato su `playerAmount`
-- **Glow**: `VeichleVisualEffects` usa `MaterialPropertyBlock` — non crea istanze materiale, sicuro per performance
+- **Glow**: `VehicleVisualEffects` usa `MaterialPropertyBlock` — non crea istanze materiale, sicuro per performance

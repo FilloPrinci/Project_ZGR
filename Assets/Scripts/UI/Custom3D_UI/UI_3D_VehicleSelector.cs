@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.Rendering.RayTracingAccelerationStructure;
 
-public class UI_3D_VeichleSelector : MonoBehaviour
+public class UI_3D_VehicleSelector : MonoBehaviour
 {
     public int playerIndex = 0;
     public float rotationSpeed = 5.0f;
-    public float veichleScale = 0.2f;
-    public Transform veichleSpawnPosition;
+    public float vehicleScale = 0.2f;
+    public Transform vehicleSpawnPosition;
     public Transform pivotTransform;
     public Transform confirmTranform;
     public bool selectionCompleted = false;
@@ -22,10 +22,10 @@ public class UI_3D_VeichleSelector : MonoBehaviour
 
     private RaceSettings _settings;
     private UI_3D_Manager _manager;
-    private List<GameObject> availableVeichles;
-    private GameObject currentSelectedVeichleInstance;
+    private List<GameObject> availableVehicles;
+    private GameObject currentSelectedVehicleInstance;
 
-    private int currentSelectedVeichleIndex = 0;
+    private int currentSelectedVehicleIndex = 0;
     private GameObject mainCamera;
 
     private Renderer SelectorRenderer;
@@ -50,18 +50,18 @@ public class UI_3D_VeichleSelector : MonoBehaviour
         }
         else
         {
-            availableVeichles = _settings.veichlePrefabList;
+            availableVehicles = _settings.vehiclePrefabList;
 
             // spawn / show first veicchle
-            currentSelectedVeichleInstance = Instantiate(availableVeichles[currentSelectedVeichleIndex], veichleSpawnPosition);
-            currentSelectedVeichleInstance.transform.localScale = Vector3.one * veichleScale;
+            currentSelectedVehicleInstance = Instantiate(availableVehicles[currentSelectedVehicleIndex], vehicleSpawnPosition);
+            currentSelectedVehicleInstance.transform.localScale = Vector3.one * vehicleScale;
 
             if (HUD != null) {
-                HUD.transform.position = veichleSpawnPosition.position;
+                HUD.transform.position = vehicleSpawnPosition.position;
                 HUD_check.SetActive(false);
             }
 
-            pivotTransform.position = veichleSpawnPosition.position;
+            pivotTransform.position = vehicleSpawnPosition.position;
             pivotTransform.rotation = Quaternion.identity;
         }
 
@@ -88,18 +88,18 @@ public class UI_3D_VeichleSelector : MonoBehaviour
     {
         deltaTime = Time.deltaTime;
 
-        // rotate veichle
-        if (currentSelectedVeichleInstance != null)
+        // rotate vehicle
+        if (currentSelectedVehicleInstance != null)
         {
             pivotTransform.Rotate(Vector3.up, rotationSpeed * deltaTime);
 
             if (selectionCompleted)
             {
-                currentSelectedVeichleInstance.transform.rotation = Utils.ExpDecay(currentSelectedVeichleInstance.transform.rotation, confirmTranform.rotation, 3f, deltaTime);
+                currentSelectedVehicleInstance.transform.rotation = Utils.ExpDecay(currentSelectedVehicleInstance.transform.rotation, confirmTranform.rotation, 3f, deltaTime);
             }
             else
             {
-                currentSelectedVeichleInstance.transform.rotation = pivotTransform.rotation;
+                currentSelectedVehicleInstance.transform.rotation = pivotTransform.rotation;
 
                 
             }
@@ -108,27 +108,27 @@ public class UI_3D_VeichleSelector : MonoBehaviour
         }   
     }
 
-    void RefreshVeichleInstance()
+    void RefreshVehicleInstance()
     {
-        DestroyImmediate(currentSelectedVeichleInstance);
-        currentSelectedVeichleInstance = Instantiate(availableVeichles[currentSelectedVeichleIndex], veichleSpawnPosition);
-        currentSelectedVeichleInstance.transform.localScale = Vector3.one * veichleScale;
+        DestroyImmediate(currentSelectedVehicleInstance);
+        currentSelectedVehicleInstance = Instantiate(availableVehicles[currentSelectedVehicleIndex], vehicleSpawnPosition);
+        currentSelectedVehicleInstance.transform.localScale = Vector3.one * vehicleScale;
     }
 
     public void SelectRight()
     {
         if (!selectionCompleted)
         {
-            if (currentSelectedVeichleIndex < availableVeichles.Count - 1)
+            if (currentSelectedVehicleIndex < availableVehicles.Count - 1)
             {
-                currentSelectedVeichleIndex++;
+                currentSelectedVehicleIndex++;
             }
             else
             {
-                currentSelectedVeichleIndex = 0;
+                currentSelectedVehicleIndex = 0;
             }
 
-            RefreshVeichleInstance();
+            RefreshVehicleInstance();
         }
         
     }
@@ -138,16 +138,16 @@ public class UI_3D_VeichleSelector : MonoBehaviour
     {
         if (!selectionCompleted)
         {
-            if (currentSelectedVeichleIndex > 0)
+            if (currentSelectedVehicleIndex > 0)
             {
-                currentSelectedVeichleIndex--;
+                currentSelectedVehicleIndex--;
             }
             else
             {
-                currentSelectedVeichleIndex = availableVeichles.Count - 1;
+                currentSelectedVehicleIndex = availableVehicles.Count - 1;
             }
 
-            RefreshVeichleInstance();
+            RefreshVehicleInstance();
         }
     }
 
@@ -157,9 +157,9 @@ public class UI_3D_VeichleSelector : MonoBehaviour
         {
             selectionCompleted = true;
 
-            _settings.OnVeichleSelect(playerIndex, currentSelectedVeichleIndex);
+            _settings.OnVehicleSelect(playerIndex, currentSelectedVehicleIndex);
             HUD_check.SetActive(true);
-            _manager.OnVeichleSelectionReady();
+            _manager.OnVehicleSelectionReady();
 
             if(SelectorLightMaterial != null)
             {
@@ -182,7 +182,7 @@ public class UI_3D_VeichleSelector : MonoBehaviour
         }
         else
         {
-            _manager.ManageBackFromVeichleSelection(playerIndex);
+            _manager.ManageBackFromVehicleSelection(playerIndex);
         }
     }
 

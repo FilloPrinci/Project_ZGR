@@ -1476,7 +1476,7 @@ GameObject:
   - component: {fileID: 1728151273}
   - component: {fileID: 1728151274}
   m_Layer: 0
-  m_Name: VeichleSpawnPoint
+  m_Name: VehicleSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

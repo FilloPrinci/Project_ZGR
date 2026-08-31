@@ -42,7 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1988229309433029797}
   m_Layer: 0
-  m_Name: VeichleSpawnPoint
+  m_Name: VehicleSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,7 +74,7 @@ GameObject:
   - component: {fileID: 4237209557884971829}
   - component: {fileID: 8142328035311158199}
   m_Layer: 0
-  m_Name: UI_3D_VeichleSelector
+  m_Name: UI_3D_VehicleSelector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -113,8 +113,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerIndex: 0
   rotationSpeed: 50
-  veichleScale: 0.2
-  veichleSpawnPosition: {fileID: 1988229309433029797}
+  vehicleScale: 0.2
+  vehicleSpawnPosition: {fileID: 1988229309433029797}
   pivotTransform: {fileID: 1988229309433029797}
   confirmTranform: {fileID: 2737124380185762941}
   selectionCompleted: 0
@@ -581,7 +581,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 97b4d98281e55e74aa4820bca37a1bc0, type: 2}
     - target: {fileID: 919132149155446097, guid: f16fc56befcb4d44b886702154ac91e1, type: 3}
       propertyPath: m_Name
-      value: VeichleSelectorBase
+      value: VehicleSelectorBase
       objectReference: {fileID: 0}
     - target: {fileID: 1456271770618183520, guid: f16fc56befcb4d44b886702154ac91e1, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'

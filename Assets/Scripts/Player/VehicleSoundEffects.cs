@@ -14,7 +14,7 @@ public class CustomAudioEffect{
     public float desideredVolume = 1f;
 }
 
-public class VeichleSoundEffects : MonoBehaviour
+public class VehicleSoundEffects : MonoBehaviour
 {
     public CustomAudioEffect collisionEffect;
     public CustomAudioEffect engineEffect;

@@ -10,7 +10,7 @@ public enum MenuStepName
     PlayModeSelection,
     MultiplayerSetup,
     SinglePlayerSetup,
-    VeichleSelection
+    VehicleSelection
 }
 
 [System.Serializable]

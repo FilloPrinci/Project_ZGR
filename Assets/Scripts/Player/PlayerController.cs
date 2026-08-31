@@ -22,11 +22,11 @@ public class PlayerController : MonoBehaviour
     [Header("Component Setup")]
 
     public PlayerData playerData;
-    private GameObject veichleModelInstance;
+    private GameObject vehicleModelInstance;
     public PlayerStats playerStats;
     public PlayerStructure playerStructure;
     public PlayerSoundManager playerSoundManager;
-    public Transform veichlePivot;
+    public Transform vehiclePivot;
 
     [Header("Hover Settings")]
 
@@ -145,7 +145,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        veichleModelInstance = Instantiate(playerData.veichlePrefab, veichlePivot);
+        vehicleModelInstance = Instantiate(playerData.vehiclePrefab, vehiclePivot);
         feedBackManager = GetComponent<FeedBackManager>();
         globalInputManager = GlobalInputManager.Instance;
         raceManager = RaceManager.Instance;
@@ -176,8 +176,8 @@ public class PlayerController : MonoBehaviour
             currentRotation = transform.rotation;
             previousRotation = currentRotation;
 
-            veichlePivot.position = transform.position;
-            veichlePivot.rotation = transform.rotation;
+            vehiclePivot.position = transform.position;
+            vehiclePivot.rotation = transform.rotation;
         }
 
         if (raceManager != null)
@@ -223,7 +223,7 @@ public class PlayerController : MonoBehaviour
         // manage race steps
         if (raceManager.GetCurrentRacePhase() == RacePhase.Presentation)
         {
-            // place the veichle
+            // place the vehicle
             StartHoverEngine(enginePower, deltaTime, debugMode);
         }
         else if (raceManager.GetCurrentRacePhase() == RacePhase.CountDown)
@@ -268,8 +268,8 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
-        InterpolateVeichlePivotRotation();
-        veichlePivot.position = currentPosition;
+        InterpolateVehiclePivotRotation();
+        vehiclePivot.position = currentPosition;
 
     }
 
@@ -473,19 +473,19 @@ public class PlayerController : MonoBehaviour
         return GetCurrentRaceData().position;
     }
 
-    public GameObject GetVeichleModel()
+    public GameObject GetVehicleModel()
     {
-        return veichleModelInstance;
+        return vehicleModelInstance;
     }
 
-    public VeichleAnchors GetVeichleAnchors()
+    public VehicleAnchors GetVehicleAnchors()
     {
-        return veichlePivot.gameObject.GetComponent<VeichleAnchors>();
+        return vehiclePivot.gameObject.GetComponent<VehicleAnchors>();
     }
 
-    public GameObject GetVeichlePivot()
+    public GameObject GetVehiclePivot()
     {
-               return veichlePivot.gameObject;
+               return vehiclePivot.gameObject;
     }
 
     public void SetAutoDrive(bool autoDrive)
@@ -666,24 +666,24 @@ public class PlayerController : MonoBehaviour
         transform.localPosition += totalLocalMovement;
     }
 
-    private void InterpolateVeichlePivotRotation()
+    private void InterpolateVehiclePivotRotation()
     {
 
         // Smooth rotation using exponential decay on Quaternions
-        Quaternion currentRotationQuat = veichlePivot.rotation;
+        Quaternion currentRotationQuat = vehiclePivot.rotation;
         Quaternion targetRotationQuat = currentRotation;
 
         float t = 1f - Mathf.Exp(-pivotRotationDecay * deltaTime);
         Quaternion smoothedRotation = Quaternion.Slerp(currentRotationQuat, targetRotationQuat, t);
 
-        veichlePivot.rotation = smoothedRotation;
+        vehiclePivot.rotation = smoothedRotation;
     }
 
     private void SkipInterpolatePivotRotation()
     {
         Quaternion targetRotationQuat = currentRotation;
 
-        veichlePivot.rotation = targetRotationQuat;
+        vehiclePivot.rotation = targetRotationQuat;
     }
 
     private Vector3 OnUpadteCollisionDetected(Vector3 collisionExitDirection, float time)

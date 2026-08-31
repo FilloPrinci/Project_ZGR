@@ -427,7 +427,7 @@ GameObject:
   - component: {fileID: 4536793443373279285}
   - component: {fileID: 1436301037151036804}
   m_Layer: 0
-  m_Name: VeichleSelector
+  m_Name: VehicleSelector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -469,7 +469,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIndex: 0
-  shownVeichlePosition: {fileID: 7394146021269903167}
+  shownVehiclePosition: {fileID: 7394146021269903167}
   scaleFactor: 0.2
   selectionCheckIcon: {fileID: 3356814205963932318}
 --- !u!114 &1436301037151036804
@@ -552,7 +552,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 4536793443373279285}
-        m_TargetAssemblyTypeName: VeichleSelector, Assembly-CSharp
+        m_TargetAssemblyTypeName: VehicleSelector, Assembly-CSharp
         m_MethodName: OnSelectionConfirm
         m_Mode: 1
         m_Arguments:
@@ -589,7 +589,7 @@ GameObject:
   - component: {fileID: 7394146021269903167}
   - component: {fileID: 7390695174931548426}
   m_Layer: 0
-  m_Name: VeichlePivot
+  m_Name: VehiclePivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
