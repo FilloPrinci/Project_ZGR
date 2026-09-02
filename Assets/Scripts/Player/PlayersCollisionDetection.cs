@@ -104,14 +104,24 @@ public class PlayersCollisionDetection : MonoBehaviour
                         colB, colB.transform.position, colB.transform.rotation,
                         out Vector3 direction, out float distance))
                     {
-                        // Position separation: world-horizontal only.
-                        // Full 3D direction passed as collision normal so PlayerController
+                        // Position separation: strip the component along the vehicles' local
+                        // "up" axis (the track-normal axis owned by the hover system) instead
+                        // of world Y. On banked/rotated track sections world Y does not match
+                        // "vertical relative to the vehicle" — stripping world Y there discards
+                        // real lateral penetration instead of the redundant vertical one, so the
+                        // overlap never gets resolved. Use the averaged up of both vehicles as a
+                        // shared reference axis so the symmetric push stays consistent.
+                        // Full 3D direction is still passed as collision normal so PlayerController
                         // can project correctly in local space at any bank angle.
-                        Vector3 dirHoriz = new Vector3(direction.x, 0f, direction.z);
-                        if (dirHoriz.sqrMagnitude < 0.0001f) continue;
-                        dirHoriz.Normalize();
+                        Vector3 sharedUp = colA.transform.up + colB.transform.up;
+                        if (sharedUp.sqrMagnitude < 0.0001f) continue;
+                        sharedUp.Normalize();
 
-                        Vector3 separation = dirHoriz * (distance + penetrationEpsilon);
+                        Vector3 dirLateral = direction - sharedUp * Vector3.Dot(direction, sharedUp);
+                        if (dirLateral.sqrMagnitude < 0.0001f) continue;
+                        dirLateral.Normalize();
+
+                        Vector3 separation = dirLateral * (distance + penetrationEpsilon);
 
                         var pcA = colA.GetComponent<PlayerController>();
                         var pcB = colB.GetComponent<PlayerController>();
@@ -147,16 +157,20 @@ public class PlayersCollisionDetection : MonoBehaviour
                     trackMainCollider, trackMainCollider.transform.position, trackMainCollider.transform.rotation,
                     out Vector3 direction, out float distance))
                 {
-                    // Position separation: world-horizontal only, so we don't fight the hover system.
-                    // Collision normal passed to PlayerController is the full 3D direction — at non-flat
+                    // Position separation: strip the component along the vehicle's local "up" axis
+                    // (owned by the hover system) instead of world Y, so we don't fight the hover system
+                    // while still resolving penetration correctly on banked/rotated track sections — see
+                    // the PLAYER vs PLAYER pass above for why world Y is the wrong axis to strip there.
+                    // Collision normal passed to PlayerController stays the full 3D direction — at non-flat
                     // bank angles the world-Y component maps to local-X (lateral), so stripping it here
                     // would destroy the bounce/rotation signal. PlayerController filters via local-space
                     // projection (localExitVector.y = 0 removes the transform.up component correctly).
-                    Vector3 dirHoriz = new Vector3(direction.x, 0f, direction.z);
-                    if (dirHoriz.sqrMagnitude > 0.0001f)
+                    Vector3 up = playerCol.transform.up;
+                    Vector3 dirLateral = direction - up * Vector3.Dot(direction, up);
+                    if (dirLateral.sqrMagnitude > 0.0001f)
                     {
-                        dirHoriz.Normalize();
-                        playerCol.transform.position += dirHoriz * (distance + penetrationEpsilon);
+                        dirLateral.Normalize();
+                        playerCol.transform.position += dirLateral * (distance + penetrationEpsilon);
                     }
 
                     Vector3 collisionPoint = playerCol.transform.position + direction * distance * 0.5f;
