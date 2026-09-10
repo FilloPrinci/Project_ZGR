@@ -33,6 +33,16 @@ public class PlayersCollisionDetection : MonoBehaviour
     public int solverIterations = 3;
     public float penetrationEpsilon = 0.001f;
 
+    [Header("Collision Push Distribution (player vs player)")]
+    // Share of the separation distance absorbed (moved) by the vehicle WITH turbo,
+    // when only one of the two colliding vehicles is on turbo. The other vehicle
+    // absorbs (1 - this). Checked before the human/CPU rule below.
+    [Range(0f, 1f)] public float turboVehiclePushShare = 0.1f;
+    // Share of the separation distance absorbed (moved) by the human vehicle,
+    // when a human collides with a CPU and neither/both are on turbo (i.e. the
+    // turbo rule above didn't apply). The CPU vehicle absorbs (1 - this).
+    [Range(0f, 1f)] public float humanVehiclePushShare = 0.2f;
+
     void Start()
     {
         raceManager = RaceManager.Instance;
@@ -131,6 +141,29 @@ public class PlayersCollisionDetection : MonoBehaviour
 
                             float factorA = 0.5f;
                             float factorB = 0.5f;
+
+                            bool aTurbo = pcA.playerStats != null && pcA.playerStats.onTurbo;
+                            bool bTurbo = pcB.playerStats != null && pcB.playerStats.onTurbo;
+
+                            if (aTurbo != bTurbo)
+                            {
+                                // Only one of the two has turbo: it absorbs less of the push.
+                                factorA = aTurbo ? turboVehiclePushShare : 1f - turboVehiclePushShare;
+                                factorB = bTurbo ? turboVehiclePushShare : 1f - turboVehiclePushShare;
+                            }
+                            else
+                            {
+                                bool aHuman = pcA.IsHuman();
+                                bool bHuman = pcB.IsHuman();
+
+                                if (aHuman != bHuman)
+                                {
+                                    // Same turbo state, but one is human and the other CPU:
+                                    // the human absorbs less of the push.
+                                    factorA = aHuman ? humanVehiclePushShare : 1f - humanVehiclePushShare;
+                                    factorB = bHuman ? humanVehiclePushShare : 1f - humanVehiclePushShare;
+                                }
+                            }
 
                             colA.transform.position += separation * factorA;
                             colB.transform.position -= separation * factorB;
