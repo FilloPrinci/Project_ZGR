@@ -26,6 +26,19 @@ public class RaceSettings : MonoBehaviour
     private string selectedRaceTrack;
     private string selectedRaceTrackDisplayName;
 
+    [Header("Trophy / Points")]
+    // Points awarded for finishing in each position (index 0 = 1st place). Tune in Inspector.
+    public List<int> pointsTable = new List<int> { 15, 12, 10, 8, 6, 4, 2, 1 };
+
+    // CPU identity persistence: a CPU slot (cpuIndex) keeps the same name across races within
+    // the same session/trophy. Cleared in ResetSettings() (end of session, back to main menu).
+    private List<string> availableCPUNames; // null = not initialized yet
+    private Dictionary<int, string> cpuNameByIndex = new Dictionary<int, string>();
+
+    // Trophy points totals, keyed by PlayerData.nameId. Accumulates across races within a
+    // session/trophy; cleared in ResetSettings().
+    private Dictionary<string, int> totalPointsByPlayerId = new Dictionary<string, int>();
+
 
     private void Awake()
     {
@@ -161,5 +174,61 @@ public class RaceSettings : MonoBehaviour
         cpuPlayerDataList = new List<PlayerData>();
         inputPlayerDataList = new List<PlayerData>();
         selectedRaceMode = RaceMode.Test;
+
+        // End of session/trophy: forget CPU identities and accumulated points.
+        availableCPUNames = null;
+        cpuNameByIndex.Clear();
+        totalPointsByPlayerId.Clear();
+    }
+
+    // --- CPU identity persistence (see class header comment) ---
+
+    public void EnsureCPUNamePoolInitialized(List<string> allNames)
+    {
+        if (availableCPUNames == null)
+        {
+            availableCPUNames = new List<string>(allNames ?? new List<string>());
+        }
+    }
+
+    public string GetOrAssignCPUName(int cpuIndex, string fallbackName)
+    {
+        if (cpuNameByIndex.TryGetValue(cpuIndex, out string existing))
+        {
+            return existing;
+        }
+
+        string chosen = fallbackName;
+        if (availableCPUNames != null && availableCPUNames.Count > 0)
+        {
+            int nameIndex = UnityEngine.Random.Range(0, availableCPUNames.Count);
+            chosen = availableCPUNames[nameIndex];
+            availableCPUNames.RemoveAt(nameIndex);
+        }
+
+        cpuNameByIndex[cpuIndex] = chosen;
+        return chosen;
+    }
+
+    // --- Trophy points (see class header comment) ---
+
+    public int GetPointsForPosition(int position)
+    {
+        int index = position - 1;
+        return (index >= 0 && index < pointsTable.Count) ? pointsTable[index] : 0;
+    }
+
+    public void AddPointsForPlayer(string playerId, int points)
+    {
+        if (!totalPointsByPlayerId.ContainsKey(playerId))
+        {
+            totalPointsByPlayerId[playerId] = 0;
+        }
+        totalPointsByPlayerId[playerId] += points;
+    }
+
+    public int GetTotalPointsForPlayer(string playerId)
+    {
+        return totalPointsByPlayerId.TryGetValue(playerId, out int points) ? points : 0;
     }
 }

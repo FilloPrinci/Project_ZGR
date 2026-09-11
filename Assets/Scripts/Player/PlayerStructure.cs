@@ -76,7 +76,7 @@ public class PlayerStructure : MonoBehaviour
             }
         }
 
-        playerUIMarkerSystem.ManualInitialize(playerCamera.GetComponent<Camera>(), canvasInstance.GetComponent<RectTransform>(), targets);
+        playerUIMarkerSystem.ManualInitialize(playerCamera.GetComponent<Camera>(), canvasInstance.GetComponent<RectTransform>(), targets, controller);
 
     }
 

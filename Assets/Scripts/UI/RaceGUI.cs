@@ -314,16 +314,17 @@ public class RaceGUI : MonoBehaviour
                 string name = finalPlayerRaceDataList[i].playerData.displayName;
                 string totalTime = finalPlayerRaceDataList[i].GetTotalTime();
                 string bestTime = finalPlayerRaceDataList[i].GetBestLapTime();
+                string points = raceSettings != null ? raceSettings.GetPointsForPosition(position).ToString() : "0";
 
                 if (humanNameIdList.Contains(finalPlayerRaceDataList[i].playerData.nameId)){
-                    resultListManager.AddRow(new List<string>() { position.ToString(), name, totalTime, bestTime }, highlightColor);
+                    resultListManager.AddRow(new List<string>() { position.ToString(), name, totalTime, bestTime, points }, highlightColor);
                 }
                 else
                 {
-                    resultListManager.AddRow(new List<string>() { position.ToString(), name, totalTime, bestTime });
+                    resultListManager.AddRow(new List<string>() { position.ToString(), name, totalTime, bestTime, points });
                 }
 
-                
+
             }
 
             //resultString = GetRaceResultLines();

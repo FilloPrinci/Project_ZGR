@@ -40,8 +40,15 @@ public class PlayerUIMarkerSystem : MonoBehaviour
     [Header("Fade")]
     public float fadeSpeed = 5f;
 
+    [Header("Position Filter")]
+    // Only show markers for opponents currently ranked within this many positions ahead of us
+    // (e.g. 3 => only whoever is in 1st/2nd/3rd place ahead of our own position gets a marker).
+    public int maxPositionsAheadToShow = 3;
+
     private Dictionary<Transform, MarkerData> activeMarkers = new();
     private bool active = true;
+    private PlayerController selfController;
+    private HashSet<Transform> allowedTargetsBuffer = new HashSet<Transform>();
 
     void Start()
     {
@@ -62,11 +69,12 @@ public class PlayerUIMarkerSystem : MonoBehaviour
         }
     }
 
-    public void ManualInitialize(Camera cam, RectTransform canvas, List<Transform> targetList)
+    public void ManualInitialize(Camera cam, RectTransform canvas, List<Transform> targetList, PlayerController owner)
     {
         playerCamera = cam;
         canvasRect = canvas;
         targets = targetList;
+        selfController = owner;
 
         if (playerCamera != null && markerPrefab != null && targets.Count > 0)
             InitializeMarkers();
@@ -112,6 +120,28 @@ public class PlayerUIMarkerSystem : MonoBehaviour
         if (!active || activeMarkers.Count == 0)
             return;
 
+        // Only the closest `maxPositionsAheadToShow` opponents currently ranked ahead of us
+        // (by race position, not screen position) get a marker at all this frame.
+        allowedTargetsBuffer.Clear();
+        if (selfController != null)
+        {
+            int selfPosition = selfController.GetCurrentPositionInRace();
+            if (selfPosition > 0)
+            {
+                foreach (var pair in activeMarkers)
+                {
+                    PlayerController otherController = pair.Value.controller;
+                    if (otherController == null) continue;
+
+                    int otherPosition = otherController.GetCurrentPositionInRace();
+                    if (otherPosition > 0 && otherPosition < selfPosition && otherPosition >= selfPosition - maxPositionsAheadToShow)
+                    {
+                        allowedTargetsBuffer.Add(pair.Key);
+                    }
+                }
+            }
+        }
+
         foreach (var pair in activeMarkers)
         {
             Transform target = pair.Key;
@@ -122,6 +152,10 @@ public class PlayerUIMarkerSystem : MonoBehaviour
                 marker.targetAlpha = 0f;
                 continue;
             }
+
+            // selfController == null (marker system not routed through ManualInitialize) keeps
+            // the old "show everyone" behavior as a safe fallback.
+            bool allowedByPosition = selfController == null || allowedTargetsBuffer.Contains(target);
 
             Vector3 worldPos = target.position + worldOffset;
             Vector3 viewportPos = playerCamera.WorldToViewportPoint(worldPos);
@@ -146,7 +180,7 @@ public class PlayerUIMarkerSystem : MonoBehaviour
                 viewportPos.x = Mathf.Clamp(viewportPos.x, margin, 1f - margin);
                 viewportPos.y = margin;
 
-                marker.targetAlpha = GetBehindAlpha(distance);
+                marker.targetAlpha = allowedByPosition ? GetBehindAlpha(distance) : 0f;
             }
             else
             {
@@ -160,7 +194,7 @@ public class PlayerUIMarkerSystem : MonoBehaviour
                     viewportPos.x >= 0 && viewportPos.x <= 1 &&
                     viewportPos.y >= 0 && viewportPos.y <= 1;
 
-                if (isInside && IsVisible(target))
+                if (isInside && IsVisible(target) && allowedByPosition)
                 {
                     viewportPos.x = Mathf.Clamp(viewportPos.x, margin, 1f - margin);
                     viewportPos.y = Mathf.Clamp(viewportPos.y, margin, 1f - margin);
@@ -171,7 +205,9 @@ public class PlayerUIMarkerSystem : MonoBehaviour
                     if (marker.frontText != null && marker.controller != null)
                     {
                         int position = marker.controller.GetCurrentPositionInRace();
-                        marker.frontText.text = position != 0 ? position.ToString() : "-";
+                        string positionLabel = position != 0 ? position.ToString() : "-";
+                        string displayName = marker.controller.playerData != null ? marker.controller.playerData.displayName : null;
+                        marker.frontText.text = string.IsNullOrEmpty(displayName) ? positionLabel : $"{positionLabel} {displayName}";
                     }
                 }
                 else
