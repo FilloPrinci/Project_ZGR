@@ -180,7 +180,11 @@ public class PlayerUIMarkerSystem : MonoBehaviour
                 viewportPos.x = Mathf.Clamp(viewportPos.x, margin, 1f - margin);
                 viewportPos.y = margin;
 
-                marker.targetAlpha = allowedByPosition ? GetBehindAlpha(distance) : 0f;
+                // The position filter only makes sense for the front markers ("who's ahead of
+                // me"). The bottom-of-screen arrow is a proximity warning for whoever is behind
+                // the camera on track — almost always someone ranked behind us too, so gating it
+                // on allowedByPosition made it never show. Always show it, distance-faded only.
+                marker.targetAlpha = GetBehindAlpha(distance);
             }
             else
             {

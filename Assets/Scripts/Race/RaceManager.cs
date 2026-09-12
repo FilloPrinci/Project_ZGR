@@ -210,6 +210,16 @@ public class RaceManager : MonoBehaviour
             raceSettingsInstance?.EnsureCPUNamePoolInitialized(availableNames);
             List<string> localFallbackNames = new List<string>(availableNames);
 
+            // CPU skill persistence: same idea as the name pool above, but rolled as a whole
+            // batch (not lazily per CPU) because "always 1-3 CPUs at max skill" is a constraint
+            // over the whole roster. Falls back to the same rule for a single race when there is
+            // no RaceSettings instance (e.g. testing the race scene directly in the Editor).
+            int cpuCountToGenerate = cpuPlayersAmount - playerDataList.Count;
+            raceSettingsInstance?.EnsureCPUSkillPoolInitialized(playerDataList.Count, cpuCountToGenerate);
+            Dictionary<int, int> localFallbackSkills = raceSettingsInstance == null
+                ? RaceSettings.GenerateCPUSkillBatch(playerDataList.Count, cpuCountToGenerate, 0.5f)
+                : null;
+
             for (int i = 0; i < cpuPlayersAmount; i++)
             {
                 // Real CPU are after the player
@@ -236,8 +246,15 @@ public class RaceManager : MonoBehaviour
 
                     int vehicleIndex = UnityEngine.Random.Range(0, avaiableVehicleList.Count);
 
+                    // CPU skill persistence: same lifecycle as the name above (a cpuIndex keeps
+                    // the same driving skill for the whole session/trophy).
+                    int skillLevel = raceSettingsInstance != null
+                        ? raceSettingsInstance.GetOrAssignCPUSkill(i)
+                        : localFallbackSkills[i];
+
                     PlayerData cpuPlayerData = new PlayerData("CPU" + (i), avaiableVehicleList[vehicleIndex], InputIndex.CPU, displayName);
                     cpuPlayerData.SetCPUIndex(i);
+                    cpuPlayerData.SetSkillLevel(skillLevel);
                     playerDataList.Add(cpuPlayerData);
                 }
             }

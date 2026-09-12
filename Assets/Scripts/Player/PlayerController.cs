@@ -125,7 +125,7 @@ public class PlayerController : MonoBehaviour
 
 
     // for CPU only
-    private int rubberbandingLevel = 0;
+    private float rubberbandingLevel = 0;
 
     #endregion
 
@@ -429,7 +429,7 @@ public class PlayerController : MonoBehaviour
         playerStats.OnDifficultyUpdated(newLevel);
     }
 
-    public void SetRubberbandLevel(int newLevel)
+    public void SetRubberbandLevel(float newLevel)
     {
         if (!IsHuman())
         {
@@ -443,7 +443,7 @@ public class PlayerController : MonoBehaviour
         playerStats.OnRubberbandUpdated(rubberbandingLevel);
     }
 
-    public int GetRubberbandingLevel()
+    public float GetRubberbandingLevel()
     {
         return rubberbandingLevel;
     }   

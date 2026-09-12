@@ -35,6 +35,18 @@ public class RaceSettings : MonoBehaviour
     private List<string> availableCPUNames; // null = not initialized yet
     private Dictionary<int, string> cpuNameByIndex = new Dictionary<int, string>();
 
+    // CPU driving skill persistence: a CPU slot (cpuIndex) keeps the same skill level (0-10)
+    // across races within the same session/trophy, same lifecycle as the name above. The whole
+    // batch is rolled once (EnsureCPUSkillPoolInitialized), not lazily per CPU, because the
+    // "1-3 CPUs at max skill" guarantee is a constraint over the whole roster, not a single slot.
+    private Dictionary<int, int> cpuSkillByIndex = new Dictionary<int, int>();
+    private bool cpuSkillPoolInitialized = false;
+
+    [Header("CPU Skill")]
+    // Chance that a non-guaranteed CPU rolls a skill level above 5 (6-10) instead of 0-5,
+    // indexed by GlobalDifficulty (easy=0, normal=1, hard=2). Tune in Inspector.
+    public List<float> highSkillChanceByDifficulty = new List<float> { 0.2f, 0.5f, 0.8f };
+
     // Trophy points totals, keyed by PlayerData.nameId. Accumulates across races within a
     // session/trophy; cleared in ResetSettings().
     private Dictionary<string, int> totalPointsByPlayerId = new Dictionary<string, int>();
@@ -178,6 +190,8 @@ public class RaceSettings : MonoBehaviour
         // End of session/trophy: forget CPU identities and accumulated points.
         availableCPUNames = null;
         cpuNameByIndex.Clear();
+        cpuSkillByIndex.Clear();
+        cpuSkillPoolInitialized = false;
         totalPointsByPlayerId.Clear();
     }
 
@@ -208,6 +222,89 @@ public class RaceSettings : MonoBehaviour
 
         cpuNameByIndex[cpuIndex] = chosen;
         return chosen;
+    }
+
+    // --- CPU skill persistence (see field comment above) ---
+
+    // Rolls skill levels for a batch of CPUs (cpuIndex in [startCpuIndex, startCpuIndex+cpuCount)):
+    // always 1-3 of them (capped to cpuCount) get the max skill (10), the rest roll 6-10 with
+    // probability highSkillChance or 0-5 otherwise. Static/pure so RaceManager's no-RaceSettings
+    // fallback (testing the race scene directly in the Editor) can reuse the exact same rule.
+    public static Dictionary<int, int> GenerateCPUSkillBatch(int startCpuIndex, int cpuCount, float highSkillChance)
+    {
+        Dictionary<int, int> result = new Dictionary<int, int>();
+        if (cpuCount <= 0) return result;
+
+        int guaranteedTopSkillCount = Mathf.Min(UnityEngine.Random.Range(1, 4), cpuCount); // 1-3 inclusive
+        HashSet<int> topSkillOffsets = new HashSet<int>();
+        while (topSkillOffsets.Count < guaranteedTopSkillCount)
+        {
+            topSkillOffsets.Add(UnityEngine.Random.Range(0, cpuCount));
+        }
+
+        for (int offset = 0; offset < cpuCount; offset++)
+        {
+            int skill;
+            if (topSkillOffsets.Contains(offset))
+            {
+                skill = 10;
+            }
+            else if (UnityEngine.Random.value < highSkillChance)
+            {
+                skill = UnityEngine.Random.Range(6, 11); // 6-10 ("above 5")
+            }
+            else
+            {
+                skill = UnityEngine.Random.Range(0, 6); // 0-5
+            }
+
+            result[startCpuIndex + offset] = skill;
+        }
+
+        return result;
+    }
+
+    private float GetHighSkillChanceForCurrentDifficulty()
+    {
+        int index = (int)selectedDifficulty;
+        if (highSkillChanceByDifficulty != null && index >= 0 && index < highSkillChanceByDifficulty.Count)
+        {
+            return highSkillChanceByDifficulty[index];
+        }
+        return 0.5f;
+    }
+
+    // Rolls the whole trophy's CPU skill batch once (see class field comment); later calls in
+    // the same session/trophy are a no-op, exactly like EnsureCPUNamePoolInitialized above.
+    public void EnsureCPUSkillPoolInitialized(int startCpuIndex, int cpuCount)
+    {
+        if (cpuSkillPoolInitialized) return;
+        cpuSkillPoolInitialized = true;
+
+        Dictionary<int, int> batch = GenerateCPUSkillBatch(startCpuIndex, cpuCount, GetHighSkillChanceForCurrentDifficulty());
+        foreach (KeyValuePair<int, int> pair in batch)
+        {
+            cpuSkillByIndex[pair.Key] = pair.Value;
+        }
+    }
+
+    public int GetOrAssignCPUSkill(int cpuIndex)
+    {
+        if (cpuSkillByIndex.TryGetValue(cpuIndex, out int existing))
+        {
+            return existing;
+        }
+
+        // Not covered by the batch rolled in EnsureCPUSkillPoolInitialized (e.g. this session's
+        // CPU count grew between races) - roll a single difficulty-biased value as a fallback.
+        // The "1-3 at max skill" guarantee only applies to a full batch roll, not a single slot.
+        float highSkillChance = GetHighSkillChanceForCurrentDifficulty();
+        int skill = UnityEngine.Random.value < highSkillChance
+            ? UnityEngine.Random.Range(6, 11)
+            : UnityEngine.Random.Range(0, 6);
+
+        cpuSkillByIndex[cpuIndex] = skill;
+        return skill;
     }
 
     // --- Trophy points (see class header comment) ---
