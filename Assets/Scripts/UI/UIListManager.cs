@@ -12,7 +12,7 @@ public class UIListManager : MonoBehaviour
     public Color accentBgColor;
 
 
-    public void AddRow(List<string> columns, Color? bgColor = null)
+    public GameObject AddRow(List<string> columns, Color? bgColor = null)
     {
         if (bgColor == null)
         {
@@ -35,5 +35,7 @@ public class UIListManager : MonoBehaviour
         {
             texts[i].text = columns[i];
         }
+
+        return row;
     }
 }

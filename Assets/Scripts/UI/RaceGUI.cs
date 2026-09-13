@@ -29,6 +29,23 @@ public class RaceGUI : MonoBehaviour
     public TextMeshProUGUI positionResultText;
     public TextMeshProUGUI currentPositionText;
 
+    [Header("Trophy")]
+    // Shown on the results panel only while a Trophy session is active: recaps which stage of
+    // the trophy just finished. The totals themselves are a column in the results list instead
+    // (see AnimateResultsPoints) so they don't need repeating here.
+    public GameObject trophyRecapPanel;
+    public TextMeshProUGUI trophyRecapText;
+    // Green "continue to next track" button - only shown while the trophy isn't finished yet.
+    // The red "exit to menu" button is a plain UnityEngine.UI.Button wired to OnRaceExit()
+    // directly and needs no script reference: it's always visible.
+    public GameObject continueButton;
+
+    [Header("Results points animation")]
+    public Color gainedPointsColor = new Color(0.4f, 1f, 0.4f);
+    public float resultsRowStagger = 0.08f;
+    public float pointsPopDuration = 0.25f;
+    public float totalCountDuration = 0.35f;
+
     [Header("GameObjects")]
     public GameObject currentPlayer;
     public GameObject pauseMenuSelectionStart;
@@ -294,7 +311,7 @@ public class RaceGUI : MonoBehaviour
         finishLabel.SetActive(true);
     }
 
-    public void SetCanShowResults(bool canShowResults) 
+    public void SetCanShowResults(bool canShowResults)
     {
         this.canShowResults = canShowResults;
 
@@ -308,23 +325,53 @@ public class RaceGUI : MonoBehaviour
 
             List<PlayerRaceData> finalPlayerRaceDataList = raceData.GetFinalPlayerRaceDataList();
 
+            // Rows are built with the pre-race total already showing (points for this race are
+            // awarded to raceSettings before results are shown - see RaceManager.OnRaceEnd - so
+            // the post-race total minus this race's points recovers what the total was before
+            // it). The "gained this race" cell's FINAL text is written immediately too -
+            // AnimateResultsPoints only hides it via scale (which doesn't affect layout) and pops
+            // it in. Building it blank and filling it in later, after the row's ContentSizeFitter
+            // had already measured an empty string, was leaving the row too narrow to fit it.
+            List<(GameObject row, int preTotal, int postTotal)> animatedRows = new List<(GameObject, int, int)>();
+
             for (int i = 0; i < finalPlayerRaceDataList.Count; i++)
             {
                 int position = i + 1;
                 string name = finalPlayerRaceDataList[i].playerData.displayName;
                 string totalTime = finalPlayerRaceDataList[i].GetTotalTime();
                 string bestTime = finalPlayerRaceDataList[i].GetBestLapTime();
-                string points = raceSettings != null ? raceSettings.GetPointsForPosition(position).ToString() : "0";
 
-                if (humanNameIdList.Contains(finalPlayerRaceDataList[i].playerData.nameId)){
-                    resultListManager.AddRow(new List<string>() { position.ToString(), name, totalTime, bestTime, points }, highlightColor);
-                }
-                else
+                int racePoints = raceSettings != null ? raceSettings.GetPointsForPosition(position) : 0;
+                int postTotal = raceSettings != null ? raceSettings.GetTotalPointsForPlayer(finalPlayerRaceDataList[i].playerData.nameId) : 0;
+                int preTotal = postTotal - racePoints;
+
+                // The total column is built with the POST-race value (the wider of the two, since
+                // it can only be >= preTotal) so the row's ContentSizeFitter reserves enough width
+                // for whatever the count-up animation will end on, then immediately rolled back
+                // to the pre-race value to display before the animation starts.
+                // NOTE: no "+" prefix - the '+' glyph renders as a solid colored blob instead of
+                // text with this project's font asset (confirmed live: the same cell renders a
+                // clean number without it), so the gained-points cell is just the bare number in
+                // green instead.
+                List<string> columns = new List<string>() { position.ToString(), name, totalTime, bestTime, postTotal.ToString(), racePoints.ToString() };
+
+                GameObject row = humanNameIdList.Contains(finalPlayerRaceDataList[i].playerData.nameId)
+                    ? resultListManager.AddRow(columns, highlightColor)
+                    : resultListManager.AddRow(columns);
+
+                // Force the row to size itself for this content right now, instead of waiting for
+                // whichever frame Unity's own dirty-tracking would otherwise batch it to - building
+                // it wide enough only once the total/gain text arrived later (rather than at
+                // creation) left the row too narrow to fit them.
+                LayoutRebuilder.ForceRebuildLayoutImmediate(row.GetComponent<RectTransform>());
+
+                TMP_Text[] rowTexts = row.GetComponentsInChildren<TMP_Text>();
+                if (rowTexts.Length >= 5)
                 {
-                    resultListManager.AddRow(new List<string>() { position.ToString(), name, totalTime, bestTime, points });
+                    rowTexts[4].text = preTotal.ToString();
                 }
 
-
+                animatedRows.Add((row, preTotal, postTotal));
             }
 
             //resultString = GetRaceResultLines();
@@ -332,9 +379,101 @@ public class RaceGUI : MonoBehaviour
             canShowRaceDataLines = false;
             canShowStats = false;
 
+            UpdateTrophyRecap();
+            StartCoroutine(AnimateResultsPoints(animatedRows));
+
             EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(resultMenuSelectionStart);
         }
+    }
+
+    // Recaps which trophy stage this was, and shows/hides the green "continue" button - it only
+    // makes sense while there is a next track to continue to. The always-present red "exit"
+    // button is a plain Button wired to OnRaceExit() directly, so it needs no logic here.
+    private void UpdateTrophyRecap()
+    {
+        bool trophyActive = raceSettings != null && raceSettings.IsTrophyActive();
+        bool hasNextStage = trophyActive && !raceSettings.IsLastTrophyStage();
+
+        if (trophyRecapPanel != null)
+        {
+            trophyRecapPanel.SetActive(trophyActive);
+        }
+
+        if (trophyActive && trophyRecapText != null)
+        {
+            trophyRecapText.text = $"{raceSettings.GetSelectedTrophyName()} - Stage {raceSettings.GetTrophyStageNumber()}/{raceSettings.GetTrophyStageCount()}";
+        }
+
+        if (continueButton != null)
+        {
+            continueButton.SetActive(hasNextStage);
+        }
+    }
+
+    // Pops each row's gained-points cell in, then counts its total column up from the
+    // pre-race to the post-race value - staggered per row so the whole list doesn't animate at
+    // once. Unscaled time so it still plays if something has paused Time.timeScale.
+    private IEnumerator AnimateResultsPoints(List<(GameObject row, int preTotal, int postTotal)> rows)
+    {
+        for (int i = 0; i < rows.Count; i++)
+        {
+            StartCoroutine(AnimateResultsRow(rows[i].row, rows[i].preTotal, rows[i].postTotal, i * resultsRowStagger));
+        }
+        yield return null;
+    }
+
+    private IEnumerator AnimateResultsRow(GameObject row, int preTotal, int postTotal, float delay)
+    {
+        if (row == null) yield break;
+
+        TMP_Text[] texts = row.GetComponentsInChildren<TMP_Text>();
+        if (texts.Length < 6) yield break;
+
+        TMP_Text totalText = texts[4];
+        TMP_Text gainText = texts[5];
+
+        // Text for both cells is already final (set in SetCanShowResults, before the row's
+        // layout was sized) - the gain cell just needs hiding here, to fade in later.
+        // NOTE: this fades alpha rather than popping in via RectTransform.localScale (the
+        // obvious choice for a "pop") because animating a freshly-created TMP text's scale away
+        // from and back to normal leaves its CanvasRenderer mesh stuck rendering as a solid
+        // colored blob instead of glyphs - confirmed live, and not fixable by forcing a mesh
+        // rebuild afterwards either (the very next scale change re-breaks it, so even doing that
+        // once the scale animation is entirely over doesn't stick). Plain color/alpha changes
+        // don't trigger it.
+        Color visibleColor = gainedPointsColor;
+        Color hiddenColor = new Color(visibleColor.r, visibleColor.g, visibleColor.b, 0f);
+        gainText.color = hiddenColor;
+
+        if (delay > 0f)
+        {
+            yield return new WaitForSecondsRealtime(delay);
+        }
+
+        float t = 0f;
+        while (t < pointsPopDuration)
+        {
+            t += Time.unscaledDeltaTime;
+            float p = Mathf.Clamp01(t / pointsPopDuration);
+            gainText.color = Color.Lerp(hiddenColor, visibleColor, p);
+            yield return null;
+        }
+        gainText.color = visibleColor;
+
+        t = 0f;
+        while (t < totalCountDuration)
+        {
+            t += Time.unscaledDeltaTime;
+            float p = Mathf.Clamp01(t / totalCountDuration);
+            totalText.text = Mathf.RoundToInt(Mathf.Lerp(preTotal, postTotal, p)).ToString();
+            yield return null;
+        }
+        totalText.text = postTotal.ToString();
+
+        // The row was already sized to fit postTotal at creation (see SetCanShowResults), so this
+        // is just a safety net in case anything nudged its layout dirty in the meantime.
+        LayoutRebuilder.ForceRebuildLayoutImmediate(row.GetComponent<RectTransform>());
     }
 
     public void SetCanShowPositionResult(bool canShowPositionResults)
@@ -441,6 +580,26 @@ public class RaceGUI : MonoBehaviour
         }
     }
 
+    // Bound to the results panel's green "Continue" button, which UpdateTrophyRecap only shows
+    // while there's a next trophy track to go to. The "else" below is just a safety net for
+    // that button somehow being clicked outside of that state.
+    public void OnResultsContinue()
+    {
+        if (raceSettings != null && raceSettings.IsTrophyActive() && !raceSettings.IsLastTrophyStage())
+        {
+            if (raceManager != null)
+            {
+                raceManager.ExitRace();
+            }
+
+            raceSettings.AdvanceTrophyToNextTrack();
+            LoadScene(raceSettings.GetSelectedRaceTrack());
+            return;
+        }
+
+        OnRaceExit();
+    }
+
     public void OnRaceExit()
     {
         if (raceManager != null) {
@@ -458,12 +617,25 @@ public class RaceGUI : MonoBehaviour
 
         if (sceneReferences != null)
         {
-            SceneManager.LoadScene(sceneReferences.startScene);
+            LoadScene(sceneReferences.startScene);
         }
         else
         {
             Debug.LogError("sceneReferences instance is null!!");
         }
-        
+
+    }
+
+    private void LoadScene(string sceneName)
+    {
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.LoadScene(sceneName);
+        }
+        else
+        {
+            Debug.LogWarning("[RaceGUI] LoadingScreenManager instance not found, loading without a loading screen.");
+            SceneManager.LoadScene(sceneName);
+        }
     }
 }
