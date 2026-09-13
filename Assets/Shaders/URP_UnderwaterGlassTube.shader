@@ -182,7 +182,17 @@ Shader "Custom/URP_UnderwaterGlassTube"
 
                 // Rifrazione extra ai bordi: dipende dalla normale del vetro (UV-space),
                 // ma l'offset finale viene comunque applicato in screen-space sullo sfondo.
-                float2 normalOffset = N.xy * _RefractionAmount * (1.0 - NdotV);
+                // N e' in WORLD space: usare direttamente N.xy come offset screen-space e'
+                // corretto solo se la camera guarda esattamente lungo un asse del mondo senza
+                // rotazioni. Su un tubo bancato/ruotato (o con la camera che rolla in curva)
+                // gli assi mondo X/Y non coincidono piu' con destra/alto dello schermo, e la
+                // rifrazione smette di essere un bend simmetrico ai bordi e diventa uno shift
+                // fisso in una direzione (es. sempre verso l'alto a destra). Si proietta quindi
+                // N sugli assi camera (destra/alto, in world space, dalle righe della view
+                // matrix) invece di usare le componenti mondo grezze.
+                float3 camRightWS = UNITY_MATRIX_V[0].xyz;
+                float3 camUpWS    = UNITY_MATRIX_V[1].xyz;
+                float2 normalOffset = float2(dot(N, camRightWS), dot(N, camUpWS)) * _RefractionAmount * (1.0 - NdotV);
 
                 float2 distortedUV = screenUV + screenWaveDir * _DistortionStrength + normalOffset;
 
