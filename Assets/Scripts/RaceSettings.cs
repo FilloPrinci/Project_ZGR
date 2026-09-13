@@ -1,7 +1,14 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-
+// Top-level structure of a play session, chosen right after "Play": a single race on one
+// track, or a Trophy (multiple tracks raced back-to-back, points accumulating across them).
+public enum SessionMode
+{
+    SingleRace,
+    Trophy
+}
 
 public class RaceSettings : MonoBehaviour
 {
@@ -25,6 +32,12 @@ public class RaceSettings : MonoBehaviour
     private GlobalDifficulty selectedDifficulty = GlobalDifficulty.normal;
     private string selectedRaceTrack;
     private string selectedRaceTrackDisplayName;
+
+    [Header("Trophy / Session Mode")]
+    private SessionMode selectedSessionMode = SessionMode.SingleRace;
+    private int selectedTrophyIndex = -1;
+    private int currentTrophyStage = -1; // 0-based index into currentTrophyTrackIndexes
+    private List<int> currentTrophyTrackIndexes; // resolved trackSceneDataList indices, in race order
 
     [Header("Trophy / Points")]
     // Points awarded for finishing in each position (index 0 = 1st place). Tune in Inspector.
@@ -172,6 +185,96 @@ public class RaceSettings : MonoBehaviour
         Debug.Log("[RaceSettings] INFO: selected track set to " + selectedRaceTrack);
     }
 
+    // --- Session mode (Single Race vs Trophy) ---
+
+    public void OnSingleRaceModeSelect()
+    {
+        selectedSessionMode = SessionMode.SingleRace;
+        selectedTrophyIndex = -1;
+        currentTrophyStage = -1;
+        currentTrophyTrackIndexes = null;
+    }
+
+    public void OnTrophyModeSelect()
+    {
+        selectedSessionMode = SessionMode.Trophy;
+    }
+
+    public SessionMode GetSelectedSessionMode()
+    {
+        return selectedSessionMode;
+    }
+
+    // --- Trophy selection / progression ---
+    // A trophy races through several tracks back-to-back, points accumulating across them
+    // (see AddPointsForPlayer/GetTotalPointsForPlayer). Selecting a trophy immediately selects
+    // its first track via OnRaceTrackSelect, exactly like a normal single-track selection;
+    // AdvanceTrophyToNextTrack() re-calls it for each following stage.
+
+    public void OnTrophySelect(int trophyIndex)
+    {
+        selectedTrophyIndex = trophyIndex;
+        TrophyData trophy = sceneReferences.trophyDataList[trophyIndex];
+
+        currentTrophyTrackIndexes = (trophy.trackIndexes != null && trophy.trackIndexes.Count > 0)
+            ? new List<int>(trophy.trackIndexes)
+            : Enumerable.Range(0, sceneReferences.trackSceneDataList.Count).ToList();
+
+        currentTrophyStage = 0;
+        OnRaceTrackSelect(currentTrophyTrackIndexes[0]);
+
+        Debug.Log("[RaceSettings] INFO: selected trophy '" + trophy.displayName + "' (" + currentTrophyTrackIndexes.Count + " tracks)");
+    }
+
+    public bool IsTrophyActive()
+    {
+        return selectedSessionMode == SessionMode.Trophy && selectedTrophyIndex >= 0 && currentTrophyStage >= 0;
+    }
+
+    public string GetSelectedTrophyName()
+    {
+        if (selectedTrophyIndex < 0 || sceneReferences.trophyDataList == null || selectedTrophyIndex >= sceneReferences.trophyDataList.Count)
+        {
+            return "";
+        }
+        return sceneReferences.trophyDataList[selectedTrophyIndex].displayName;
+    }
+
+    // 1-based, for UI ("Stage 2/3")
+    public int GetTrophyStageNumber()
+    {
+        return currentTrophyStage + 1;
+    }
+
+    public int GetTrophyStageCount()
+    {
+        return currentTrophyTrackIndexes != null ? currentTrophyTrackIndexes.Count : 0;
+    }
+
+    public bool IsLastTrophyStage()
+    {
+        if (!IsTrophyActive())
+        {
+            return true;
+        }
+        return currentTrophyStage >= currentTrophyTrackIndexes.Count - 1;
+    }
+
+    // Called once the player dismisses a trophy race's results. Advances to the next track and
+    // selects it (like OnRaceTrackSelect) and returns true, or leaves state untouched and
+    // returns false when this was the trophy's last track.
+    public bool AdvanceTrophyToNextTrack()
+    {
+        if (!IsTrophyActive() || IsLastTrophyStage())
+        {
+            return false;
+        }
+
+        currentTrophyStage++;
+        OnRaceTrackSelect(currentTrophyTrackIndexes[currentTrophyStage]);
+        return true;
+    }
+
     public void SetSelectedVehicleForPlayer(int playerIndex, GameObject vehiclePrefab)
     {
         inputPlayerDataList[playerIndex].vehiclePrefab = vehiclePrefab;
@@ -186,6 +289,13 @@ public class RaceSettings : MonoBehaviour
         cpuPlayerDataList = new List<PlayerData>();
         inputPlayerDataList = new List<PlayerData>();
         selectedRaceMode = RaceMode.Test;
+
+        // NOTE: selectedSessionMode/selectedTrophyIndex/currentTrophyStage/currentTrophyTrackIndexes
+        // are deliberately NOT reset here, exactly like selectedRaceTrack above: ResetSettings() is
+        // called mid-flow by StartVehicleSelection(), right after the player has just chosen a mode
+        // and (for Trophy) a trophy - resetting them here would immediately erase that choice before
+        // the race ever loads. They get re-initialized whenever OnSingleRaceModeSelect/OnTrophySelect
+        // run again on the next pass through the menu.
 
         // End of session/trophy: forget CPU identities and accumulated points.
         availableCPUNames = null;

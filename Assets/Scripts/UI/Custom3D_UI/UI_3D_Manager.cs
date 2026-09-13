@@ -594,7 +594,15 @@ public class UI_3D_Manager : MonoBehaviour
                 return;
             }
 
-            SceneManager.LoadSceneAsync(raceTracSceneName);
+            if (LoadingScreenManager.Instance != null)
+            {
+                LoadingScreenManager.Instance.LoadScene(raceTracSceneName);
+            }
+            else
+            {
+                Debug.LogWarning("[UI_3D_Manager] LoadingScreenManager instance not found, loading without a loading screen.");
+                SceneManager.LoadSceneAsync(raceTracSceneName);
+            }
         }
     }
 
