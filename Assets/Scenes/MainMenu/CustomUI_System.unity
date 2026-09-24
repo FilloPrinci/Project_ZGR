@@ -249,7 +249,7 @@ PrefabInstance:
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[1].GraphicComponent.Icon
       value: 
-      objectReference: {fileID: 1014520105036327642, guid: e4d5218d002e6ba469e08b661dea6809, type: 3}
+      objectReference: {fileID: 6315889116388502785, guid: 273f23ff1295e7045bae7b964458482c, type: 3}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[2].GraphicComponent.Icon
       value: 
@@ -6709,7 +6709,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.9914449
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.x
@@ -6717,7 +6717,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0.13052624
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.z
@@ -6729,7 +6729,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -15
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -6940,7 +6940,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ba465add47382754f877d38ee2950852, type: 2}
+  - {fileID: 2100000, guid: eeac5218387b72e47ada6732387c1d92, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7709,7 +7709,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ba465add47382754f877d38ee2950852, type: 2}
+  - {fileID: 2100000, guid: 3bf33a161a2c52648971ff4edf66971f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8043,15 +8043,15 @@ PrefabInstance:
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[0].GraphicComponent.Icon
       value: 
-      objectReference: {fileID: 1014520105036327642, guid: e4d5218d002e6ba469e08b661dea6809, type: 3}
+      objectReference: {fileID: 3373551075966378594, guid: 42f5a5fbdfe8d7242935e1cbb4569804, type: 3}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[1].GraphicComponent.Icon
       value: 
-      objectReference: {fileID: 1014520105036327642, guid: e4d5218d002e6ba469e08b661dea6809, type: 3}
+      objectReference: {fileID: 2798337985295338430, guid: 0fd6aac0778a42f47bef05dc60951643, type: 3}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[2].GraphicComponent.Icon
       value: 
-      objectReference: {fileID: 1014520105036327642, guid: e4d5218d002e6ba469e08b661dea6809, type: 3}
+      objectReference: {fileID: 1045703403558347968, guid: 289b78a5ed9f7f046997eb6400d3a27d, type: 3}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[3].GraphicComponent.Icon
       value: 
@@ -8952,7 +8952,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.9914449
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.x
@@ -8960,7 +8960,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0.13052624
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalRotation.z
@@ -8972,7 +8972,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -15
       objectReference: {fileID: 0}
     - target: {fileID: 4205811687933288995, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -8981,6 +8981,18 @@ PrefabInstance:
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: GroupName
       value: Select trophy
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[0].GraphicComponent.Icon
+      value: 
+      objectReference: {fileID: 1014520105036327642, guid: e4d5218d002e6ba469e08b661dea6809, type: 3}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[0].GraphicComponent.Panel
+      value: 
+      objectReference: {fileID: 1425986839947724955, guid: 67cf72e6e06647a47b4e6b73bbe7be45, type: 3}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[0].GraphicComponent.previewSprite
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9113,13 +9125,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1559359402}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalRotation: {x: 0.2164396, y: 0, z: 0, w: 0.97629607}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 25, y: 0, z: 0}
 --- !u!114 &1559359405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11006,15 +11018,15 @@ PrefabInstance:
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[0].GraphicComponent.Icon
       value: 
-      objectReference: {fileID: 1014520105036327642, guid: e4d5218d002e6ba469e08b661dea6809, type: 3}
+      objectReference: {fileID: 6315889116388502785, guid: 273f23ff1295e7045bae7b964458482c, type: 3}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[1].GraphicComponent.Icon
       value: 
-      objectReference: {fileID: 1014520105036327642, guid: e4d5218d002e6ba469e08b661dea6809, type: 3}
+      objectReference: {fileID: 6315889116388502785, guid: 273f23ff1295e7045bae7b964458482c, type: 3}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[2].GraphicComponent.Icon
       value: 
-      objectReference: {fileID: 1014520105036327642, guid: e4d5218d002e6ba469e08b661dea6809, type: 3}
+      objectReference: {fileID: 6315889116388502785, guid: 273f23ff1295e7045bae7b964458482c, type: 3}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[3].GraphicComponent.Icon
       value: 
