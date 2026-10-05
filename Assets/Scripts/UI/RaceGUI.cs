@@ -46,6 +46,16 @@ public class RaceGUI : MonoBehaviour
     public float pointsPopDuration = 0.25f;
     public float totalCountDuration = 0.35f;
 
+    [Header("Score-based (real) results reorder")]
+    // The results list first shows this race's finish order (position), then after this delay
+    // rebuilds itself to the standings that actually matter - total score - since a single
+    // race's position isn't the real result once points accumulate across a Trophy session.
+    public float realResultsDelay = 2f;
+    // Delay between removing each old (position-ordered) row, and between adding each new
+    // (score-ordered) row back - see ShowScoreBasedResults.
+    public float realResultsRemoveStagger = 0.08f;
+    public float realResultsAddStagger = 0.1f;
+
     [Header("GameObjects")]
     public GameObject currentPlayer;
     public GameObject pauseMenuSelectionStart;
@@ -332,7 +342,8 @@ public class RaceGUI : MonoBehaviour
             // AnimateResultsPoints only hides it via scale (which doesn't affect layout) and pops
             // it in. Building it blank and filling it in later, after the row's ContentSizeFitter
             // had already measured an empty string, was leaving the row too narrow to fit it.
-            List<(GameObject row, int preTotal, int postTotal)> animatedRows = new List<(GameObject, int, int)>();
+            List<(GameObject row, int preTotal, int postTotal, PlayerRaceData playerRaceData, bool isHighlighted)> animatedRows
+                = new List<(GameObject, int, int, PlayerRaceData, bool)>();
 
             for (int i = 0; i < finalPlayerRaceDataList.Count; i++)
             {
@@ -344,6 +355,7 @@ public class RaceGUI : MonoBehaviour
                 int racePoints = raceSettings != null ? raceSettings.GetPointsForPosition(position) : 0;
                 int postTotal = raceSettings != null ? raceSettings.GetTotalPointsForPlayer(finalPlayerRaceDataList[i].playerData.nameId) : 0;
                 int preTotal = postTotal - racePoints;
+                bool isHighlighted = humanNameIdList.Contains(finalPlayerRaceDataList[i].playerData.nameId);
 
                 // The total column is built with the POST-race value (the wider of the two, since
                 // it can only be >= preTotal) so the row's ContentSizeFitter reserves enough width
@@ -355,7 +367,7 @@ public class RaceGUI : MonoBehaviour
                 // green instead.
                 List<string> columns = new List<string>() { position.ToString(), name, totalTime, bestTime, postTotal.ToString(), racePoints.ToString() };
 
-                GameObject row = humanNameIdList.Contains(finalPlayerRaceDataList[i].playerData.nameId)
+                GameObject row = isHighlighted
                     ? resultListManager.AddRow(columns, highlightColor)
                     : resultListManager.AddRow(columns);
 
@@ -371,7 +383,7 @@ public class RaceGUI : MonoBehaviour
                     rowTexts[4].text = preTotal.ToString();
                 }
 
-                animatedRows.Add((row, preTotal, postTotal));
+                animatedRows.Add((row, preTotal, postTotal, finalPlayerRaceDataList[i], isHighlighted));
             }
 
             //resultString = GetRaceResultLines();
@@ -380,7 +392,8 @@ public class RaceGUI : MonoBehaviour
             canShowStats = false;
 
             UpdateTrophyRecap();
-            StartCoroutine(AnimateResultsPoints(animatedRows));
+            StartCoroutine(AnimateResultsPoints(animatedRows.Select(r => (r.row, r.preTotal, r.postTotal)).ToList()));
+            StartCoroutine(ShowScoreBasedResults(animatedRows, realResultsDelay));
 
             EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(resultMenuSelectionStart);
@@ -474,6 +487,58 @@ public class RaceGUI : MonoBehaviour
         // The row was already sized to fit postTotal at creation (see SetCanShowResults), so this
         // is just a safety net in case anything nudged its layout dirty in the meantime.
         LayoutRebuilder.ForceRebuildLayoutImmediate(row.GetComponent<RectTransform>());
+    }
+
+    // Waits, then rebuilds the results list from this race's finish order to the real
+    // standings - total score (points accumulated across the Trophy session, or just this
+    // race's points for a Single Race). Rather than reordering the existing rows in place
+    // (which means fighting the VerticalLayoutGroup/ContentSizeFitter driving their position -
+    // see git history on this method for why that broke the whole list), it removes the
+    // position-ordered rows one at a time top to bottom, then adds them back one at a time in
+    // score order - both are the layout group's normal add/remove path, so it stays in control
+    // of positioning throughout and the stagger reads as a clean "reveal" animation.
+    private IEnumerator ShowScoreBasedResults(List<(GameObject row, int preTotal, int postTotal, PlayerRaceData playerRaceData, bool isHighlighted)> rows, float delaySeconds)
+    {
+        yield return new WaitForSecondsRealtime(delaySeconds);
+
+        UIListManager resultListManager = resultsPanelContent.GetComponent<UIListManager>();
+        if (resultListManager == null) yield break;
+
+        for (int i = 0; i < rows.Count; i++)
+        {
+            if (rows[i].row != null)
+            {
+                Destroy(rows[i].row);
+            }
+            yield return new WaitForSecondsRealtime(realResultsRemoveStagger);
+        }
+
+        // Real result: ranked by total score instead of this race's finish position.
+        List<(PlayerRaceData playerRaceData, int postTotal, bool isHighlighted)> scoreOrder = rows
+            .Select(r => (r.playerRaceData, r.postTotal, r.isHighlighted))
+            .OrderByDescending(r => r.postTotal)
+            .ToList();
+
+        for (int i = 0; i < scoreOrder.Count; i++)
+        {
+            int position = i + 1;
+            string name = scoreOrder[i].playerRaceData.playerData.displayName;
+            string totalTime = scoreOrder[i].playerRaceData.GetTotalTime();
+            string bestTime = scoreOrder[i].playerRaceData.GetBestLapTime();
+            string postTotal = scoreOrder[i].postTotal.ToString();
+
+            // No "gained this race" cell here - that was specific to the finish-order view, it
+            // doesn't mean anything once rows are ranked by total score instead.
+            List<string> columns = new List<string>() { position.ToString(), name, totalTime, bestTime, postTotal, "" };
+
+            GameObject row = scoreOrder[i].isHighlighted
+                ? resultListManager.AddRow(columns, highlightColor)
+                : resultListManager.AddRow(columns);
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(row.GetComponent<RectTransform>());
+
+            yield return new WaitForSecondsRealtime(realResultsAddStagger);
+        }
     }
 
     public void SetCanShowPositionResult(bool canShowPositionResults)
