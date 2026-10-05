@@ -174,7 +174,7 @@ Material:
     - _Offset: {r: 0, g: 0, b: 0, a: 0}
     - _ScrollOffset: {r: 0, g: 0, b: 0, a: 0}
     - _ScrollSpeed: {r: 0, g: 0.1, b: 0, a: 0}
-    - _ScrollTiling: {r: 100, g: 50, b: 0, a: 0}
+    - _ScrollTiling: {r: 150, g: 50, b: 0, a: 0}
     - _ScrolledAlbedoMultiplier: {r: 0, g: 0, b: 0, a: 1}
     - _ScrolledEmissionMultiplier: {r: 8, g: 8, b: 8, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
