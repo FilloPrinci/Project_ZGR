@@ -386,6 +386,9 @@ public class RaceGUI : MonoBehaviour
                 animatedRows.Add((row, preTotal, postTotal, finalPlayerRaceDataList[i], isHighlighted));
             }
 
+            FitResultsWidthToContent(animatedRows.Select(r => r.row));
+            ResetResultsScrollToTop();
+
             //resultString = GetRaceResultLines();
             canShowSpeedometer = false;
             canShowRaceDataLines = false;
@@ -519,6 +522,8 @@ public class RaceGUI : MonoBehaviour
             .OrderByDescending(r => r.postTotal)
             .ToList();
 
+        List<GameObject> newRows = new List<GameObject>();
+
         for (int i = 0; i < scoreOrder.Count; i++)
         {
             int position = i + 1;
@@ -536,9 +541,86 @@ public class RaceGUI : MonoBehaviour
                 : resultListManager.AddRow(columns);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(row.GetComponent<RectTransform>());
+            newRows.Add(row);
+            FitResultsWidthToContent(newRows);
+            ResetResultsScrollToTop();
 
             yield return new WaitForSecondsRealtime(realResultsAddStagger);
         }
+    }
+
+    // The results box's width used to auto-fit to content via ContentSizeFitter (before it
+    // became a fixed-size ScrollRect - see ResetResultsScrollToTop's neighbors). A hardcoded
+    // width measured once in the Editor turned out not to match what rows actually need at
+    // runtime (confirmed live: points/gained columns were ending up clipped by the viewport
+    // mask), so this re-derives it from the real, currently-built rows every time instead -
+    // whatever a row's own ContentSizeFitter says it needs, plus a small margin.
+    //
+    // NOTE: deliberately does NOT trust rowRect.rect.width (the ContentSizeFitter-driven value)
+    // - confirmed live it comes back narrower than what the row's own HorizontalLayoutGroup
+    // actually needs to lay out every column (measured 410 vs an actual 530 = padding + six
+    // columns' widths + five gaps of spacing), so the last column(s) were ending up positioned
+    // past the row's own reported width and clipped by the viewport mask. Summing the row's own
+    // active children + spacing + padding directly matches what SetLayoutHorizontal positions
+    // them at, sidestepping whatever makes the aggregate figure come back short.
+    private void FitResultsWidthToContent(IEnumerable<GameObject> rows)
+    {
+        float maxWidth = 0f;
+        foreach (GameObject row in rows)
+        {
+            if (row == null) continue;
+
+            RectTransform rowRect = row.GetComponent<RectTransform>();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rowRect);
+
+            HorizontalLayoutGroup rowHlg = row.GetComponent<HorizontalLayoutGroup>();
+            float rowWidth;
+            if (rowHlg != null)
+            {
+                float sum = rowHlg.padding.left + rowHlg.padding.right;
+                int activeChildCount = 0;
+                for (int c = 0; c < rowRect.childCount; c++)
+                {
+                    RectTransform childRect = rowRect.GetChild(c) as RectTransform;
+                    if (childRect == null || !childRect.gameObject.activeSelf) continue;
+                    sum += childRect.rect.width;
+                    activeChildCount++;
+                }
+                if (activeChildCount > 1)
+                {
+                    sum += rowHlg.spacing * (activeChildCount - 1);
+                }
+                rowWidth = sum;
+            }
+            else
+            {
+                rowWidth = rowRect.rect.width;
+            }
+
+            maxWidth = Mathf.Max(maxWidth, rowWidth);
+        }
+
+        if (maxWidth <= 0f) return;
+
+        const float horizontalMargin = 20f;
+        RectTransform panelRect = resultsPanelContent.GetComponent<RectTransform>();
+        float newWidth = maxWidth + horizontalMargin;
+        if (newWidth > panelRect.sizeDelta.x)
+        {
+            panelRect.sizeDelta = new Vector2(newWidth, panelRect.sizeDelta.y);
+        }
+    }
+
+    // The results list always opens showing the top of the standings (1st place first), never
+    // wherever a previous scroll happened to leave off. Forces a layout pass first so the
+    // ScrollRect's content height is current before reading/driving its scroll position.
+    private void ResetResultsScrollToTop()
+    {
+        ScrollRect scrollRect = resultsPanelContent.GetComponent<ScrollRect>();
+        if (scrollRect == null || scrollRect.content == null) return;
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content);
+        scrollRect.verticalNormalizedPosition = 1f;
     }
 
     public void SetCanShowPositionResult(bool canShowPositionResults)
