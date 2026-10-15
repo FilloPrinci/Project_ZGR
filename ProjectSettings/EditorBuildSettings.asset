@@ -26,6 +26,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Tracks/T1C3.unity
     guid: 4814c541ee87aac4da9e86536b71a463
+  - enabled: 1
+    path: Assets/Scenes/Ending/Ending.unity
+    guid: 0f873631f64bb075a9249ee0927a2a58
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9836e290f4aeca044bf5fa879525658c, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
