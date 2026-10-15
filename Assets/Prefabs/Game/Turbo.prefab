@@ -80,8 +80,7 @@ GameObject:
   - component: {fileID: 7156735901310972426}
   - component: {fileID: 2420419760821756602}
   - component: {fileID: 4470604924187385367}
-  - component: {fileID: 2068384584474581452}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Holo (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -161,28 +160,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &2068384584474581452
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 796804070814503034}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1998562517392116560
 GameObject:
   m_ObjectHideFlags: 0
@@ -194,8 +171,7 @@ GameObject:
   - component: {fileID: 38314445152146782}
   - component: {fileID: 1502546964289756288}
   - component: {fileID: 1219109957246989546}
-  - component: {fileID: 4842219039725597045}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Holo (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -275,28 +251,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4842219039725597045
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1998562517392116560}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &2777972536671298417
 GameObject:
   m_ObjectHideFlags: 0
@@ -306,7 +260,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3298473179120744907}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Turbo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -345,7 +299,7 @@ GameObject:
   - component: {fileID: 6960162634291828172}
   - component: {fileID: 3981456148516999915}
   - component: {fileID: 7409139790094594881}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5199,7 +5153,7 @@ GameObject:
   - component: {fileID: 1140740129531922391}
   - component: {fileID: 4546214944196306271}
   - component: {fileID: 2458239454366195051}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LightEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5289,8 +5243,7 @@ GameObject:
   - component: {fileID: 1874640648115088137}
   - component: {fileID: 4246765128583773361}
   - component: {fileID: 7999484040640523920}
-  - component: {fileID: 5923019596452925938}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Holo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5369,28 +5322,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &5923019596452925938
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5249327536806644031}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &6730226267734667718
 GameObject:
   m_ObjectHideFlags: 0
@@ -5402,8 +5333,7 @@ GameObject:
   - component: {fileID: 7357737095450782900}
   - component: {fileID: 3208958417952607035}
   - component: {fileID: 5820106647550034376}
-  - component: {fileID: 750248239072899561}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Holo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5482,28 +5412,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &750248239072899561
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6730226267734667718}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &7442719271119609725
 GameObject:
   m_ObjectHideFlags: 0
@@ -5515,7 +5423,7 @@ GameObject:
   - component: {fileID: 2683031750854249684}
   - component: {fileID: 3692580085049688824}
   - component: {fileID: 4084511674954958109}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: ActiveArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5732,7 +5640,7 @@ GameObject:
   - component: {fileID: 3254544363226258469}
   - component: {fileID: 8040155915172633701}
   - component: {fileID: 8223108625902654633}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}

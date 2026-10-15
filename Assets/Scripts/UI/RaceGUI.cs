@@ -399,7 +399,7 @@ public class RaceGUI : MonoBehaviour
             StartCoroutine(ShowScoreBasedResults(animatedRows, realResultsDelay));
 
             EventSystem.current.SetSelectedGameObject(null);
-            EventSystem.current.SetSelectedGameObject(resultMenuSelectionStart);
+            EventSystem.current.SetSelectedGameObject(GetResultMenuSelectionTarget());
         }
     }
 
@@ -425,6 +425,25 @@ public class RaceGUI : MonoBehaviour
         {
             continueButton.SetActive(hasNextStage);
         }
+    }
+
+    // resultMenuSelectionStart is wired to the green Continue button in the Inspector, but
+    // UpdateTrophyRecap() just deactivated it whenever there's no next trophy stage (Single Race,
+    // or the last stage) - confirmed live: EventSystem.SetSelectedGameObject on an inactive
+    // object fails silently, leaving nothing selected and no way to navigate the results panel
+    // by keyboard/gamepad at all. Falls back to the sibling "QuitButton", which UpdateTrophyRecap
+    // never touches and stays active in every case, so something is always selected.
+    private GameObject GetResultMenuSelectionTarget()
+    {
+        if (resultMenuSelectionStart != null && resultMenuSelectionStart.activeInHierarchy)
+        {
+            return resultMenuSelectionStart;
+        }
+
+        Transform fallback = resultMenuSelectionStart != null ? resultMenuSelectionStart.transform.parent : null;
+        fallback = fallback != null ? fallback.Find("QuitButton") : null;
+
+        return fallback != null ? fallback.gameObject : resultMenuSelectionStart;
     }
 
     // Pops each row's gained-points cell in, then counts its total column up from the
