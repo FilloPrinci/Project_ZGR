@@ -63,8 +63,22 @@ public class LogicActions : MonoBehaviour
         uI_3D_Manager.ManageBackSelection(0);
     }
 
+    #region Game Mode
+
+    public void OnSingleRaceModeSelect()
+    {
+        raceSettings.OnSingleRaceModeSelect();
+    }
+
+    public void OnTrophyModeSelect()
+    {
+        raceSettings.OnTrophyModeSelect();
+    }
+
+    #endregion
+
     #region Difficulty
-    
+
     public void OnEasy()
     {
         raceSettings.SetSelectedDifficulty(GlobalDifficulty.easy);

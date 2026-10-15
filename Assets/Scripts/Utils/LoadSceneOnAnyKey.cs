@@ -32,6 +32,13 @@ public class LoadSceneOnAnyKey : MonoBehaviour
 
     private void LoadScene()
     {
-        SceneManager.LoadScene(sceneName);
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.LoadScene(sceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene(sceneName);
+        }
     }
 }

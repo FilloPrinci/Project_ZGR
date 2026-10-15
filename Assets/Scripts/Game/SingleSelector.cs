@@ -6,20 +6,20 @@ using UnityEngine.UI;
 public class SingleSelector : MonoBehaviour
 {
     public int playerIndex = 0;
-    public Transform shownVeichlePosition;
+    public Transform shownVehiclePosition;
     
     public float scaleFactor = 0.2f;
     public GameObject selectionCheckIcon;
-    private int selectedVeichleIndex = 0;
-    private GameObject instantiatedSelectedVeichle;
+    private int selectedVehicleIndex = 0;
+    private GameObject instantiatedSelectedVehicle;
     private RaceSettings raceSettings;
     private SelectionManager selectionManager;
     private bool selectionConfirmed = false;
-    private List<GameObject> veichlePrefabList;
+    private List<GameObject> vehiclePrefabList;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        shownVeichlePosition.localScale = Vector3.one * scaleFactor; // Set the scale of the shown veichle position
+        shownVehiclePosition.localScale = Vector3.one * scaleFactor; // Set the scale of the shown vehicle position
 
         RefreshReferences();
     }
@@ -34,27 +34,27 @@ public class SingleSelector : MonoBehaviour
     {
         raceSettings = RaceSettings.Instance;
         selectionManager = SelectionManager.Instance;
-        veichlePrefabList = raceSettings.veichlePrefabList;
-        if (instantiatedSelectedVeichle != null)
+        vehiclePrefabList = raceSettings.vehiclePrefabList;
+        if (instantiatedSelectedVehicle != null)
         {
-            Destroy(instantiatedSelectedVeichle);
+            Destroy(instantiatedSelectedVehicle);
             
         }
-        instantiatedSelectedVeichle = Instantiate(GetSelectedVeichlePrefab(), shownVeichlePosition);
+        instantiatedSelectedVehicle = Instantiate(GetSelectedVehiclePrefab(), shownVehiclePosition);
     }
 
-    void UpdateSelectedVeichle()
+    void UpdateSelectedVehicle()
     {
-        if (veichlePrefabList.Count == 0)
+        if (vehiclePrefabList.Count == 0)
         {
-            Debug.LogError("[VeichleSelector] ERROR: veichlePrefabList is empty");
+            Debug.LogError("[VehicleSelector] ERROR: vehiclePrefabList is empty");
             return;
         }
 
-        if (instantiatedSelectedVeichle != null)
+        if (instantiatedSelectedVehicle != null)
         {
-            Destroy(instantiatedSelectedVeichle);
-            instantiatedSelectedVeichle = Instantiate(GetSelectedVeichlePrefab(), shownVeichlePosition);
+            Destroy(instantiatedSelectedVehicle);
+            instantiatedSelectedVehicle = Instantiate(GetSelectedVehiclePrefab(), shownVehiclePosition);
         }
     }
 
@@ -71,14 +71,14 @@ public class SingleSelector : MonoBehaviour
         {
             if (!selectionConfirmed)
             {
-                selectedVeichleIndex++;
-                if (selectedVeichleIndex >= veichlePrefabList.Count)
+                selectedVehicleIndex++;
+                if (selectedVehicleIndex >= vehiclePrefabList.Count)
                 {
-                    selectedVeichleIndex = 0; // Loop back to the first veichle
+                    selectedVehicleIndex = 0; // Loop back to the first vehicle
                 }
-                Debug.Log("[VeichleSelector] INFO: Player " + playerIndex + " selected next veichle: " + selectedVeichleIndex);
+                Debug.Log("[VehicleSelector] INFO: Player " + playerIndex + " selected next vehicle: " + selectedVehicleIndex);
 
-                UpdateSelectedVeichle();
+                UpdateSelectedVehicle();
             }
         }
         
@@ -91,14 +91,14 @@ public class SingleSelector : MonoBehaviour
         {
             if (!selectionConfirmed)
             {
-                selectedVeichleIndex--;
-                if (selectedVeichleIndex < 0)
+                selectedVehicleIndex--;
+                if (selectedVehicleIndex < 0)
                 {
-                    selectedVeichleIndex = veichlePrefabList.Count-1; // Loop back to the last veichle
+                    selectedVehicleIndex = vehiclePrefabList.Count-1; // Loop back to the last vehicle
                 }
-                Debug.Log("[VeichleSelector] INFO: Player " + playerIndex + " selected next veichle: " + selectedVeichleIndex);
+                Debug.Log("[VehicleSelector] INFO: Player " + playerIndex + " selected next vehicle: " + selectedVehicleIndex);
 
-                UpdateSelectedVeichle();
+                UpdateSelectedVehicle();
             }
         }
 
@@ -107,18 +107,18 @@ public class SingleSelector : MonoBehaviour
 
     public void OnKeyTest(int value)
     {
-        Debug.Log("[VeichleSelector] INFO: Player " + playerIndex + " pressed test key with value: " + value);
+        Debug.Log("[VehicleSelector] INFO: Player " + playerIndex + " pressed test key with value: " + value);
     }
 
-    public GameObject GetSelectedVeichlePrefab()
+    public GameObject GetSelectedVehiclePrefab()
     {
-        if (veichlePrefabList.Count == 0)
+        if (vehiclePrefabList.Count == 0)
         {
-            Debug.LogError("[VeichleSelector] ERROR: veichlePrefabList is empty");
+            Debug.LogError("[VehicleSelector] ERROR: vehiclePrefabList is empty");
             return null;
         }
 
-        return veichlePrefabList[selectedVeichleIndex];
+        return vehiclePrefabList[selectedVehicleIndex];
     }
 
     public void OnSelectionConfirm()
@@ -131,12 +131,12 @@ public class SingleSelector : MonoBehaviour
 
             if (selectionConfirmed)
             {
-                raceSettings.SetSelectedVeichleForPlayer(playerIndex, GetSelectedVeichlePrefab());
-                selectionManager.OnVeichleSelected();
+                raceSettings.SetSelectedVehicleForPlayer(playerIndex, GetSelectedVehiclePrefab());
+                selectionManager.OnVehicleSelected();
             }
             else
             {
-                selectionManager.OnVeichleUnselect();
+                selectionManager.OnVehicleUnselect();
             }
 
 

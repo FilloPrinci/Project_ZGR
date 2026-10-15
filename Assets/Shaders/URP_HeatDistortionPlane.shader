@@ -91,14 +91,26 @@ Shader "Custom/URP_HeatDistortionPlane"
                 float noiseB = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, uv2).r;
                 float combined = (noiseA + noiseB) * 0.5;
 
-                // --- Secondo campo di noise (offsettato) per la DIREZIONE della distorsione ---
-                float2 uv1b = uv1 + float2(0.37, 0.17);
-                float2 uv2b = uv2 + float2(0.61, 0.29);
-                float noiseAb = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, uv1b).r;
-                float noiseBb = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, uv2b).r;
-                float combinedB = (noiseAb + noiseBb) * 0.5;
+                // --- Campi di noise indipendenti (offsettati) per la DIREZIONE della distorsione ---
+                // IMPORTANTE: non riusare "combined" qui. "combined" guida anche patchAlpha
+                // (sotto), quindi dove l'effetto e' visibile il suo valore e' sistematicamente
+                // alto (> _PatchThreshold): usarlo anche per l'offset X sbilanciava la
+                // distorsione sempre verso destra proprio nelle zone in cui si vede. Con
+                // campioni indipendenti la direzione e' scorrelata dall'intensita'/alpha e
+                // puo' andare sia in positivo che in negativo su entrambi gli assi.
+                float2 uv1x = uv1 + float2(0.37, 0.17);
+                float2 uv2x = uv2 + float2(0.61, 0.29);
+                float noiseAx = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, uv1x).r;
+                float noiseBx = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, uv2x).r;
+                float combinedX = (noiseAx + noiseBx) * 0.5;
 
-                float2 distortionDir = float2(combined, combinedB) * 2.0 - 1.0; // -1..1
+                float2 uv1y = uv1 + float2(0.83, 0.51);
+                float2 uv2y = uv2 + float2(0.12, 0.94);
+                float noiseAy = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, uv1y).r;
+                float noiseBy = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, uv2y).r;
+                float combinedY = (noiseAy + noiseBy) * 0.5;
+
+                float2 distortionDir = float2(combinedX, combinedY) * 2.0 - 1.0; // -1..1, scorrelato da "combined"
                 float2 offset = distortionDir * _DistortionStrength;
 
                 // --- Distorci la scena dietro al piano ---

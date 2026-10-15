@@ -217,15 +217,21 @@ public class RaceDifficultyManager : MonoBehaviour
                 // Apply bottom rubberbanding level to CPU players
                 foreach (GameObject cpuPlayer in cpuPlayerInstanceList)
                 {
+                    PlayerController cpuController = cpuPlayer.GetComponent<PlayerController>();
+
                     // Adjust CPU player performance based on the top rubberbanding level
-                    if (cpuPlayer.GetComponent<PlayerController>().GetCurrentPositionInRace() > bestPlayerPosition)
+                    if (cpuController.GetCurrentPositionInRace() > bestPlayerPosition)
                     {
-                        // CPU player is behind of the best human player, apply top rubberbanding level so the CPU gets faster
-                        cpuPlayer.GetComponent<PlayerController>().SetRubberbandLevel(1 * selectedDifficultySettings.goFasterLevel);
+                        // CPU player is behind the best human player: apply the go-faster
+                        // rubberbanding level, scaled by this CPU's driving skill (0-10) — a
+                        // skill-0 CPU gets no catch-up boost at all, a skill-10 CPU gets the
+                        // full configured boost.
+                        float skillScale = cpuController.playerData.skillLevel / 10f;
+                        cpuController.SetRubberbandLevel(1 * selectedDifficultySettings.goFasterLevel * skillScale);
                     }
                     else
                     {
-                        cpuPlayer.GetComponent<PlayerController>().SetRubberbandLevel(0); // No rubberbanding for CPU players ahead the best human player
+                        cpuController.SetRubberbandLevel(0); // No rubberbanding for CPU players ahead the best human player
                     }
                 }
 

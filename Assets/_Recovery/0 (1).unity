@@ -3512,11 +3512,11 @@ MonoBehaviour:
   playerDataList:
   - nameId: Player1
     displayName: Player1
-    veichlePrefab: {fileID: 3665708238735973177, guid: 98c827ba062baf7478f6aa5bee782b7f, type: 3}
+    vehiclePrefab: {fileID: 3665708238735973177, guid: 98c827ba062baf7478f6aa5bee782b7f, type: 3}
     playerInputIndex: 0
     cpuIndex: -1
   maxLaps: 3
-  avaiableVeichleList:
+  avaiableVehicleList:
   - {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
   - {fileID: 4699924895700797138, guid: a3bb4ad6c635fd44dac73aa2e5772f91, type: 3}
   - {fileID: 4699924895700797138, guid: 267da2944cbf0b044896309ba451fb34, type: 3}
@@ -32617,10 +32617,10 @@ MonoBehaviour:
   cpuLevel: 10
   forwardLookAheadMultiplier: 30
   forwardLookSteerMultiplier: 4
-  forwardLookotherVeichlesMultiplier: 3.5
+  forwardLookotherVehiclesMultiplier: 3.5
   borderLimitDistance: 2
   borderSafeDistance: 10
-  otherVeichleSafeDistance: 2
+  otherVehicleSafeDistance: 2
   maxCheckpointTollerance: 10
   minCheckpointTollerance: 1
   cpuCount: 0

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -57,7 +58,7 @@ public class RaceManager : MonoBehaviour
     public RaceMode mode;
     public List<PlayerData> playerDataList;
     public int maxLaps;
-    public  List<GameObject> avaiableVeichleList;
+    public  List<GameObject> avaiableVehicleList;
 
     [Header("Audio parameters")]
     public AudioSource sountrackAudioSource;
@@ -201,30 +202,59 @@ public class RaceManager : MonoBehaviour
                 availableNames = namesLoader.namesList;
             }
 
+            // CPU identity persistence: RaceSettings (DontDestroyOnLoad) keeps a name assigned
+            // to a given cpuIndex for as long as the session/trophy lasts, so the same CPU keeps
+            // the same name across races. Falls back to today's per-race random pick when there
+            // is no RaceSettings instance (e.g. running the race scene directly in the Editor).
+            RaceSettings raceSettingsInstance = RaceSettings.Instance;
+            raceSettingsInstance?.EnsureCPUNamePoolInitialized(availableNames);
+            List<string> localFallbackNames = new List<string>(availableNames);
+
+            // CPU skill persistence: same idea as the name pool above, but rolled as a whole
+            // batch (not lazily per CPU) because "always 1-3 CPUs at max skill" is a constraint
+            // over the whole roster. Falls back to the same rule for a single race when there is
+            // no RaceSettings instance (e.g. testing the race scene directly in the Editor).
+            int cpuCountToGenerate = cpuPlayersAmount - playerDataList.Count;
+            raceSettingsInstance?.EnsureCPUSkillPoolInitialized(playerDataList.Count, cpuCountToGenerate);
+            Dictionary<int, int> localFallbackSkills = raceSettingsInstance == null
+                ? RaceSettings.GenerateCPUSkillBatch(playerDataList.Count, cpuCountToGenerate, 0.5f)
+                : null;
+
             for (int i = 0; i < cpuPlayersAmount; i++)
             {
                 // Real CPU are after the player
                 if(i >= playerDataList.Count)
                 {
-                    string displayName = "CPU" + (i);
+                    string fallbackDisplayName = "CPU" + (i);
+                    string displayName;
 
-                    if (availableNames.Count > 0)
+                    if (raceSettingsInstance != null)
                     {
-                        int nameIndex = UnityEngine.Random.Range(0, availableNames.Count);
-                        string name = availableNames[nameIndex];
-                        availableNames.RemoveAt(nameIndex);
-                        displayName = name;
-                        
+                        displayName = raceSettingsInstance.GetOrAssignCPUName(i, fallbackDisplayName);
+                    }
+                    else if (localFallbackNames.Count > 0)
+                    {
+                        int nameIndex = UnityEngine.Random.Range(0, localFallbackNames.Count);
+                        displayName = localFallbackNames[nameIndex];
+                        localFallbackNames.RemoveAt(nameIndex);
                     }
                     else
                     {
                         Debug.LogWarning($"[RaceManager] : No more names available for CPU players. Assigning default name for CPU player {i}");
+                        displayName = fallbackDisplayName;
                     }
 
-                    int veichleIndex = UnityEngine.Random.Range(0, avaiableVeichleList.Count);
+                    int vehicleIndex = UnityEngine.Random.Range(0, avaiableVehicleList.Count);
 
-                    PlayerData cpuPlayerData = new PlayerData("CPU" + (i), avaiableVeichleList[veichleIndex], InputIndex.CPU, displayName);
+                    // CPU skill persistence: same lifecycle as the name above (a cpuIndex keeps
+                    // the same driving skill for the whole session/trophy).
+                    int skillLevel = raceSettingsInstance != null
+                        ? raceSettingsInstance.GetOrAssignCPUSkill(i)
+                        : localFallbackSkills[i];
+
+                    PlayerData cpuPlayerData = new PlayerData("CPU" + (i), avaiableVehicleList[vehicleIndex], InputIndex.CPU, displayName);
                     cpuPlayerData.SetCPUIndex(i);
+                    cpuPlayerData.SetSkillLevel(skillLevel);
                     playerDataList.Add(cpuPlayerData);
                 }
             }
@@ -358,7 +388,7 @@ public class RaceManager : MonoBehaviour
             maxLaps = currentRaceSettings.laps;
             playerDataList = currentRaceSettings.GetAllPlayerDataList();
             mode = currentRaceSettings.GetSelectedRaceMode();
-            avaiableVeichleList = currentRaceSettings.veichlePrefabList;
+            avaiableVehicleList = currentRaceSettings.vehiclePrefabList;
             gameObject.GetComponent<RaceDifficultyManager>().difficulty = currentRaceSettings.GetSelectedDifficulty();
         }
 
@@ -503,6 +533,19 @@ public class RaceManager : MonoBehaviour
         raceData.playerRaceDataList.Sort((a, b) => a.position.CompareTo(b.position));
 
         Debug.Log("the winner is : " + raceData.playerRaceDataList[0].playerData.nameId + " (player index : " + (int)raceData.playerRaceDataList[0].playerData.playerInputIndex + " )");
+
+        // Award trophy points for this race's finishing order.
+        RaceSettings raceSettingsInstance = RaceSettings.Instance;
+        if (raceSettingsInstance != null)
+        {
+            List<PlayerRaceData> finalPlayerRaceDataList = raceData.GetFinalPlayerRaceDataList();
+            for (int i = 0; i < finalPlayerRaceDataList.Count; i++)
+            {
+                int position = i + 1;
+                int points = raceSettingsInstance.GetPointsForPosition(position);
+                raceSettingsInstance.AddPointsForPlayer(finalPlayerRaceDataList[i].playerData.nameId, points);
+            }
+        }
 
         foreach (PlayerRaceData playerRaceData in raceData.playerRaceDataList)
         {
@@ -654,14 +697,18 @@ public class RaceManager : MonoBehaviour
 
             if (mode == RaceMode.RaceSingleplayer)
             {
-                // race is completed, register all positions and finish race for all the CPUs
-                foreach (PlayerRaceData playerRaceData in raceData.playerRaceDataList)
+                // race is completed, register all positions and finish race for all the CPUs.
+                // Sort by live position first so the final results (and the points awarded per
+                // position) reflect the actual standing, not just iteration order.
+                List<PlayerRaceData> remainingRaceData = raceData.playerRaceDataList
+                    .Where(p => p.inRace && p != currentPlayerRaceData)
+                    .OrderBy(p => p.position)
+                    .ToList();
+
+                foreach (PlayerRaceData playerRaceData in remainingRaceData)
                 {
-                    if (playerRaceData.inRace && playerRaceData != currentPlayerRaceData)
-                    {
-                        raceData.AddFinalResultForPlayerRaceData(playerRaceData);
-                        playerRaceData.inRace = false;
-                    }
+                    raceData.AddFinalResultForPlayerRaceData(playerRaceData);
+                    playerRaceData.inRace = false;
                 }
             }
             else if (mode == RaceMode.RaceMultiplayer)

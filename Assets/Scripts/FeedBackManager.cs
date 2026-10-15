@@ -10,9 +10,9 @@ public enum CameraPositionMode
 
 public class FeedBackManager : MonoBehaviour
 {
-    private GameObject playerVeichle;
-    private VeichleAnchors veichleAnchors;
-    [Header("playerVeichle Settings")]
+    private GameObject playerVehicle;
+    private VehicleAnchors vehicleAnchors;
+    [Header("playerVehicle Settings")]
     public float maxTiltAngleZ = 15f;
     public float maxTiltAngleY = 45f;
     public float tiltSmoothSpeed = 5f;
@@ -45,7 +45,7 @@ public class FeedBackManager : MonoBehaviour
     private bool onTurbo = false;
 
     // Visual material effect support
-    private VeichleVisualEffects veichleVisualEffects;
+    private VehicleVisualEffects vehicleVisualEffects;
     private Coroutine visualEffectCoroutine;
     private readonly float visualEffectDurationDefault = 0.5f; // half second as requested
 
@@ -68,13 +68,13 @@ public class FeedBackManager : MonoBehaviour
 
         isHuman = playerController.IsHuman();
 
-        // Player Veichle
+        // Player Vehicle
 
-        playerVeichle = playerController.GetVeichleModel();
+        playerVehicle = playerController.GetVehicleModel();
 
-        if(playerVeichle == null)
+        if(playerVehicle == null)
         {
-            Debug.LogError("PlayerController does not have a valid VeichleModel assigned.");
+            Debug.LogError("PlayerController does not have a valid VehicleModel assigned.");
             return;
         }
 
@@ -97,13 +97,13 @@ public class FeedBackManager : MonoBehaviour
 
         
 
-        veichleAnchors = playerController.GetVeichleAnchors();
+        vehicleAnchors = playerController.GetVehicleAnchors();
         cameraPositionMode = CameraPositionMode.Race;
 
-        veichleVisualEffects = playerController.GetVeichlePivot().GetComponent<VeichleVisualEffects>();
-        if(veichleVisualEffects == null)
+        vehicleVisualEffects = playerController.GetVehiclePivot().GetComponent<VehicleVisualEffects>();
+        if(vehicleVisualEffects == null)
         {
-            Debug.LogWarning("VeichleVisualEffects component not found on VeichlePivot. Collision visual effects will be unavailable.");
+            Debug.LogWarning("VehicleVisualEffects component not found on VehiclePivot. Collision visual effects will be unavailable.");
         }
         else
         {
@@ -116,7 +116,7 @@ public class FeedBackManager : MonoBehaviour
     {
 
         deltaTime = Time.deltaTime;
-        if (playerVeichle.activeInHierarchy)
+        if (playerVehicle.activeInHierarchy)
         {
             EngineFeedback();
             SteerFeedBack(steeringAmount);
@@ -130,8 +130,8 @@ public class FeedBackManager : MonoBehaviour
 
         if(cameraPositionMode == CameraPositionMode.RaceEnd)
         {
-            veichleAnchors.cameraPivot.position = veichleAnchors.OutRace_CameraPivot.position;
-            veichleAnchors.cameraPivot.rotation = veichleAnchors.OutRace_CameraPivot.rotation;
+            vehicleAnchors.cameraPivot.position = vehicleAnchors.OutRace_CameraPivot.position;
+            vehicleAnchors.cameraPivot.rotation = vehicleAnchors.OutRace_CameraPivot.rotation;
         }
     }
 
@@ -160,9 +160,9 @@ public class FeedBackManager : MonoBehaviour
     }
 
     private void InitVisualEffects() { 
-        if (veichleVisualEffects != null)
+        if (vehicleVisualEffects != null)
         {
-            veichleVisualEffects.SetGlow(0, 0, new Color(0, 0, 0));
+            vehicleVisualEffects.SetGlow(0, 0, new Color(0, 0, 0));
         }
     }
 
@@ -185,7 +185,7 @@ public class FeedBackManager : MonoBehaviour
         }
         
 
-        playerVeichle.GetComponent<VeichleEffects>().particlePower = 0.5f * currentEnginePower;
+        playerVehicle.GetComponent<VehicleEffects>().particlePower = 0.5f * currentEnginePower;
 
     }
 
@@ -202,25 +202,25 @@ public class FeedBackManager : MonoBehaviour
     {
         //TriggerCameraShake();
 
-        if (veichleVisualEffects != null)
+        if (vehicleVisualEffects != null)
         {
             if (visualEffectCoroutine != null)
             {
                 StopCoroutine(visualEffectCoroutine);
             }
-            visualEffectCoroutine = StartCoroutine(veichleVisualEffects.PlayCollisionEffect(0.2f));
+            visualEffectCoroutine = StartCoroutine(vehicleVisualEffects.PlayCollisionEffect(0.2f));
         }
     }
 
     public void OnEnergyRechargeFeedback()
     {
-        if (veichleVisualEffects != null)
+        if (vehicleVisualEffects != null)
         {
             if (visualEffectCoroutine != null)
             {
                 StopCoroutine(visualEffectCoroutine);
             }
-            visualEffectCoroutine = StartCoroutine(veichleVisualEffects.PlayEnergyChargeEffect(0.25f));
+            visualEffectCoroutine = StartCoroutine(vehicleVisualEffects.PlayEnergyChargeEffect(0.25f));
         }
     }
 
@@ -239,21 +239,21 @@ public class FeedBackManager : MonoBehaviour
     public void TurboFeedBack(bool onTurbo) {
         this.onTurbo = onTurbo;
 
-        if (veichleAnchors != null)
+        if (vehicleAnchors != null)
         {
             if (onTurbo)
             {
-                veichleAnchors.cameraPivot.localPosition = Vector3.Lerp(veichleAnchors.cameraPivot.localPosition, veichleAnchors.Turbo_cameraPivot.localPosition, deltaTime * 4f);
+                vehicleAnchors.cameraPivot.localPosition = Vector3.Lerp(vehicleAnchors.cameraPivot.localPosition, vehicleAnchors.Turbo_cameraPivot.localPosition, deltaTime * 4f);
             }
             else
             {
-                if((veichleAnchors.cameraPivot.localPosition - veichleAnchors.Normal_cameraPivot.localPosition).magnitude > 0.01f)
+                if((vehicleAnchors.cameraPivot.localPosition - vehicleAnchors.Normal_cameraPivot.localPosition).magnitude > 0.01f)
                 {
-                    veichleAnchors.cameraPivot.localPosition = Vector3.Lerp(veichleAnchors.cameraPivot.localPosition, veichleAnchors.Normal_cameraPivot.localPosition, deltaTime);
+                    vehicleAnchors.cameraPivot.localPosition = Vector3.Lerp(vehicleAnchors.cameraPivot.localPosition, vehicleAnchors.Normal_cameraPivot.localPosition, deltaTime);
                 }
                 else
                 {
-                    veichleAnchors.cameraPivot.localPosition = veichleAnchors.Normal_cameraPivot.localPosition;
+                    vehicleAnchors.cameraPivot.localPosition = vehicleAnchors.Normal_cameraPivot.localPosition;
                 }
                 
             }
@@ -262,7 +262,7 @@ public class FeedBackManager : MonoBehaviour
 
     public void TriggerEndRaceCameraView()
     {
-        if(veichleAnchors != null)
+        if(vehicleAnchors != null)
         {
             cameraPositionMode = CameraPositionMode.RaceEnd;
             
@@ -284,12 +284,12 @@ public class FeedBackManager : MonoBehaviour
         euler.z = currentTiltAngleZ;
         euler.y = currentTiltAngleY;
 
-        playerVeichle.transform.localRotation = Quaternion.Euler(euler);
+        playerVehicle.transform.localRotation = Quaternion.Euler(euler);
     }
 
     private IEnumerator CameraShake()
     {
-        Vector3 originalCamPos = veichleAnchors.cameraPivot.localPosition;
+        Vector3 originalCamPos = vehicleAnchors.cameraPivot.localPosition;
         float elapsed = 0f;
 
         while (elapsed < shakeDuration)
@@ -304,13 +304,13 @@ public class FeedBackManager : MonoBehaviour
             // vertical offset: initial hit then bounce
             float offsetY = (-Mathf.Abs(Mathf.Sin(t * Mathf.PI)) + spring) * shakeMagnitude * damper;
 
-            veichleAnchors.cameraPivot.localPosition = originalCamPos + new Vector3(0f, offsetY, 0f);
+            vehicleAnchors.cameraPivot.localPosition = originalCamPos + new Vector3(0f, offsetY, 0f);
 
             elapsed += Time.deltaTime;
             yield return null;
         }
 
         // Return exactly to the original position
-        veichleAnchors.cameraPivot.localPosition = originalCamPos;
+        vehicleAnchors.cameraPivot.localPosition = originalCamPos;
     }
 }

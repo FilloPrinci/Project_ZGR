@@ -117,7 +117,7 @@ MonoBehaviour:
   data:
     nameId: 
     displayName: 
-    veichlePrefab: {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
+    vehiclePrefab: {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
     playerInputIndex: 0
     cpuIndex: 15
   playerCamera: {fileID: 0}
@@ -183,13 +183,13 @@ MonoBehaviour:
   playerData:
     nameId: 
     displayName: 
-    veichlePrefab: {fileID: 0}
+    vehiclePrefab: {fileID: 0}
     playerInputIndex: 0
     cpuIndex: 0
   playerStats: {fileID: 7834776545252078584}
   playerStructure: {fileID: 0}
   playerSoundManager: {fileID: 3114235918088769195}
-  veichlePivot: {fileID: 0}
+  vehiclePivot: {fileID: 0}
   hoverHeight: 0.4
   startHoverHeight: 0.275
   hoverRaycastMask:

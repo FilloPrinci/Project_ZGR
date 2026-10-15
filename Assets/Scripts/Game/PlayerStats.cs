@@ -236,7 +236,7 @@ public class PlayerStats : MonoBehaviour
         UpdateStats();
     }
 
-    public void OnRubberbandUpdated(int rubberbandLevel)
+    public void OnRubberbandUpdated(float rubberbandLevel)
     {
         rubberbandMaxSpeedEffect = rubberbandLevel;
 

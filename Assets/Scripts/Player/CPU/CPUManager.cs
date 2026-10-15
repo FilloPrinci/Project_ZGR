@@ -14,15 +14,14 @@ public class CPUManager : MonoBehaviour
 
     [Header("Configuration")]
     public float jobHz = 10f;
-    public int cpuLevel = 0;
 
     public float forwardLookAheadMultiplier = 10f;
     public float forwardLookSteerMultiplier = 2f;
-    public float forwardLookotherVeichlesMultiplier = 1.5f;
+    public float forwardLookotherVehiclesMultiplier = 1.5f;
 
     public float borderLimitDistance = 2f;
     public float borderSafeDistance = 6f;
-    public float otherVeichleSafeDistance = 3f;
+    public float otherVehicleSafeDistance = 3f;
 
     public float maxCheckpointTollerance = 5f;
     public float minCheckpointTollerance = 1f;
@@ -102,15 +101,8 @@ public class CPUManager : MonoBehaviour
             {
                 JOB_IO_cpuAccelerate[i] = 1;
                 JOB_IO_cpuSteer[i] = 0f;
-                if (cpuLevel == 0)
-                {
-                    JOB_I_cpuLevel[i] = Random.Range(0, 11);
-                }
-                else
-                {
-                    JOB_I_cpuLevel[i] = cpuLevel;
-                }
-
+                // JOB_I_cpuLevel[i] is filled from each CPU's persisted PlayerData.skillLevel in
+                // UpdateCPUData() below, once the player instances are resolved.
             }
         }
 
@@ -207,11 +199,11 @@ public class CPUManager : MonoBehaviour
             Gizmos.color = new Color(0f, 1f, 0f, 0.25f);
             Gizmos.DrawWireSphere(forwardSensorPoistion, scaledSafe);
 
-            Vector3 forwardOtherVeichleSensorPosition = carPos + (forward * speedFactor * forwardLookotherVeichlesMultiplier);
+            Vector3 forwardOtherVehicleSensorPosition = carPos + (forward * speedFactor * forwardLookotherVehiclesMultiplier);
 
-            // Other veichle safe zone
+            // Other vehicle safe zone
             Gizmos.color = new Color(0.9f, 0.1f, 0.1f, 0.25f);
-            Gizmos.DrawWireSphere(forwardOtherVeichleSensorPosition, otherVeichleSafeDistance);
+            Gizmos.DrawWireSphere(forwardOtherVehicleSensorPosition, otherVehicleSafeDistance);
         }
     }
     #endregion
@@ -237,6 +229,11 @@ public class CPUManager : MonoBehaviour
             GameObject player = cpuTransformList[i].gameObject;
             int playerDataToUpdateIndex = raceData.playerRaceDataList.FindIndex(p => p.playerData.nameId == player.GetComponent<PlayerController>().playerData.nameId);
             int nextCheckpointIndex = raceData.playerRaceDataList[playerDataToUpdateIndex].nextCheckpointIndex;
+
+            // Driving skill is persisted per trophy on the CPU's own PlayerData (see
+            // RaceSettings.GetOrAssignCPUSkill) — read it fresh each tick instead of only once,
+            // it's cheap and keeps this array self-healing against ordering changes.
+            JOB_I_cpuLevel[i] = player.GetComponent<PlayerController>().playerData.skillLevel;
 
             GameObject nextCheckpoint = checkPointList[nextCheckpointIndex];
 
@@ -324,7 +321,7 @@ public class CPUManager : MonoBehaviour
             positions = positions,
             lookAheadForwardMultiplier = forwardLookAheadMultiplier,
             lookAheadRightMultiplier = forwardLookSteerMultiplier,
-            lookAheadVeichleMultiplier = forwardLookotherVeichlesMultiplier,
+            lookAheadVehicleMultiplier = forwardLookotherVehiclesMultiplier,
             maxCheckpointTollerance = maxCheckpointTollerance,
             minCheckpointTollerance = minCheckpointTollerance,
             forwardDirections = forwardDirections,
@@ -351,7 +348,7 @@ public class CPUManager : MonoBehaviour
 
             limitDistance = borderLimitDistance,
             safeDistance = borderSafeDistance,
-            otherVeichleSafeDistance = otherVeichleSafeDistance
+            otherVehicleSafeDistance = otherVehicleSafeDistance
         };
 
         JobHandle handle = job.Schedule(cpuCount, 10);
