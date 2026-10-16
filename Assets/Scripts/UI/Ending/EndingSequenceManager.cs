@@ -33,7 +33,7 @@ public static class EndingSequenceContext
 }
 
 // Drives the "Ending" scene, loaded by RaceGUI.OnRaceExit once a single race or a whole
-// trophy has been completed: thank-you screen first, then the scrolling end credits (content
+// trophy has been completed: thank-you screen first, then (trophy only) the scrolling end credits (content
 // from CreditsConfig), then back to SceneReferences.startScene.
 //
 // Input (polled directly, like LoadSceneOnAnyKey, since the race's PlayerInput instances are
@@ -113,7 +113,11 @@ public class EndingSequenceManager : MonoBehaviour
     private IEnumerator SequenceRoutine()
     {
         yield return ThankYouRoutine();
-        yield return CreditsRoutine();
+
+        if (ShouldShowCredits())
+        {
+            yield return CreditsRoutine();
+        }
 
         if (musicSource != null)
         {
@@ -166,6 +170,13 @@ public class EndingSequenceManager : MonoBehaviour
     }
 
     // --- Credits ---
+
+    // Credits only follow a completed trophy; a single race gets just the thank-you screen.
+    // No context means this scene was played directly in the Editor: show them, for testing.
+    private bool ShouldShowCredits()
+    {
+        return !EndingSequenceContext.HasData || EndingSequenceContext.SessionMode == SessionMode.Trophy;
+    }
 
     private IEnumerator CreditsRoutine()
     {
