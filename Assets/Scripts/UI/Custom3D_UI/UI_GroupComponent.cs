@@ -38,6 +38,16 @@ public class UI_GroupComponent : MonoBehaviour
     private List<float> currentIconSizeList;
     private List<float> newIconSizeList;
 
+    private List<Vector3> textBaseScaleList;
+
+    // Background state (see SetInBackground): every graphic of the group is scaled by
+    // visibility, which shrinks to 0 while the group sits behind the current one; once it's
+    // small enough the graphics get deactivated so nothing (lights included) is left showing.
+    private const float backgroundHiddenThreshold = 0.05f;
+    private bool inBackground = false;
+    private bool graphicsHiddenForBackground = false;
+    private float visibility = 1f;
+
     private float groupSpacing;
     private float moveSpeed;
     private float panelScaleMultiplier;
@@ -89,6 +99,13 @@ public class UI_GroupComponent : MonoBehaviour
             return;
         }
 
+        visibility = Utils.ExpDecay(visibility, inBackground ? 0f : 1f, panelScaleSpeed, deltaTime);
+
+        if (inBackground && !graphicsHiddenForBackground && visibility < backgroundHiddenThreshold)
+        {
+            SetGraphicsActiveForBackground(false);
+        }
+
         for (int i = 0; i < UIComponentList.Count; i++)
         {
             UI_Component_3D component = UIComponentList[i];
@@ -130,11 +147,16 @@ public class UI_GroupComponent : MonoBehaviour
                     newPanelSizeList[i] = 1f;
                 }
 
-                graphicComponent.GetInstantiatedPanel().transform.localScale = Vector3.one * currentPanelSizeList[i];
+                graphicComponent.GetInstantiatedPanel().transform.localScale = Vector3.one * currentPanelSizeList[i] * visibility;
 
                 if (graphicComponent.GetInstantiatedIcon() != null)
                 {
-                    graphicComponent.GetInstantiatedIcon().transform.localScale = Vector3.one * currentIconSizeList[i];
+                    graphicComponent.GetInstantiatedIcon().transform.localScale = Vector3.one * currentIconSizeList[i] * visibility;
+                }
+
+                if (graphicComponent.GetInstantiatedText() != null)
+                {
+                    graphicComponent.GetInstantiatedText().transform.localScale = textBaseScaleList[i] * visibility;
                 }
             }
         }
@@ -204,9 +226,56 @@ public class UI_GroupComponent : MonoBehaviour
         }
     }
 
+    // Called by MoveBack/MoveForward: a group pushed behind the current one shrinks away and
+    // gets hidden, and grows back when it becomes the current group again. Propagated to an
+    // open selector sub-group, whose graphics don't move with this group's transform.
+    public void SetInBackground(bool value)
+    {
+        inBackground = value;
+
+        if (!value && graphicsHiddenForBackground)
+        {
+            SetGraphicsActiveForBackground(true);
+        }
+
+        if (activeGroupSelector != null)
+        {
+            activeGroupSelector.SetInBackground(value);
+        }
+    }
+
+    // Showing again only restores what was visible before going to the background: with a
+    // confirmed selection that's just the selected component (see HideUnselectedComponents).
+    private void SetGraphicsActiveForBackground(bool active)
+    {
+        graphicsHiddenForBackground = !active;
+
+        for (int i = 0; i < UIComponentList.Count; i++)
+        {
+            UI_GraphicComponent graphicComponent = UIComponentList[i].GraphicComponent;
+            if (graphicComponent == null) continue;
+
+            bool componentActive = active && (!selectionConfirmed || i == ActiveComponentIndex);
+
+            if (graphicComponent.GetInstantiatedPanel() != null)
+            {
+                graphicComponent.GetInstantiatedPanel().SetActive(componentActive);
+            }
+            if (graphicComponent.GetInstantiatedIcon() != null)
+            {
+                graphicComponent.GetInstantiatedIcon().SetActive(componentActive);
+            }
+            if (graphicComponent.GetInstantiatedText() != null)
+            {
+                graphicComponent.GetInstantiatedText().SetActive(componentActive);
+            }
+        }
+    }
+
     public void MoveBack(float amount)
     {
         position += transform.forward * amount;
+        SetInBackground(true);
 
         /*
         for (int i = 0; i < positionList.Count; i++)
@@ -219,6 +288,7 @@ public class UI_GroupComponent : MonoBehaviour
     public void MoveForward(float amount)
     {
         position -= transform.forward * amount;
+        SetInBackground(false);
 
         /*
         for (int i = 0; i < positionList.Count; i++)
@@ -251,6 +321,11 @@ public class UI_GroupComponent : MonoBehaviour
             newIconSizeList = new List<float>();
             currentPanelSizeList = new List<float>();
             newPanelSizeList = new List<float>();
+            textBaseScaleList = new List<Vector3>();
+
+            inBackground = false;
+            graphicsHiddenForBackground = false;
+            visibility = 1f;
 
             for (int i = 0; i < UIComponentList.Count; i++)
             {
@@ -321,6 +396,9 @@ public class UI_GroupComponent : MonoBehaviour
                 newIconSizeList.Add(graphicComponent.IconSize);
                 currentPanelSizeList.Add(1f);
                 newPanelSizeList.Add(1f);
+                textBaseScaleList.Add(graphicComponent != null && graphicComponent.GetInstantiatedText() != null
+                    ? graphicComponent.GetInstantiatedText().transform.localScale
+                    : Vector3.one);
             }
         }
         else
@@ -372,6 +450,7 @@ public class UI_GroupComponent : MonoBehaviour
         newIconSizeList.Clear();
         currentPanelSizeList.Clear();
         newPanelSizeList.Clear();
+        textBaseScaleList.Clear();
     }
 
     public void SelectRight(int playerIndex)

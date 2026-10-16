@@ -40,6 +40,10 @@ public class DynamicTrophyGroupPopulator : MonoBehaviour
             return;
         }
 
+        // Entries filled by hand in the UI_GroupComponent Inspector get replaced below; keep
+        // them so a 3D Icon set there (same index as the trophy) is still used as a fallback
+        // when TrophyData.iconPrefab is empty.
+        List<UI_Component_3D> inspectorComponents = _group.UIComponentList;
         _group.UIComponentList = new List<UI_Component_3D>();
 
         try
@@ -62,7 +66,24 @@ public class DynamicTrophyGroupPopulator : MonoBehaviour
                 graphic.Icon = null;
                 graphic.TextGUI = null;
 
-                if (hasImage)
+                UI_GraphicComponent inspectorGraphic = (inspectorComponents != null && i < inspectorComponents.Count && inspectorComponents[i] != null)
+                    ? inspectorComponents[i].GraphicComponent
+                    : null;
+
+                if (trophyData.iconPrefab != null)
+                {
+                    graphic.Icon = trophyData.iconPrefab;
+                    // Trophies saved before iconSize existed deserialize it as 0, not its default.
+                    graphic.IconSize = trophyData.iconSize > 0f ? trophyData.iconSize : 1f;
+                    graphic.IconOffset = trophyData.iconOffset;
+                }
+                else if (inspectorGraphic != null && inspectorGraphic.Icon != null)
+                {
+                    graphic.Icon = inspectorGraphic.Icon;
+                    graphic.IconSize = inspectorGraphic.IconSize;
+                    graphic.IconOffset = inspectorGraphic.IconOffset;
+                }
+                else if (hasImage)
                 {
                     Sprite sprite = trophyData.previewImage;
                     graphic.previewSprite = sprite;
