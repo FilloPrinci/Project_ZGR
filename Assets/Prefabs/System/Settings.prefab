@@ -173,6 +173,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startScene: CustomUI_System
   raceScene: 
+  endingScene: Ending
   raceTrackSceneList:
   - Track_02
   trackSceneDataList: []

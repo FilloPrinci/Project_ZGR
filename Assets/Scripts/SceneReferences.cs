@@ -35,6 +35,10 @@ public class SceneReferences : MonoBehaviour
 
     public string raceScene;
 
+    // Thank-you screen + end credits, shown instead of going straight back to startScene once
+    // a single race or a whole trophy is completed (see RaceGUI.OnRaceExit). Leave empty to skip.
+    public string endingScene;
+
     public List<string> raceTrackSceneList;
 
     public List<TrackSceneData> trackSceneDataList;

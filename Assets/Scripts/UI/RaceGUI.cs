@@ -768,6 +768,13 @@ public class RaceGUI : MonoBehaviour
 
     public void OnRaceExit()
     {
+        // Must be read before ResetSettings() below wipes the trophy state it depends on.
+        bool sessionCompleted = IsSessionCompleted();
+        if (sessionCompleted)
+        {
+            EndingSequenceContext.Capture(raceSettings);
+        }
+
         if (raceManager != null) {
             raceManager.ExitRace();
         }
@@ -783,13 +790,27 @@ public class RaceGUI : MonoBehaviour
 
         if (sceneReferences != null)
         {
-            LoadScene(sceneReferences.startScene);
+            bool showEnding = sessionCompleted && !string.IsNullOrEmpty(sceneReferences.endingScene);
+            LoadScene(showEnding ? sceneReferences.endingScene : sceneReferences.startScene);
         }
         else
         {
             Debug.LogError("sceneReferences instance is null!!");
         }
 
+    }
+
+    // True when exiting from the results of a single race, or of a trophy's last track. False
+    // from the pause menu (race not finished) and from a mid-trophy results screen (the red
+    // "exit" there abandons the trophy rather than completing it).
+    private bool IsSessionCompleted()
+    {
+        if (raceManager == null || raceManager.GetCurrentRacePhase() != RacePhase.Results)
+        {
+            return false;
+        }
+
+        return raceSettings == null || !raceSettings.IsTrophyActive() || raceSettings.IsLastTrophyStage();
     }
 
     private void LoadScene(string sceneName)
