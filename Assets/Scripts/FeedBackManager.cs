@@ -46,6 +46,7 @@ public class FeedBackManager : MonoBehaviour
 
     // Visual material effect support
     private VehicleVisualEffects vehicleVisualEffects;
+    private SpeedLinesEffect speedLinesEffect;
     private Coroutine visualEffectCoroutine;
     private readonly float visualEffectDurationDefault = 0.5f; // half second as requested
 
@@ -109,6 +110,12 @@ public class FeedBackManager : MonoBehaviour
         {
             InitVisualEffects();
         }
+
+        speedLinesEffect = playerController.GetVehiclePivot().GetComponentInChildren<SpeedLinesEffect>();
+        if (speedLinesEffect == null)
+        {
+            Debug.LogWarning("SpeedLinesEffect component not found on VehiclePivot. Energy speed-lines feedback will be unavailable.");
+        }
     }
 
     // Update is called once per frame
@@ -121,11 +128,16 @@ public class FeedBackManager : MonoBehaviour
             EngineFeedback();
             SteerFeedBack(steeringAmount);
 
+            if (speedLinesEffect != null)
+            {
+                speedLinesEffect.UpdateEffect(playerController.playerStats.Energy, playerController.GetCurrentSpeed(), playerController.GetMaxSpeed());
+            }
+
             if (isHuman)
             {
                 ManageCameraFOV();
             }
-            
+
         }
 
         if(cameraPositionMode == CameraPositionMode.RaceEnd)
@@ -185,7 +197,9 @@ public class FeedBackManager : MonoBehaviour
         }
         
 
-        playerVehicle.GetComponent<VehicleEffects>().particlePower = 0.5f * currentEnginePower;
+        VehicleEffects vehicleEffects = playerVehicle.GetComponent<VehicleEffects>();
+        vehicleEffects.particlePower = 0.5f * currentEnginePower;
+        vehicleEffects.onTurbo = onTurbo;
 
     }
 

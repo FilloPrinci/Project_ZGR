@@ -8,6 +8,12 @@ public class VehicleEffects : MonoBehaviour
     public EngineFeedback engineFeedback;
     public EngineFeedback engineFeedback_2;
     public float particlePower = 0f;
+    // Explicit turbo flag (set by FeedBackManager, same source PlayerSoundManager already uses
+    // for engine audio) rather than inferring it from particlePower crossing some threshold -
+    // particlePower caps at exactly 1f during turbo (0.5f * the 2f FeedBackManager uses), never
+    // above, so EngineFeedback's own "currentEnginePower > 1f" boostMode check could never
+    // actually fire through this pipeline.
+    public bool onTurbo = false;
     private List<ParticleSystem> particleEffectList = new List<ParticleSystem>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -42,11 +48,13 @@ public class VehicleEffects : MonoBehaviour
         if (engineFeedback != null)
         {
             engineFeedback.currentEnginePower = particlePower;
+            engineFeedback.boostMode = onTurbo;
         }
 
         if(engineFeedback_2 != null)
         {
             engineFeedback_2.currentEnginePower = particlePower;
+            engineFeedback_2.boostMode = onTurbo;
         }
     }
 

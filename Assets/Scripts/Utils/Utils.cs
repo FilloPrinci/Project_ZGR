@@ -19,6 +19,16 @@ public static class Utils
         );
     }
 
+    public static Color ExpDecay(Color a, Color b, float decay, float deltaTime)
+    {
+        return new Color(
+            ExpDecay(a.r, b.r, decay, deltaTime),
+            ExpDecay(a.g, b.g, decay, deltaTime),
+            ExpDecay(a.b, b.b, decay, deltaTime),
+            ExpDecay(a.a, b.a, decay, deltaTime)
+        );
+    }
+
     public static Quaternion ExpDecay(Quaternion a, Quaternion b, float decay, float deltaTime)
     {
         if (deltaTime < 0)
