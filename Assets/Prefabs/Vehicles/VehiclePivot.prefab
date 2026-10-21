@@ -1110,7 +1110,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 200
+    maxNumParticles: 300
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -5356,9 +5356,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpeedLinesEffect
   speedLines: {fileID: 4641388483977524550}
   minEmissionRate: 0
-  maxEmissionRate: 40
+  maxEmissionRate: 90
   minParticleSpeed: 2
   maxParticleSpeed: 12
+  fullEffectSpeedFraction: 0.85
+  minForwardOffset: 0
+  maxForwardOffset: 4
   decay: 6
 --- !u!1 &9118861194746994268
 GameObject:
