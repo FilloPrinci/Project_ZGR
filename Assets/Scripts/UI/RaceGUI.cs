@@ -69,6 +69,7 @@ public class RaceGUI : MonoBehaviour
 
     public GameObject finishLabel;
     public RectTransform energyBar;
+    public RectTransformHaloFollower energyBarHalo;
 
     public GameObject[] itemPanelList;
     public GameObject[] itemPanelImageList;
@@ -201,6 +202,11 @@ public class RaceGUI : MonoBehaviour
                 Vector2 anchorMax = energyBar.anchorMax;
                 anchorMax.x = clampedEnergyValue;
                 energyBar.anchorMax = anchorMax;
+
+                if (energyBarHalo != null)
+                {
+                    energyBarHalo.SetFillFraction(clampedEnergyValue);
+                }
             }
             else
             {

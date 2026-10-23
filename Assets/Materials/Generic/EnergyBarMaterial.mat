@@ -36,15 +36,20 @@ Material:
     m_Floats:
     - _BlendMode: 0
     - _Brightness: 1.6
+    - _BurnAmount: 1
     - _ColorMask: 15
     - _Contrast: 1.3
     - _DimFloor: 0.35
     - _EdgeFeather: 0
+    - _FeatherBottom: 0
+    - _FeatherLeft: 0
+    - _FeatherRight: 0
+    - _FeatherTop: 0
     - _GlowBoost: 1.8
     - _GlowPower: 3
     - _NoiseTileSize: 100
-    - _NoiseTileSizeA: 150
-    - _NoiseTileSizeB: 60
+    - _NoiseTileSizeA: 300
+    - _NoiseTileSizeB: 120
     - _NoiseTiling: 3
     - _Stencil: 0
     - _StencilComp: 8

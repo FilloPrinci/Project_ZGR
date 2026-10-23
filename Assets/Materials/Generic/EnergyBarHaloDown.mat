@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: EnergyBarHaloMaterial
+  m_Name: EnergyBarHaloDown
   m_Shader: {fileID: 4800000, guid: da8c7fca0bd6d9944a6d94b35b59c12f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -36,14 +36,19 @@ Material:
     m_Floats:
     - _BlendMode: 0
     - _Brightness: 1.6
+    - _BurnAmount: 0.8
     - _ColorMask: 15
     - _Contrast: 1.1
     - _DimFloor: 0.35
     - _EdgeFeather: 0.45
+    - _FeatherBottom: 0.75
+    - _FeatherLeft: 0
+    - _FeatherRight: 0
+    - _FeatherTop: 0
     - _GlowBoost: 1.8
     - _GlowPower: 3
-    - _NoiseTileSizeA: 220
-    - _NoiseTileSizeB: 110
+    - _NoiseTileSizeA: 450
+    - _NoiseTileSizeB: 200
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0

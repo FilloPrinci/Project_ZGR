@@ -5,9 +5,10 @@
 // sliding past; different scales + opposite scroll directions is what breaks up the repetition
 // and reads as genuinely organic).
 //
-// Also doubles as the "halo" layer around the bar (a second Image instance of this same shader,
-// larger and behind the crisp bar - see RectTransformHaloFollower.cs) via _EdgeFeather, which
-// fades alpha to 0 near this element's own rect edges - the glow source's own semi-transparency
+// Also doubles as the "halo" layers around the bar (separate Image instances of this same
+// shader, behind the crisp bar - see RectTransformHaloFollower.cs, which builds one piece per
+// direction: Up, Down, Right) via the per-side _Feather* properties, which fade alpha to 0 only
+// on the one outer side that faces away from the bar - the glow source's own semi-transparency
 // comes from the Image's ordinary Color alpha, already respected like any other UI shader.
 //
 // Built on Unity's standard UI/Default.shader structure (stencil/clip-rect/alpha-clip support)
@@ -44,15 +45,24 @@ Shader "ZGR/UI/EnergyBar"
         _DimFloor ("Dim Floor", Range(0, 1)) = 0.35
         // Glow Power: how sharply the bright spots stand out from the rest - higher = fewer, punchier hotspots.
         _GlowPower ("Glow Power", Float) = 3
-        // Glow Boost: extra additive brightness at the hotspots, on top of the base color - this is what reads as "emissive" without actually being HDR/Bloom.
-        _GlowBoost ("Glow Boost", Float) = 1.8
+        // Burn Amount: at the hotspots, blend the color toward pure white instead of just scaling
+        // it brighter - a real light source overexposes/clips to white at its brightest point
+        // rather than staying a saturated, tinted bright version of itself, so this is what makes
+        // it read as "emitting light" instead of "a brightly colored texture".
+        _BurnAmount ("Burn Amount", Range(0, 2)) = 1.3
 
         [Header(Halo)]
-        // Edge Feather: 0 = hard-edged (use for the bar itself). On a halo instance (a larger,
-        // semi-transparent copy sitting behind the bar - see RectTransformHaloFollower.cs), a
-        // value around 0.3-0.5 fades it to nothing near its own rect edges instead of cutting
-        // off sharply, so it reads as a soft bloom bleeding outward rather than a second bar.
-        _EdgeFeather ("Edge Feather", Range(0, 0.5)) = 0
+        // Directional edge feather: each side fades independently (0 = hard edge on that side).
+        // Deliberately NOT a single symmetric fadeX*fadeY like a vignette - that fades the
+        // corners faster than the edge midpoints, which reads as a rounded/circular blob instead
+        // of a clean directional glow. Each halo piece (see RectTransformHaloFollower.cs, which
+        // now builds three separate pieces - Up/Down/Right) only feathers the one outer side that
+        // actually faces away from the bar, and leaves the other three sides hard (0) so it butts
+        // seamlessly against the bar with uniform intensity along that shared edge.
+        _FeatherLeft ("Feather Left", Range(0, 1)) = 0
+        _FeatherRight ("Feather Right", Range(0, 1)) = 0
+        _FeatherTop ("Feather Top", Range(0, 1)) = 0
+        _FeatherBottom ("Feather Bottom", Range(0, 1)) = 0
 
         // UI internals below (stencil/clip support) - leave at their defaults.
         [Header(UI Internals)]
@@ -139,8 +149,11 @@ Shader "ZGR/UI/EnergyBar"
             float _Contrast;
             float _DimFloor;
             float _GlowPower;
-            float _GlowBoost;
-            float _EdgeFeather;
+            float _BurnAmount;
+            float _FeatherLeft;
+            float _FeatherRight;
+            float _FeatherTop;
+            float _FeatherBottom;
 
             v2f vert(appdata_t v)
             {
@@ -194,20 +207,21 @@ Shader "ZGR/UI/EnergyBar"
                 // Bloom (that's a post-process step this draw happens after, confirmed live -
                 // no color value, HDR or not, reaches it), so instead of just scaling brightness
                 // linearly by the combined noise (which read as a flat, evenly-lit tint, not an
-                // "energy" glow), hotspots get pushed additively brighter than the base color
-                // while darker noise regions only dim down to _DimFloor rather than to black -
-                // the two together are what actually read as "brighter where the noise is
-                // lighter, weaker where it's darker" instead of uniform.
+                // "energy" glow), darker noise regions only dim down to _DimFloor rather than to
+                // black, and hotspots burn toward pure white rather than just a brighter tint of
+                // the base color - a real light source clips/overexposes to white at its
+                // brightest point, it doesn't stay a saturated bright version of its own color,
+                // so blending toward white (instead of additively scaling it) is what actually
+                // reads as "emitting light" rather than "a brightly colored texture".
                 fixed glow = pow(combined, _GlowPower);
                 color.rgb *= lerp(_DimFloor, 1.0, combined);
-                color.rgb += color.rgb * glow * _GlowBoost;
+                color.rgb = lerp(color.rgb, fixed3(1.0, 1.0, 1.0), saturate(glow * _BurnAmount));
 
-                if (_EdgeFeather > 0.0)
-                {
-                    float fadeX = smoothstep(0.0, _EdgeFeather, IN.texcoord.x) * smoothstep(0.0, _EdgeFeather, 1.0 - IN.texcoord.x);
-                    float fadeY = smoothstep(0.0, _EdgeFeather, IN.texcoord.y) * smoothstep(0.0, _EdgeFeather, 1.0 - IN.texcoord.y);
-                    color.a *= fadeX * fadeY;
-                }
+                float fadeLeft = _FeatherLeft > 0.0 ? smoothstep(0.0, _FeatherLeft, IN.texcoord.x) : 1.0;
+                float fadeRight = _FeatherRight > 0.0 ? smoothstep(0.0, _FeatherRight, 1.0 - IN.texcoord.x) : 1.0;
+                float fadeBottom = _FeatherBottom > 0.0 ? smoothstep(0.0, _FeatherBottom, IN.texcoord.y) : 1.0;
+                float fadeTop = _FeatherTop > 0.0 ? smoothstep(0.0, _FeatherTop, 1.0 - IN.texcoord.y) : 1.0;
+                color.a *= fadeLeft * fadeRight * fadeBottom * fadeTop;
 
                 #ifdef UNITY_UI_CLIP_RECT
                 color.a *= UnityGet2DClipping(IN.worldPosition.xy, _ClipRect);
