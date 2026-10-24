@@ -48,8 +48,8 @@ Material:
     - _GlowBoost: 1.8
     - _GlowPower: 3
     - _NoiseTileSize: 100
-    - _NoiseTileSizeA: 300
-    - _NoiseTileSizeB: 120
+    - _NoiseTileSizeA: 600
+    - _NoiseTileSizeB: 240
     - _NoiseTiling: 3
     - _Stencil: 0
     - _StencilComp: 8

@@ -30,8 +30,8 @@ Shader "ZGR/UI/EnergyBar"
         // different sizes, one coarser and one finer, is what the "one texture bigger, one
         // smaller" look actually needs - two layers at the same scale just reinforce each other
         // instead of adding detail.
-        _NoiseTileSizeA ("Noise Tile Size A (coarser)", Float) = 150
-        _NoiseTileSizeB ("Noise Tile Size B (finer)", Float) = 60
+        _NoiseTileSizeA ("Noise Tile Size A (coarser)", Float) = 300
+        _NoiseTileSizeB ("Noise Tile Size B (finer)", Float) = 120
         _ScrollSpeedA ("Scroll Speed A (local units/sec)", Vector) = (70, 35, 0, 0)
         _ScrollSpeedB ("Scroll Speed B (local units/sec)", Vector) = (-55, -28, 0, 0)
 
