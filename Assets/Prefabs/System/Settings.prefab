@@ -175,9 +175,28 @@ MonoBehaviour:
   raceScene: 
   endingScene: Ending
   raceTrackSceneList:
-  - Track_02
-  trackSceneDataList: []
-  trophyDataList: []
+  - T1C1
+  trackSceneDataList:
+  - sceneName: T1C1
+    displayName: NeonCity
+    description: 
+    previewImage: {fileID: 21300000, guid: 3eb671f8b87ed3d42b3250dd4c3b433c, type: 3}
+  - sceneName: T1C2
+    displayName: SpaceTower
+    description: 
+    previewImage: {fileID: 21300000, guid: 4bc422ef279c2f04c84d7210ee4b3792, type: 3}
+  - sceneName: T1C3
+    displayName: UnderDock
+    description: 
+    previewImage: {fileID: 21300000, guid: f2ae35cf87c10324fa71c643809d857e, type: 3}
+  trophyDataList:
+  - displayName: Trophy 1
+    description: Le piste attualmente disponibili, in ordine.
+    previewImage: {fileID: 0}
+    iconPrefab: {fileID: 0}
+    iconSize: 0
+    iconOffset: {x: 0, y: 0, z: 0}
+    trackIndexes: 
 --- !u!1 &4110100899477358533
 GameObject:
   m_ObjectHideFlags: 0
