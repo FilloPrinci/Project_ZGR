@@ -82,6 +82,12 @@ public class RaceManager : MonoBehaviour
 
     private RacePhase currentRacePhase;
     private List<GameObject> playerInstanceList;
+    // Built once right after playerInstanceList is populated (it's never modified again after
+    // setup) so GetPlayerInstanceFromID is an O(1) lookup instead of a linear scan that calls
+    // GetComponent<PlayerStructure>() on every entry - that scan ran inside
+    // RefreshPlayerRaceDataDistances() for the whole roster, 30 times a second, for the entire
+    // race.
+    private Dictionary<string, GameObject> playerInstanceById;
     private List<int> sectorList;
     private RaceData raceData;
     private int humanPlayersAmount = 0;
@@ -316,6 +322,12 @@ public class RaceManager : MonoBehaviour
                     case RaceMode.SpectatorRace:
                         addPlayerInstances();
                         break;
+                }
+
+                playerInstanceById = new Dictionary<string, GameObject>(playerInstanceList.Count);
+                foreach (GameObject instance in playerInstanceList)
+                {
+                    playerInstanceById[instance.GetComponent<PlayerStructure>().data.nameId] = instance;
                 }
             }
             TriggerRaceEvent(RacePhaseEvent.Start);
@@ -603,18 +615,14 @@ public class RaceManager : MonoBehaviour
 
     public GameObject GetPlayerInstanceFromID(string id)
     {
-        GameObject playerInstance = playerInstanceList[0];
-
-        for (int i = 0; i< playerInstanceList.Count; i++)
+        if (playerInstanceById != null && playerInstanceById.TryGetValue(id, out GameObject cachedInstance))
         {
-            string playerId = playerInstanceList[i].GetComponent<PlayerStructure>().data.nameId;
-            if (playerId == id)
-            {
-                playerInstance = playerInstanceList[i];
-            }
+            return cachedInstance;
         }
 
-        return playerInstance;
+        // id not found (e.g. called before the cache is built) - same fallback the original
+        // linear scan used when nothing matched.
+        return playerInstanceList[0];
     }
 
     public void RefreshPlayerRaceDataDistances()

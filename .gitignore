@@ -14,6 +14,9 @@
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
 
+# ProfilerCaptures (.data files from the Profiler Window's Save/Load) can get excessive in size.
+/[Pp]rofiler[Cc]aptures/
+
 # Recordings can get excessive in size
 /[Rr]ecordings/
 

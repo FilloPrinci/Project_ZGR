@@ -1,12 +1,13 @@
-﻿using Unity.Collections;
+﻿using Unity.Burst;
+using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
-using UnityEngine.UI;
 
 
 // ============================
 // Job definition
 // ============================
+[BurstCompile]
 public struct CPUJob : IJobParallelFor
 {
     // =========================
@@ -58,6 +59,7 @@ public struct CPUJob : IJobParallelFor
     // =========================
     // MAIN JOB EXECUTION
     // =========================
+    [BurstCompile]
     public void Execute(int index)
     {
         int cpuLevel = cpuLevelList[index];

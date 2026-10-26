@@ -129,7 +129,18 @@ public class RaceData
     public void RefreshPositions()
     {
         // Step 1: Sort the entire list based on the criteria: Lap → Sector → Distance
-        positionOrderedPlayerRaceDataList = new List<PlayerRaceData>(playerRaceDataList);
+        // Reuses the same backing list every call (cleared + refilled) instead of allocating a
+        // new List<> - this runs at 30Hz for the whole race (UpdateRankingCoroutine), so a fresh
+        // allocation here was continuous GC garbage for the entire race duration.
+        if (positionOrderedPlayerRaceDataList == null)
+        {
+            positionOrderedPlayerRaceDataList = new List<PlayerRaceData>(playerRaceDataList.Count);
+        }
+        else
+        {
+            positionOrderedPlayerRaceDataList.Clear();
+        }
+        positionOrderedPlayerRaceDataList.AddRange(playerRaceDataList);
 
         positionOrderedPlayerRaceDataList.Sort((a, b) =>
         {
@@ -203,7 +214,6 @@ public class RaceData
     public void AddFinalResultForPlayerRaceData(PlayerRaceData playerRaceData)
     {
         finalResultPlayerRaceDataList.Add(playerRaceData);
-        Debug.Log("" + playerRaceData.playerData.nameId + " registered position: " + playerRaceData.position);
     }
 
     public List<PlayerRaceData> GetFinalPlayerRaceDataList()

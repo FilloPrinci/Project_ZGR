@@ -44,6 +44,19 @@ public class CPUManager : MonoBehaviour
     private Vector3[] JOB_O_nearestRightPoints;
     private Vector3[] JOB_O_nearestRaceLinePoints;
 
+    // Cached sensor-collider mesh data: Mesh.vertices/.triangles each deep-copy the mesh's full
+    // buffer into a brand new managed array on every access (a well-known Mesh API gotcha, not a
+    // cached reference) - these track-boundary colliders are static for the whole race, so this
+    // data is captured once (or whenever the mesh reference actually changes) and reused across
+    // every 10Hz job cycle instead of being re-copied every cycle. Was the largest GC source in a
+    // profiler capture (~130KB/cycle), directly causing GC.Collect frame spikes.
+    private NativeArray<Vector3> JOB_I_leftVertices;
+    private NativeArray<int> JOB_I_leftTriangles;
+    private NativeArray<Vector3> JOB_I_rightVertices;
+    private NativeArray<int> JOB_I_rightTriangles;
+    private Mesh cachedLeftMesh;
+    private Mesh cachedRightMesh;
+
     private RaceManager raceManager;
     private RaceData raceData;
     private List<GameObject> instancedPlayersList;
@@ -141,6 +154,10 @@ public class CPUManager : MonoBehaviour
         if (JOB_IO_cpuSteer.IsCreated) JOB_IO_cpuSteer.Dispose();
         if (JOB_I_cpuCurrentSpeed.IsCreated) JOB_I_cpuCurrentSpeed.Dispose();
         if (JOB_I_cpuInCorner.IsCreated) JOB_I_cpuInCorner.Dispose();
+        if (JOB_I_leftVertices.IsCreated) JOB_I_leftVertices.Dispose();
+        if (JOB_I_leftTriangles.IsCreated) JOB_I_leftTriangles.Dispose();
+        if (JOB_I_rightVertices.IsCreated) JOB_I_rightVertices.Dispose();
+        if (JOB_I_rightTriangles.IsCreated) JOB_I_rightTriangles.Dispose();
     }
 
     // Draw gizmos to debug nearest distances
@@ -275,11 +292,22 @@ public class CPUManager : MonoBehaviour
         Mesh leftMesh = leftCollider.sharedMesh;
         Mesh rightMesh = rightCollider.sharedMesh;
 
-        NativeArray<Vector3> leftVertices = new NativeArray<Vector3>(leftMesh.vertices, Allocator.TempJob);
-        NativeArray<int> leftTriangles = new NativeArray<int>(leftMesh.triangles, Allocator.TempJob);
-
-        NativeArray<Vector3> rightVertices = new NativeArray<Vector3>(rightMesh.vertices, Allocator.TempJob);
-        NativeArray<int> rightTriangles = new NativeArray<int>(rightMesh.triangles, Allocator.TempJob);
+        if (leftMesh != cachedLeftMesh)
+        {
+            if (JOB_I_leftVertices.IsCreated) JOB_I_leftVertices.Dispose();
+            if (JOB_I_leftTriangles.IsCreated) JOB_I_leftTriangles.Dispose();
+            JOB_I_leftVertices = new NativeArray<Vector3>(leftMesh.vertices, Allocator.Persistent);
+            JOB_I_leftTriangles = new NativeArray<int>(leftMesh.triangles, Allocator.Persistent);
+            cachedLeftMesh = leftMesh;
+        }
+        if (rightMesh != cachedRightMesh)
+        {
+            if (JOB_I_rightVertices.IsCreated) JOB_I_rightVertices.Dispose();
+            if (JOB_I_rightTriangles.IsCreated) JOB_I_rightTriangles.Dispose();
+            JOB_I_rightVertices = new NativeArray<Vector3>(rightMesh.vertices, Allocator.Persistent);
+            JOB_I_rightTriangles = new NativeArray<int>(rightMesh.triangles, Allocator.Persistent);
+            cachedRightMesh = rightMesh;
+        }
 
         NativeArray<Vector3> positions = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
         NativeArray<Vector3> forwardDirections = new NativeArray<Vector3>(cpuCount, Allocator.TempJob);
@@ -334,10 +362,10 @@ public class CPUManager : MonoBehaviour
 
             maxSpeed = JOB_I_maxSpeed,
 
-            leftVertices = leftVertices,
-            leftTriangles = leftTriangles,
-            rightVertices = rightVertices,
-            rightTriangles = rightTriangles,
+            leftVertices = JOB_I_leftVertices,
+            leftTriangles = JOB_I_leftTriangles,
+            rightVertices = JOB_I_rightVertices,
+            rightTriangles = JOB_I_rightTriangles,
 
             leftLocalToWorld = leftCollider.transform.localToWorldMatrix,
             rightLocalToWorld = rightCollider.transform.localToWorldMatrix,
@@ -395,10 +423,6 @@ public class CPUManager : MonoBehaviour
         }
 
 
-        leftVertices.Dispose();
-        leftTriangles.Dispose();
-        rightVertices.Dispose();
-        rightTriangles.Dispose();
         positions.Dispose();
         raceLinePoints.Dispose();
         raceLineForwards.Dispose();
