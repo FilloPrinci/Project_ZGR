@@ -345,6 +345,9 @@ public class RaceManager : MonoBehaviour
                     case RaceMode.SpectatorRace:
                         addPlayerInstances();
                         break;
+                    case RaceMode.Demo:
+                        addPlayerInstances();
+                        break;
                 }
 
                 playerInstanceById = new Dictionary<string, GameObject>(playerInstanceList.Count);
@@ -486,7 +489,9 @@ public class RaceManager : MonoBehaviour
         }
 
         GameObject demoFollowTarget = playerInstanceList[UnityEngine.Random.Range(0, playerInstanceList.Count)];
-        VehicleAnchors anchors = demoFollowTarget.GetComponentInChildren<VehicleAnchors>();
+        // The vehicle pivot (which holds VehicleAnchors) is instantiated as a separate root object
+        // by PlayerStructure.Awake(), not as a child of the player, so look it up via the controller.
+        VehicleAnchors anchors = demoFollowTarget.GetComponent<PlayerStructure>().controller.GetVehicleAnchors();
         if (anchors == null)
         {
             Debug.LogWarning("[RaceManager] : Demo Mode could not find VehicleAnchors on the followed vehicle.");
@@ -590,12 +595,15 @@ public class RaceManager : MonoBehaviour
     {
         ForEachHumanCameraController(cc => cc.ExitCountdownCameraMode());
 
+        // In Demo Mode mainCamera is the spectator camera and the only listener in the scene.
         AudioListener presentationCameraAudioListener = mainCamera.GetComponent<AudioListener>();
-            if (presentationCameraAudioListener != null) {
+            if (presentationCameraAudioListener != null && mode != RaceMode.Demo) {
             Destroy(presentationCameraAudioListener);
         }
 
-        if(sountrackAudioSource != null)
+        // Demo Mode never plays the track soundtrack - the title screen music (TitleMusicPlayer)
+        // keeps looping through the demo race instead.
+        if(sountrackAudioSource != null && mode != RaceMode.Demo)
         {
             sountrackAudioSource.Stop();
             sountrackAudioSource.Play();

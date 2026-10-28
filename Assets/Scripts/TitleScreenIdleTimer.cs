@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
@@ -9,14 +10,42 @@ using UnityEngine.SceneManagement;
 // (which is what actually moves the player from here into the main menu on an explicit press) -
 // this script only cares about the ABSENCE of input, so both coexist on the title screen without
 // conflicting.
+//
+// The demo track is loaded asynchronously in the background WITHOUT the full-screen
+// LoadingScreenManager overlay: the title screen stays visible and animated, with only a small
+// spinner in a corner, so the switch into the demo feels like an attract-mode cut rather than
+// a regular scene transition.
 public class TitleScreenIdleTimer : MonoBehaviour
 {
     public float idleSeconds = 10f;
 
+    [Header("Demo Loading Indicator")]
+    // Small corner spinner, inactive by default, shown only while the demo track loads.
+    public RectTransform demoLoadingSpinner;
+    public float spinnerDegreesPerSecond = 220f;
+
     private float idleTimer;
+    private bool isLoadingDemo = false;
+
+    private void Awake()
+    {
+        if (demoLoadingSpinner != null)
+        {
+            demoLoadingSpinner.gameObject.SetActive(false);
+        }
+    }
 
     private void Update()
     {
+        if (isLoadingDemo)
+        {
+            if (demoLoadingSpinner != null)
+            {
+                demoLoadingSpinner.Rotate(0f, 0f, -spinnerDegreesPerSecond * Time.unscaledDeltaTime);
+            }
+            return;
+        }
+
         if (AnyInputThisFrame())
         {
             idleTimer = 0f;
@@ -71,15 +100,38 @@ public class TitleScreenIdleTimer : MonoBehaviour
         int randomTrackIndex = Random.Range(0, sceneReferences.trackSceneDataList.Count);
         raceSettings.OnRaceTrackSelect(randomTrackIndex);
 
-        string trackSceneName = raceSettings.GetSelectedRaceTrack();
+        StartCoroutine(LoadDemoSceneRoutine(raceSettings.GetSelectedRaceTrack()));
+    }
 
-        if (LoadingScreenManager.Instance != null)
+    private IEnumerator LoadDemoSceneRoutine(string trackSceneName)
+    {
+        AsyncOperation asyncOp = SceneManager.LoadSceneAsync(trackSceneName);
+        if (asyncOp == null)
         {
-            LoadingScreenManager.Instance.LoadScene(trackSceneName);
+            Debug.LogError("[TitleScreenIdleTimer] : Could not start loading demo scene: " + trackSceneName);
+            yield break;
         }
-        else
+
+        isLoadingDemo = true;
+
+        // Once the async load has started it can't be cancelled, so "press any key" must not
+        // queue a second (main menu) load on top of it - the press is simply ignored until the
+        // demo is running, where any input returns to the main menu anyway.
+        LoadSceneOnAnyKey anyKeyLoader = GetComponent<LoadSceneOnAnyKey>();
+        if (anyKeyLoader != null)
         {
-            SceneManager.LoadScene(trackSceneName);
+            anyKeyLoader.enabled = false;
+        }
+
+        if (demoLoadingSpinner != null)
+        {
+            demoLoadingSpinner.gameObject.SetActive(true);
+        }
+
+        // This object is destroyed together with the title screen when the demo scene activates.
+        while (!asyncOp.isDone)
+        {
+            yield return null;
         }
     }
 }
