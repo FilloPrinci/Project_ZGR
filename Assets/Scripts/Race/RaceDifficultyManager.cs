@@ -146,6 +146,15 @@ public class RaceDifficultyManager : MonoBehaviour
         // Implement rubberbanding logic based on the difficulty settings and player positions
         // This may involve adjusting the speed or performance of CPU players based on their position in race
 
+        // Rubberbanding exists to keep CPUs relative to a human player - with no human in the
+        // race (e.g. Demo Mode, an all-CPU race) there's nothing to rubber-band around, and
+        // indexing humanPlayerInstanceList[0] below would throw. CPUs just race at their own
+        // skill-based pace in that case.
+        if (humanPlayerInstanceList.Count == 0)
+        {
+            return;
+        }
+
         // retrive player positions and apply rubberbanding adjustments based on the difficulty settings
         humanPlayerInstanceList.Sort((a, b) =>
         {

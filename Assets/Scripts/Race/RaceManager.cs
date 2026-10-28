@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public enum RaceMode
@@ -13,7 +14,12 @@ public enum RaceMode
     TimeTrial,
     RaceSingleplayer,
     RaceMultiplayer,
-    SpectatorRace
+    SpectatorRace,
+    // Attract-mode style demo race (title screen idle timeout): every player is forced to CPU
+    // regardless of playerDataList's configured entries, a random CPU is followed by a dedicated
+    // spectator camera, no gameplay HUD is shown (already true for an all-CPU race - RaceGUI is
+    // only instantiated for non-CPU players), and the pre-race presentation sequence is skipped.
+    Demo
 }
 
 public enum RacePhase 
@@ -79,6 +85,13 @@ public class RaceManager : MonoBehaviour
 
     [Header("FinishLine")]
     public FinishLineManager finishLineManager;
+
+    [Header("Demo Mode")]
+    // Logo + blinking "press start" overlay, the same prompt shown on the title screen -
+    // instantiated over the spectator camera's view for the whole demo race, since no gameplay
+    // HUD of any kind should be visible (RaceGUI is never instantiated in the first place for an
+    // all-CPU race, so this overlay is the only UI Demo Mode needs to add).
+    public GameObject demoOverlayPrefab;
 
     private RacePhase currentRacePhase;
     private List<GameObject> playerInstanceList;
@@ -178,6 +191,16 @@ public class RaceManager : MonoBehaviour
             }
         }
         LoadRaceSettings();
+
+        if (mode == RaceMode.Demo)
+        {
+            // Force every spawn point to CPU, overriding whatever playerDataList ended up
+            // containing (from RaceSettings or the Inspector) - Demo Mode must have zero human
+            // players unconditionally, and must work just by opening a track scene and setting
+            // RaceManager's mode to Demo directly (no RaceSettings instance needed).
+            playerDataList.Clear();
+            cpuPlayersAmount = spawnPointList.Count;
+        }
 
         humanPlayersAmount = playerDataList.Count;
     }
@@ -450,6 +473,49 @@ public class RaceManager : MonoBehaviour
         }
     }
 
+    // Picks a random CPU to follow for the whole race, points a DemoSpectatorCamera at its
+    // VehicleAnchors, and shows the logo/press-start overlay - everything Demo Mode needs beyond
+    // what already happens automatically for an all-CPU race (no RaceGUI, no rubber-banding, see
+    // RaceDifficultyManager/PlayerStructure).
+    private void ActivateDemoMode()
+    {
+        if (playerInstanceList == null || playerInstanceList.Count == 0)
+        {
+            Debug.LogWarning("[RaceManager] : Demo Mode has no players to follow.");
+            return;
+        }
+
+        GameObject demoFollowTarget = playerInstanceList[UnityEngine.Random.Range(0, playerInstanceList.Count)];
+        VehicleAnchors anchors = demoFollowTarget.GetComponentInChildren<VehicleAnchors>();
+        if (anchors == null)
+        {
+            Debug.LogWarning("[RaceManager] : Demo Mode could not find VehicleAnchors on the followed vehicle.");
+            return;
+        }
+
+        // Reuse mainCamera as the spectator camera instead of the normal per-human camera
+        // pipeline (built around a single player's FOV/shake feedback, see FeedBackManager) - a
+        // plain external chase camera driven by DemoSpectatorCamera is simpler and is all an
+        // all-CPU race needs.
+        mainCamera.gameObject.SetActive(true);
+        DemoSpectatorCamera spectatorCamera = mainCamera.GetComponent<DemoSpectatorCamera>();
+        if (spectatorCamera == null)
+        {
+            spectatorCamera = mainCamera.gameObject.AddComponent<DemoSpectatorCamera>();
+        }
+        spectatorCamera.Follow(anchors);
+
+        if (demoOverlayPrefab != null)
+        {
+            Instantiate(demoOverlayPrefab);
+        }
+
+        // Any input during the demo race returns to the main menu, same as the title screen's
+        // own "press any key" handling - reusing that exact component instead of writing a
+        // second copy of the same input-polling logic.
+        gameObject.AddComponent<LoadSceneOnAnyKey>().SetSceneName("CustomUI_System");
+    }
+
     private void OnCountDownStart() { 
 
         mainCamera.gameObject.SetActive(false);
@@ -470,6 +536,13 @@ public class RaceManager : MonoBehaviour
         backgroundCamera.backgroundColor = Color.black;
         backgroundCamera.rect = new Rect(0f, 0f, 1f, 1f);
         backgroundCamera.cullingMask = 0; // do not render anything
+
+        if (mode == RaceMode.Demo)
+        {
+            // No human player camera gets activated below (there are none), so without this the
+            // screen would just stay on the culls-everything BackgroundCamera above.
+            ActivateDemoMode();
+        }
 
         // switch to players cameras
         foreach (GameObject playerInstnce in playerInstanceList)
@@ -542,6 +615,16 @@ public class RaceManager : MonoBehaviour
             sountrackAudioSource.Stop();
         }
 
+        if (mode == RaceMode.Demo)
+        {
+            // No human to show results to and no trophy session to award points into - a demo
+            // race finishing on its own (nobody pressed anything) just loops the attract mode:
+            // back to the title screen, whose idle timer will start another random demo race
+            // after its own 10s wait.
+            SceneManager.LoadScene("TitleScreen");
+            return;
+        }
+
         raceData.playerRaceDataList.Sort((a, b) => a.position.CompareTo(b.position));
 
         Debug.Log("the winner is : " + raceData.playerRaceDataList[0].playerData.nameId + " (player index : " + (int)raceData.playerRaceDataList[0].playerData.playerInputIndex + " )");
@@ -594,11 +677,11 @@ public class RaceManager : MonoBehaviour
                 break;
             case RaceMode.SpectatorRace:
                 break;
-
-
+            case RaceMode.Demo:
+                break;
         }
 
-        
+
         raceData.UpdatePlayerRaceDataTimings();
     }
 
@@ -771,9 +854,19 @@ public class RaceManager : MonoBehaviour
         switch (newRacePhaseEvent)
         {
             case RacePhaseEvent.Start:
-                // Start presentation
                 currentRacePhase = RacePhase.Presentation;
-                OnTrackPresentationStart();
+                if (mode == RaceMode.Demo)
+                {
+                    // Demo Mode skips the cinematic pre-race presentation entirely - straight to
+                    // the spectator-camera-followed race (PresentationManager.OnEndPresentation()
+                    // is safe to call without a matching OnStartPresentation() first - its
+                    // overlay canvas already exists from PresentationManager's own Start()).
+                    TriggerRaceEvent(RacePhaseEvent.PresentationEnd);
+                }
+                else
+                {
+                    OnTrackPresentationStart();
+                }
                 break;
             case RacePhaseEvent.PresentationEnd:
                 // Start countdown

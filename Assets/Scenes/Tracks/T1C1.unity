@@ -1450,6 +1450,7 @@ MonoBehaviour:
     vehiclePrefab: {fileID: 4699924895700797138, guid: a3bb4ad6c635fd44dac73aa2e5772f91, type: 3}
     playerInputIndex: 0
     cpuIndex: -1
+    skillLevel: 0
   maxLaps: 3
   avaiableVehicleList:
   - {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
@@ -1469,6 +1470,7 @@ MonoBehaviour:
   straightCheckpointSpacing: 30
   cornerMergeThreshold: 8
   finishLineManager: {fileID: 974412450}
+  demoOverlayPrefab: {fileID: 2264687887140091525, guid: 5f67b2cc219760249939331cf5da0c56, type: 3}
 --- !u!4 &219254184
 Transform:
   m_ObjectHideFlags: 0
@@ -1500,6 +1502,8 @@ MonoBehaviour:
   executeCollisionDetection: 0
   solverIterations: 3
   penetrationEpsilon: 0.001
+  turboVehiclePushShare: 0.1
+  humanVehiclePushShare: 0.2
 --- !u!114 &219254186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18698,7 +18702,6 @@ MonoBehaviour:
   leftCollider: {fileID: 1584720526}
   rightCollider: {fileID: 171257663}
   jobHz: 20
-  cpuLevel: 10
   forwardLookAheadMultiplier: 30
   forwardLookSteerMultiplier: 4
   forwardLookotherVehiclesMultiplier: 3.5

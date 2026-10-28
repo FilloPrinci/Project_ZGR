@@ -3969,6 +3969,7 @@ MonoBehaviour:
   straightCheckpointSpacing: 300
   cornerMergeThreshold: 20
   finishLineManager: {fileID: 827776917}
+  demoOverlayPrefab: {fileID: 2264687887140091525, guid: 5f67b2cc219760249939331cf5da0c56, type: 3}
 --- !u!4 &364314909
 Transform:
   m_ObjectHideFlags: 0

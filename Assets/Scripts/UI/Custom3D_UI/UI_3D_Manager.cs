@@ -419,7 +419,18 @@ public class UI_3D_Manager : MonoBehaviour
             }
             else
             {
-                Debug.Log("[ManageBackSelection] can't go back, no UI_Group_Component found in stack ");
+                // At the root menu group with nothing left to pop - back out to the title screen
+                // (the logo + blinking "press start" prompt), whose own idle timer will start a
+                // Demo Mode race if nothing happens there for a while.
+                if (LoadingScreenManager.Instance != null)
+                {
+                    LoadingScreenManager.Instance.LoadScene("TitleScreen");
+                }
+                else
+                {
+                    SceneManager.LoadScene("TitleScreen");
+                }
+                return;
             }
 
             UpdateOverlay();

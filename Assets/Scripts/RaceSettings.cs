@@ -156,6 +156,15 @@ public class RaceSettings : MonoBehaviour
         selectedRaceMode = RaceMode.RaceMultiplayer;
     }
 
+    // Title screen idle timeout (attract mode) - see TitleScreenIdleTimer. No input player is
+    // ever added (inputPlayerDataList stays empty from ResetSettings()), so RaceManager fills
+    // every spawn point with CPU, exactly like OnSinglePlayerSelect()/OnMultiplayerAmountSelect()
+    // populate it for the normal modes.
+    public void OnDemoModeSelect()
+    {
+        selectedRaceMode = RaceMode.Demo;
+    }
+
     public void OnMultiplayerAmountSelect(int amount)
     {
         inputPlayersAmount = amount;

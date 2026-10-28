@@ -7,6 +7,13 @@ public class LoadSceneOnAnyKey : MonoBehaviour
 {
     [SerializeField] private string sceneName;
 
+    // Lets code (e.g. RaceManager activating Demo Mode) point this at a scene at runtime,
+    // instead of only being configurable from the Inspector.
+    public void SetSceneName(string newSceneName)
+    {
+        sceneName = newSceneName;
+    }
+
     private void Update()
     {
         // Keyboard
