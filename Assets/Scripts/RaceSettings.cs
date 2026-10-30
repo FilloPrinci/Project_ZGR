@@ -32,6 +32,7 @@ public class RaceSettings : MonoBehaviour
     private GlobalDifficulty selectedDifficulty = GlobalDifficulty.normal;
     private string selectedRaceTrack;
     private string selectedRaceTrackDisplayName;
+    private float demoDurationSeconds = 0f;
 
     [Header("Trophy / Session Mode")]
     private SessionMode selectedSessionMode = SessionMode.SingleRace;
@@ -160,9 +161,15 @@ public class RaceSettings : MonoBehaviour
     // ever added (inputPlayerDataList stays empty from ResetSettings()), so RaceManager fills
     // every spawn point with CPU, exactly like OnSinglePlayerSelect()/OnMultiplayerAmountSelect()
     // populate it for the normal modes.
-    public void OnDemoModeSelect()
+    public void OnDemoModeSelect(float durationSeconds)
     {
         selectedRaceMode = RaceMode.Demo;
+        demoDurationSeconds = durationSeconds;
+    }
+
+    public float GetDemoDurationSeconds()
+    {
+        return demoDurationSeconds;
     }
 
     public void OnMultiplayerAmountSelect(int amount)

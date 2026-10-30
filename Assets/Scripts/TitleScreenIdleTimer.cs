@@ -17,7 +17,10 @@ using UnityEngine.SceneManagement;
 // a regular scene transition.
 public class TitleScreenIdleTimer : MonoBehaviour
 {
-    public float idleSeconds = 10f;
+    public float idleSeconds = 5f;
+
+    [Tooltip("How long a demo race lasts before returning to the title screen. 0 = until the race ends.")]
+    public float demoDurationSeconds = 60f;
 
     [Header("Demo Loading Indicator")]
     // Small corner spinner, inactive by default, shown only while the demo track loads.
@@ -26,9 +29,12 @@ public class TitleScreenIdleTimer : MonoBehaviour
 
     private float idleTimer;
     private bool isLoadingDemo = false;
+    private LoadSceneOnAnyKey anyKeyLoader;
 
     private void Awake()
     {
+        anyKeyLoader = GetComponent<LoadSceneOnAnyKey>();
+
         if (demoLoadingSpinner != null)
         {
             demoLoadingSpinner.gameObject.SetActive(false);
@@ -43,6 +49,12 @@ public class TitleScreenIdleTimer : MonoBehaviour
             {
                 demoLoadingSpinner.Rotate(0f, 0f, -spinnerDegreesPerSecond * Time.unscaledDeltaTime);
             }
+            return;
+        }
+
+        // A key press already started loading the main menu - don't start a demo on top of it.
+        if (anyKeyLoader != null && !anyKeyLoader.enabled)
+        {
             return;
         }
 
@@ -94,7 +106,7 @@ public class TitleScreenIdleTimer : MonoBehaviour
         }
 
         raceSettings.ResetSettings();
-        raceSettings.OnDemoModeSelect();
+        raceSettings.OnDemoModeSelect(demoDurationSeconds);
         raceSettings.SetSelectedDifficulty(GlobalDifficulty.normal);
 
         int randomTrackIndex = Random.Range(0, sceneReferences.trackSceneDataList.Count);
@@ -117,7 +129,6 @@ public class TitleScreenIdleTimer : MonoBehaviour
         // Once the async load has started it can't be cancelled, so "press any key" must not
         // queue a second (main menu) load on top of it - the press is simply ignored until the
         // demo is running, where any input returns to the main menu anyway.
-        LoadSceneOnAnyKey anyKeyLoader = GetComponent<LoadSceneOnAnyKey>();
         if (anyKeyLoader != null)
         {
             anyKeyLoader.enabled = false;

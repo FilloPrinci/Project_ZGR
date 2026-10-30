@@ -382,7 +382,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6f53966bd5275e48871b5af5a6553da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TitleScreenIdleTimer
-  idleSeconds: 10
+  idleSeconds: 5
+  demoDurationSeconds: 30
   demoLoadingSpinner: {fileID: 92165048}
   spinnerDegreesPerSecond: 220
 --- !u!1001 &271883708
@@ -857,7 +858,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 03d0fd279fe073d97896dd203b014165, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.3
   m_Pitch: 1

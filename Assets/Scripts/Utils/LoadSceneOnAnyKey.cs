@@ -6,12 +6,14 @@ using UnityEngine.SceneManagement;
 public class LoadSceneOnAnyKey : MonoBehaviour
 {
     [SerializeField] private string sceneName;
+    [SerializeField] private bool fadeTransition = false;
 
     // Lets code (e.g. RaceManager activating Demo Mode) point this at a scene at runtime,
     // instead of only being configurable from the Inspector.
-    public void SetSceneName(string newSceneName)
+    public void SetSceneName(string newSceneName, bool useFadeTransition = false)
     {
         sceneName = newSceneName;
+        fadeTransition = useFadeTransition;
     }
 
     private void Update()
@@ -39,9 +41,20 @@ public class LoadSceneOnAnyKey : MonoBehaviour
 
     private void LoadScene()
     {
+        // Only trigger once: the load takes several frames, and other scripts check this to know
+        // a scene change is already underway (TitleScreenIdleTimer, RaceManager's Demo Mode exit).
+        enabled = false;
+
         if (LoadingScreenManager.Instance != null)
         {
-            LoadingScreenManager.Instance.LoadScene(sceneName);
+            if (fadeTransition)
+            {
+                LoadingScreenManager.Instance.FadeToScene(sceneName, showLoadingScreen: true);
+            }
+            else
+            {
+                LoadingScreenManager.Instance.LoadScene(sceneName);
+            }
         }
         else
         {

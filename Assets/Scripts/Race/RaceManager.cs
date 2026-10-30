@@ -93,6 +93,7 @@ public class RaceManager : MonoBehaviour
     // all-CPU race, so this overlay is the only UI Demo Mode needs to add).
     public GameObject demoOverlayPrefab;
 
+    private LoadSceneOnAnyKey demoExitInput;
     private RacePhase currentRacePhase;
     private List<GameObject> playerInstanceList;
     // Built once right after playerInstanceList is populated (it's never modified again after
@@ -518,7 +519,47 @@ public class RaceManager : MonoBehaviour
         // Any input during the demo race returns to the main menu, same as the title screen's
         // own "press any key" handling - reusing that exact component instead of writing a
         // second copy of the same input-polling logic.
-        gameObject.AddComponent<LoadSceneOnAnyKey>().SetSceneName("CustomUI_System");
+        demoExitInput = gameObject.AddComponent<LoadSceneOnAnyKey>();
+        demoExitInput.SetSceneName("CustomUI_System", useFadeTransition: true);
+
+        // Duration comes from the title screen (TitleScreenIdleTimer) - without RaceSettings
+        // (track scene opened directly in the Editor) the demo just runs until the race ends.
+        RaceSettings raceSettings = RaceSettings.Instance;
+        if (raceSettings != null && raceSettings.GetDemoDurationSeconds() > 0f)
+        {
+            StartCoroutine(DemoTimeoutRoutine(raceSettings.GetDemoDurationSeconds()));
+        }
+    }
+
+    private IEnumerator DemoTimeoutRoutine(float durationSeconds)
+    {
+        yield return new WaitForSeconds(durationSeconds);
+        ReturnToTitleScreenFromDemo();
+    }
+
+    // Used by both ways a demo race ends by itself (timeout, race finished). The idle timer on
+    // the title screen will then start another random demo race, and TitleMusicPlayer keeps the
+    // music going through the reload.
+    private void ReturnToTitleScreenFromDemo()
+    {
+        if (demoExitInput != null)
+        {
+            // A key press is already loading the main menu, or this already ran once.
+            if (!demoExitInput.enabled)
+            {
+                return;
+            }
+            demoExitInput.enabled = false;
+        }
+
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.FadeToScene("TitleScreen", showLoadingScreen: false);
+        }
+        else
+        {
+            SceneManager.LoadScene("TitleScreen");
+        }
     }
 
     private void OnCountDownStart() { 
@@ -626,10 +667,8 @@ public class RaceManager : MonoBehaviour
         if (mode == RaceMode.Demo)
         {
             // No human to show results to and no trophy session to award points into - a demo
-            // race finishing on its own (nobody pressed anything) just loops the attract mode:
-            // back to the title screen, whose idle timer will start another random demo race
-            // after its own 10s wait.
-            SceneManager.LoadScene("TitleScreen");
+            // race finishing on its own (nobody pressed anything) just loops the attract mode.
+            ReturnToTitleScreenFromDemo();
             return;
         }
 

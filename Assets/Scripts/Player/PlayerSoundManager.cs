@@ -38,6 +38,17 @@ public class PlayerSoundManager : MonoBehaviour
 
     public void Setup(bool isHuman, VehicleSoundEffects soundEffects)
     {
+        // Demo Mode: only the title music must be heard. Leaving this.soundEffects unset also
+        // turns off the engine updates and collision sounds below.
+        if (RaceManager.Instance != null && RaceManager.Instance.GetCurrentRaceMode() == RaceMode.Demo)
+        {
+            if (soundEffects != null)
+            {
+                soundEffects.engineEffect.audioSource.Stop();
+            }
+            return;
+        }
+
         this.isHuman = isHuman;
         this.soundEffects = soundEffects;
 
