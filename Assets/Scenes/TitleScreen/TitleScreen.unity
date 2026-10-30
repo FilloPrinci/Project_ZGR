@@ -370,6 +370,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: CustomUI_System
+  fadeTransition: 0
 --- !u!114 &100535667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -383,7 +384,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TitleScreenIdleTimer
   idleSeconds: 5
-  demoDurationSeconds: 30
+  demoDurationSeconds: 50
   demoLoadingSpinner: {fileID: 92165048}
   spinnerDegreesPerSecond: 220
 --- !u!1001 &271883708
@@ -1578,7 +1579,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 2026 FilloPrinci
+  m_text: 2026 Filippo Principato
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 03be14029db4c4643a7981cb20b6c98c, type: 2}
@@ -1605,7 +1606,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17
+  m_fontSize: 11.9
   m_fontSizeBase: 12
   m_fontWeight: 400
   m_enableAutoSizing: 1

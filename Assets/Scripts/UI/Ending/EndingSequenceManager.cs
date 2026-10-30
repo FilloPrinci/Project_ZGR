@@ -15,6 +15,13 @@ public static class EndingSequenceContext
     public static SessionMode SessionMode { get; private set; }
     public static string TrophyName { get; private set; }
     public static string TrackName { get; private set; }
+    // Set by the main menu's Credits button: scrolling credits only, no thank-you screen.
+    public static bool CreditsOnly { get; private set; }
+
+    public static void RequestCreditsOnly()
+    {
+        CreditsOnly = true;
+    }
 
     public static void Capture(RaceSettings raceSettings)
     {
@@ -29,12 +36,14 @@ public static class EndingSequenceContext
     public static void Clear()
     {
         HasData = false;
+        CreditsOnly = false;
     }
 }
 
 // Drives the "Ending" scene, loaded by RaceGUI.OnRaceExit once a single race or a whole
 // trophy has been completed: thank-you screen first, then (trophy only) the scrolling end credits (content
-// from CreditsConfig), then back to SceneReferences.startScene.
+// from CreditsConfig), then back to SceneReferences.startScene. The main menu's Credits button
+// loads it too, for the credits alone (EndingSequenceContext.CreditsOnly).
 //
 // Input (polled directly, like LoadSceneOnAnyKey, since the race's PlayerInput instances are
 // gone by now): any button skips the thank-you screen; during the credits, holding any button
@@ -113,7 +122,10 @@ public class EndingSequenceManager : MonoBehaviour
 
     private IEnumerator SequenceRoutine()
     {
-        yield return ThankYouRoutine();
+        if (!EndingSequenceContext.CreditsOnly)
+        {
+            yield return ThankYouRoutine();
+        }
 
         if (ShouldShowCredits())
         {
@@ -176,7 +188,7 @@ public class EndingSequenceManager : MonoBehaviour
     // No context means this scene was played directly in the Editor: show them, for testing.
     private bool ShouldShowCredits()
     {
-        return !EndingSequenceContext.HasData || EndingSequenceContext.SessionMode == SessionMode.Trophy;
+        return EndingSequenceContext.CreditsOnly || !EndingSequenceContext.HasData || EndingSequenceContext.SessionMode == SessionMode.Trophy;
     }
 
     private IEnumerator CreditsRoutine()
@@ -287,7 +299,7 @@ public class EndingSequenceManager : MonoBehaviour
             {
                 CreditsEntry entry = section.entries[i];
                 if (!string.IsNullOrEmpty(entry.role)) AddText(roleTemplate, entry.role);
-                if (!string.IsNullOrEmpty(entry.names)) AddText(namesTemplate, entry.names.Trim());
+                if (!string.IsNullOrEmpty(entry.names)) AddText(namesTemplate, FormatNames(entry.names));
                 if (i < section.entries.Count - 1) AddSpacer(creditsConfig.entrySpacing);
             }
         }
@@ -299,6 +311,19 @@ public class EndingSequenceManager : MonoBehaviour
             TextMeshProUGUI closing = AddText(titleTemplate, creditsConfig.closingMessage);
             closingLine = closing != null ? closing.rectTransform : null;
         }
+    }
+
+    // Commas and new lines both separate names: one name per line on screen.
+    private static string FormatNames(string names)
+    {
+        string[] separated = names.Split(new[] { ',', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
+        List<string> lines = new List<string>();
+        foreach (string name in separated)
+        {
+            string trimmed = name.Trim();
+            if (trimmed.Length > 0) lines.Add(trimmed);
+        }
+        return string.Join("\n", lines);
     }
 
     private TextMeshProUGUI AddText(TextMeshProUGUI template, string text)

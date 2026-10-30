@@ -253,7 +253,7 @@ PrefabInstance:
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[2].GraphicComponent.Icon
       value: 
-      objectReference: {fileID: 1014520105036327642, guid: 2358c417958c3764384ff5c5099d2e97, type: 3}
+      objectReference: {fileID: 3994206676308601745, guid: 5a3567bff7f020240bd76f7845619bcc, type: 3}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[2].GraphicComponent.text
       value: Audio
@@ -14499,7 +14499,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: 'UIComponentList.Array.data[0]'
@@ -14519,6 +14519,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[2].ComponentName
+      value: Credits
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[3].ComponentName
       value: Quit
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
@@ -14540,6 +14544,14 @@ PrefabInstance:
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[2].GraphicComponent.Icon
       value: 
+      objectReference: {fileID: 1014520105036327642, guid: e4d5218d002e6ba469e08b661dea6809, type: 3}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[2].GraphicComponent.text
+      value: Credits
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[3].GraphicComponent.Icon
+      value: 
       objectReference: {fileID: 1014520105036327642, guid: 3b4e1f22ff884724b82f652957bc1967, type: 3}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[0].GraphicComponent.Panel
@@ -14551,6 +14563,10 @@ PrefabInstance:
       objectReference: {fileID: 1425986839947724955, guid: 67cf72e6e06647a47b4e6b73bbe7be45, type: 3}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[2].GraphicComponent.Panel
+      value: 
+      objectReference: {fileID: 1425986839947724955, guid: 67cf72e6e06647a47b4e6b73bbe7be45, type: 3}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[3].GraphicComponent.Panel
       value: 
       objectReference: {fileID: 1425986839947724955, guid: 67cf72e6e06647a47b4e6b73bbe7be45, type: 3}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
@@ -14566,6 +14582,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[3].GraphicComponent.IconSize
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[0].GraphicComponent.IconOffset.z
       value: -0.2
       objectReference: {fileID: 0}
@@ -14578,7 +14598,15 @@ PrefabInstance:
       value: -0.2
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[3].GraphicComponent.IconOffset.z
+      value: -0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[2].onConfirm.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[3].onConfirm.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
@@ -14586,7 +14614,15 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[3].onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[2].onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1558748705}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[3].onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1558748705}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
@@ -14594,7 +14630,15 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[3].onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[2].onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ShowCredits
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[3].onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: QuitGame
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
@@ -14602,7 +14646,15 @@ PrefabInstance:
       value: LogicActions, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[3].onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: LogicActions, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
       propertyPath: UIComponentList.Array.data[2].onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857921927464765533, guid: aaa535a4fc30024458f06dc134f0d0e2, type: 3}
+      propertyPath: UIComponentList.Array.data[3].onConfirm.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -1206,19 +1206,21 @@ MonoBehaviour:
     imageHeight: 160
     entries:
     - role: Game Design
-      names: FilloPrinci
+      names: Filippo Principato
     - role: Programming
-      names: FilloPrinci
+      names: Filippo Principato
     - role: Art & Tracks
-      names: FilloPrinci
+      names: Filippo Principato
   - title: Audio
     image: {fileID: 0}
     imageHeight: 160
     entries:
     - role: Music
-      names: Manu
+      names: 'Manu,
+
+        Davide Ranieri'
     - role: Sound Effects
-      names: FilloPrinci
+      names: Filippo Principato
   - title: Special Thanks
     image: {fileID: 0}
     imageHeight: 160

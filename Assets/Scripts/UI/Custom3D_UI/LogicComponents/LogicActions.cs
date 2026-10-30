@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class LogicActions : MonoBehaviour
 {
@@ -61,6 +62,25 @@ public class LogicActions : MonoBehaviour
     public void UI_Back()
     {
         uI_3D_Manager.ManageBackSelection(0);
+    }
+
+    public void ShowCredits()
+    {
+        SceneReferences sceneReferences = SceneReferences.Instance;
+        string endingScene = sceneReferences != null && !string.IsNullOrEmpty(sceneReferences.endingScene)
+            ? sceneReferences.endingScene
+            : "Ending";
+
+        EndingSequenceContext.RequestCreditsOnly();
+
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.LoadScene(endingScene);
+        }
+        else
+        {
+            SceneManager.LoadScene(endingScene);
+        }
     }
 
     #region Game Mode

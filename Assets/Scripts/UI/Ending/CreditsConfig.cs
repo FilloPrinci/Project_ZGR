@@ -2,12 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // One line of the credits: a role ("Game Design") and the people credited for it. Leave
-// role empty for a names-only line. names is multiline: one person per line.
+// role empty for a names-only line. Separate names with commas or new lines: each one is
+// shown on its own line.
 [System.Serializable]
 public class CreditsEntry
 {
     public string role;
-    [TextArea(1, 6)] public string names;
+    [TextArea(3, 6)] public string names;
 }
 
 // A block of the credits under a common heading ("Programming", "Music", "Special Thanks").
