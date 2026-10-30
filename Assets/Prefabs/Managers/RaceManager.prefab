@@ -1,0 +1,176 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4455379227344840345
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5311309034253594299}
+  - component: {fileID: 1094446529624605120}
+  - component: {fileID: 739775301243217330}
+  - component: {fileID: 72699348428044109}
+  - component: {fileID: 4410943480173423512}
+  m_Layer: 0
+  m_Name: RaceManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5311309034253594299
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4455379227344840345}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1094446529624605120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4455379227344840345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f52cfd38c15204741b3597edecc78db1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 0}
+  generateCPUPlayers: 1
+  cpuPlayersAmount: 0
+  playerPrefab: {fileID: 4423116904176109930, guid: 5be1c164d3800b84fa4bfdb9de999d80, type: 3}
+  trackMainCollider: {fileID: 0}
+  checkPointListParent: {fileID: 0}
+  checkPointList: []
+  raceGrid: {fileID: 0}
+  spawnPointList: []
+  presentationManager: {fileID: 0}
+  playersCollisionDetection: {fileID: 739775301243217330}
+  namesLoader: {fileID: 4410943480173423512}
+  mode: 2
+  playerDataList:
+  - nameId: Player1
+    displayName: Player1
+    vehiclePrefab: {fileID: 4699924895700797138, guid: a3bb4ad6c635fd44dac73aa2e5772f91, type: 3}
+    playerInputIndex: 0
+    cpuIndex: -1
+    skillLevel: 0
+  maxLaps: 3
+  avaiableVehicleList:
+  - {fileID: 6537926367160389953, guid: f7ea9152e5f056d4eb7fcff87373b5c7, type: 3}
+  - {fileID: 4699924895700797138, guid: a3bb4ad6c635fd44dac73aa2e5772f91, type: 3}
+  - {fileID: 4699924895700797138, guid: 267da2944cbf0b044896309ba451fb34, type: 3}
+  - {fileID: 3665708238735973177, guid: 98c827ba062baf7478f6aa5bee782b7f, type: 3}
+  sountrackAudioSource: {fileID: 0}
+  checkpointSourceCSV: {fileID: 0}
+  csvWorldOffset: {x: 0, y: 0, z: 0}
+  checkpointSourceCurve: {fileID: 0}
+  checkpointPrefab: {fileID: 3240113400896951112, guid: 91f5f017954a2df4893af7b57bf73623, type: 3}
+  finishLine: {fileID: 0}
+  checkpointDensityMultiplier: 2
+  checkpointWidth: 50
+  checkpointHeight: 30
+  cornerCurvatureThreshold: 0.25
+  maxAngularStep: 100
+  straightCheckpointSpacing: 300
+  cornerMergeThreshold: 20
+  finishLineManager: {fileID: 0}
+  demoOverlayPrefab: {fileID: 2264687887140091525, guid: 5f67b2cc219760249939331cf5da0c56, type: 3}
+--- !u!114 &739775301243217330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4455379227344840345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee46473823dbcdc44a86aa1abb72bafb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  players: []
+  executeCollisionDetection: 0
+  solverIterations: 3
+  penetrationEpsilon: 0.001
+  turboVehiclePushShare: 0.1
+  humanVehiclePushShare: 0.2
+--- !u!114 &72699348428044109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4455379227344840345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 132623d2c3a383443bf440079b6eed7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  difficultySettings:
+  - globalDifficulty: 0
+    goFasterLevel: 0
+    goSlowerLevel: 3
+  - globalDifficulty: 1
+    goFasterLevel: 1
+    goSlowerLevel: 1
+  - globalDifficulty: 2
+    goFasterLevel: 3
+    goSlowerLevel: 1
+  difficulty: 2
+  managementRefreshRate: 1
+--- !u!114 &4410943480173423512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4455379227344840345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 366b55a63b9c15040a263db4ebd6791b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jsonFile: {fileID: 4900000, guid: e9939401b8178134a9ac12317d3a67bc, type: 3}
+  namesList:
+  - Nova Striker
+  - Vortex Pulse
+  - Neon Phantom
+  - Hyperion Dash
+  - Quantum Blaze
+  - Zero Velocity
+  - Ion Drifter
+  - Cyber Comet
+  - Omega Glide
+  - Photon Rush
+  - Apex Singularity
+  - Echo Velocity
+  - Plasma Wraith
+  - Zenith Racer
+  - Flux Tempest
+  - Orbit Breaker
+  - Stellar Surge
+  - Neutron Sprint
+  - Velocity X
+  - Chrono Rider
+  - Lumen Spear
+  - Arc Lightning
+  - Turbo Eclipse
+  - Gravity Shift
+  - Pulse Horizon
+  - Spectral Dash
+  - Nova Cyclone
+  - Fusion Runner
+  - Warp Drifter
+  - Astral Torque
