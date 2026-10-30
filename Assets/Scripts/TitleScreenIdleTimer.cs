@@ -17,6 +17,9 @@ using UnityEngine.SceneManagement;
 // a regular scene transition.
 public class TitleScreenIdleTimer : MonoBehaviour
 {
+    // Static: survives the title screen reload between one demo race and the next.
+    private static int lastDemoTrackIndex = -1;
+
     public float idleSeconds = 5f;
 
     [Tooltip("How long a demo race lasts before returning to the title screen. 0 = until the race ends.")]
@@ -109,7 +112,8 @@ public class TitleScreenIdleTimer : MonoBehaviour
         raceSettings.OnDemoModeSelect(demoDurationSeconds);
         raceSettings.SetSelectedDifficulty(GlobalDifficulty.normal);
 
-        int randomTrackIndex = Random.Range(0, sceneReferences.trackSceneDataList.Count);
+        int randomTrackIndex = Utils.RandomIndexExcluding(sceneReferences.trackSceneDataList.Count, lastDemoTrackIndex);
+        lastDemoTrackIndex = randomTrackIndex;
         raceSettings.OnRaceTrackSelect(randomTrackIndex);
 
         StartCoroutine(LoadDemoSceneRoutine(raceSettings.GetSelectedRaceTrack()));

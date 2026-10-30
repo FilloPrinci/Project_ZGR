@@ -2,6 +2,18 @@ using UnityEngine;
 
 public static class Utils
 {
+    // Random index in [0, count), never equal to excludedIndex (unless it's the only one).
+    public static int RandomIndexExcluding(int count, int excludedIndex)
+    {
+        if (count <= 1 || excludedIndex < 0 || excludedIndex >= count)
+        {
+            return Random.Range(0, count);
+        }
+
+        int index = Random.Range(0, count - 1);
+        return index >= excludedIndex ? index + 1 : index;
+    }
+
 
     public static bool IsValid(Vector3 v)
     {

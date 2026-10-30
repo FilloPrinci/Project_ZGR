@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class RandomPrefabSpawner : MonoBehaviour
 {
+    // Static: survives the scene reload, so returning to the title screen never shows the same
+    // vehicle twice in a row.
+    private static int lastSpawnedIndex = -1;
+
     public GameObject[] prefabs;
 
     public Transform parent;
@@ -21,7 +25,8 @@ public class RandomPrefabSpawner : MonoBehaviour
             return;
         }
 
-        int randomIndex = Random.Range(0, prefabs.Length);
+        int randomIndex = Utils.RandomIndexExcluding(prefabs.Length, lastSpawnedIndex);
+        lastSpawnedIndex = randomIndex;
 
         GameObject selectedPrefab = prefabs[randomIndex];
 

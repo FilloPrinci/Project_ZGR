@@ -531,6 +531,15 @@ public class RaceManager : MonoBehaviour
         }
     }
 
+    // Demo Mode has no countdown. Waits one frame because this runs inside RaceManager.Start():
+    // the race must begin after every other Start(), e.g. FinishLineManager's would otherwise
+    // replace the green flag with the checkerboard one.
+    private IEnumerator StartDemoRaceNextFrame()
+    {
+        yield return null;
+        TriggerRaceEvent(RacePhaseEvent.RaceStart);
+    }
+
     private IEnumerator DemoTimeoutRoutine(float durationSeconds)
     {
         yield return new WaitForSeconds(durationSeconds);
@@ -619,7 +628,11 @@ public class RaceManager : MonoBehaviour
 
         CountdownManager countdownManager = CountdownManager.Instance;
 
-        if (countdownManager != null) {
+        if (mode == RaceMode.Demo)
+        {
+            StartCoroutine(StartDemoRaceNextFrame());
+        }
+        else if (countdownManager != null) {
             // start count down
             ShowCountdownForAllPlayers();
             countdownManager.StartCountdown();
