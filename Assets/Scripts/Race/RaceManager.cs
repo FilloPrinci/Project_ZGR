@@ -660,6 +660,7 @@ public class RaceManager : MonoBehaviour
         if(sountrackAudioSource != null && mode != RaceMode.Demo)
         {
             sountrackAudioSource.Stop();
+            sountrackAudioSource.volume *= GameSettings.MusicVolumeFactor;
             sountrackAudioSource.Play();
         }
             

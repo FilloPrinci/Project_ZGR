@@ -104,6 +104,7 @@ public class EndingSequenceManager : MonoBehaviour
 
         if (musicSource != null && musicSource.clip != null && !musicSource.isPlaying)
         {
+            musicSource.volume *= GameSettings.MusicVolumeFactor;
             musicSource.Play();
         }
 

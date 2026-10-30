@@ -68,6 +68,17 @@ public class GameSettings : MonoBehaviour
     public FPS_Settings fps_settings;
     public QualityLevel qualitySettings;
 
+    [Header("Audio")]
+    [Range(0f, 1f)] public float masterVolume = 1f;
+    [Range(0f, 1f)] public float musicVolume = 1f;
+    [Range(0f, 1f)] public float effectsVolume = 1f;
+
+    // For audio code: full volume when there's no GameSettings (a scene started directly in the
+    // Editor). Read these from Start() onwards, GameSettings may not have run Awake() before that.
+    public static float MasterVolumeFactor => Instance != null ? Instance.masterVolume : 1f;
+    public static float MusicVolumeFactor => Instance != null ? Instance.musicVolume : 1f;
+    public static float EffectsVolumeFactor => Instance != null ? Instance.effectsVolume : 1f;
+
 
     private void Awake()
     {
@@ -77,6 +88,7 @@ public class GameSettings : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             LoadSettings();
             ApplyVideoSettings();
+            AudioListener.volume = masterVolume;
 
             if (inputMode == InputMode.GamepadOnly && !IsGamepadAvailable())
             {
@@ -143,6 +155,10 @@ public class GameSettings : MonoBehaviour
         fps_settings = (FPS_Settings)PlayerPrefs.GetInt("FPS_Settings", 1);
         // default is High
         qualitySettings = (QualityLevel)PlayerPrefs.GetInt("QualitySettings", 2);
+
+        masterVolume = PlayerPrefs.GetFloat("MasterVolume", 1f);
+        musicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
+        effectsVolume = PlayerPrefs.GetFloat("EffectsVolume", 1f);
     }
 
     [Obsolete("Use ApplyVideoSettings instead for video settings and ApplyInputSettings for input settings.")]
@@ -245,6 +261,18 @@ public class GameSettings : MonoBehaviour
 
     }
 
+
+    // Saves only the volumes: SaveSettings() would also store inputMode, which Awake() may have
+    // temporarily switched to keyboard because no gamepad was connected at startup.
+    public void ApplyAudioSettings()
+    {
+        AudioListener.volume = masterVolume;
+
+        PlayerPrefs.SetFloat("MasterVolume", masterVolume);
+        PlayerPrefs.SetFloat("MusicVolume", musicVolume);
+        PlayerPrefs.SetFloat("EffectsVolume", effectsVolume);
+        PlayerPrefs.Save();
+    }
 
     private Vector2 ResolutionFromEnum(Resolutions resolution)
     {

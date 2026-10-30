@@ -57,6 +57,8 @@ public class UI_3D_Manager : MonoBehaviour
     public Sprite keyboardLayoutImage;
     public Sprite controllerLayoutImage;
 
+    public AudioSettingsPanel audioSettingsPanel;
+
     [Header("Settings")]
     public UI_GroupComponent Start_UI_GroupComponent;
     public float backgroundSpacing = 1f;
@@ -101,6 +103,7 @@ public class UI_3D_Manager : MonoBehaviour
 
     private bool popupFocused = false;
     private PopupInfo currentPopupInfo;
+    private bool audioSettingsFocused = false;
 
     private void Awake()
     {
@@ -217,6 +220,25 @@ public class UI_3D_Manager : MonoBehaviour
         }
     }
 
+    public void ShowAudioSettings()
+    {
+        if (audioSettingsPanel != null)
+        {
+            audioSettingsFocused = true;
+            audioSettingsPanel.Open();
+        }
+    }
+
+    private void HideAudioSettings(int playerIndex)
+    {
+        audioSettingsFocused = false;
+        audioSettingsPanel.Close();
+
+        // Back to the menu group the panel was opened from
+        Current_UI_GroupCompoment.BackFromSelection(playerIndex);
+        UpdateOverlay();
+    }
+
     private void UpdateCameraPosition()
     {
         if(mainCamera != null)
@@ -267,6 +289,13 @@ public class UI_3D_Manager : MonoBehaviour
 
     public void ManageSelectRight(int playerIndex)
     {
+        if (audioSettingsFocused)
+        {
+            // Volume first, so the sound below already plays at the new level
+            audioSettingsPanel.AdjustSelected(1);
+            PlaySelectionSound();
+            return;
+        }
 
         PlaySelectionSound();
 
@@ -294,6 +323,13 @@ public class UI_3D_Manager : MonoBehaviour
 
     public void ManageSelectLeft(int playerIndex)
     {
+        if (audioSettingsFocused)
+        {
+            audioSettingsPanel.AdjustSelected(-1);
+            PlaySelectionSound();
+            return;
+        }
+
         PlaySelectionSound();
 
         if (selectionPhase == SelectionPhase.Menu)
@@ -320,6 +356,12 @@ public class UI_3D_Manager : MonoBehaviour
     {
         PlaySelectionSound();
 
+        if (audioSettingsFocused)
+        {
+            audioSettingsPanel.SelectPrevious();
+            return;
+        }
+
         if (selectionPhase == SelectionPhase.Menu)
         {
             if (Current_UI_GroupCompoment != null)
@@ -333,6 +375,12 @@ public class UI_3D_Manager : MonoBehaviour
     public void ManageSelectDown(int playerIndex)
     {
         PlaySelectionSound();
+
+        if (audioSettingsFocused)
+        {
+            audioSettingsPanel.SelectNext();
+            return;
+        }
 
         if (selectionPhase == SelectionPhase.Menu)
         {
@@ -352,6 +400,12 @@ public class UI_3D_Manager : MonoBehaviour
         if(popupFocused)
         {
             HidePopup();
+            return;
+        }
+
+        if (audioSettingsFocused)
+        {
+            HideAudioSettings(playerIndex);
             return;
         }
 
@@ -384,6 +438,12 @@ public class UI_3D_Manager : MonoBehaviour
         if (popupFocused)
         {
             HidePopup();
+            return;
+        }
+
+        if (audioSettingsFocused)
+        {
+            HideAudioSettings(playerIndex);
             return;
         }
 

@@ -62,6 +62,12 @@ public class PlayerSoundManager : MonoBehaviour
         if (this.soundEffects != null) {
             engineAudioSource = soundEffects.engineEffect.audioSource;
 
+            float effectsVolume = GameSettings.EffectsVolumeFactor;
+            soundEffects.engineEffect.audioSource.volume *= effectsVolume;
+            soundEffects.engineEffect.baseVolume *= effectsVolume;
+            soundEffects.engineEffect.volumeFactor *= effectsVolume;
+            soundEffects.collisionEffect.baseVolume *= effectsVolume;
+
             if (!isHuman)
             {
                 soundEffects.engineEffect.basePitch += Random.Range(-0.5f, 0.5f);

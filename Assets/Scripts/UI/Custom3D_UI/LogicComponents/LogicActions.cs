@@ -98,6 +98,15 @@ public class LogicActions : MonoBehaviour
 
     #region GameSettings
 
+    #region Audio
+
+    public void ShowAudioSettings()
+    {
+        uI_3D_Manager.ShowAudioSettings();
+    }
+
+    #endregion
+
     #region Input
 
     public void ShowInputLayout()

@@ -23,7 +23,7 @@ public class MenuSoundManager : MonoBehaviour
     {
         if (soundEffects != null && soundEffects.selectionEffect != null)
         {
-            soundEffects.selectionEffect.audioSource.PlayOneShot(soundEffects.selectionEffect.audioSource.clip);
+            soundEffects.selectionEffect.audioSource.PlayOneShot(soundEffects.selectionEffect.audioSource.clip, GameSettings.EffectsVolumeFactor);
         }
     }
 
@@ -31,7 +31,7 @@ public class MenuSoundManager : MonoBehaviour
     {
         if (soundEffects != null && soundEffects.confirmEffect != null)
         {
-            soundEffects.confirmEffect.audioSource.PlayOneShot(soundEffects.confirmEffect.audioSource.clip);
+            soundEffects.confirmEffect.audioSource.PlayOneShot(soundEffects.confirmEffect.audioSource.clip, GameSettings.EffectsVolumeFactor);
         }
     }
 
@@ -39,7 +39,7 @@ public class MenuSoundManager : MonoBehaviour
     {
         if (soundEffects != null && soundEffects.backEffect != null)
         {
-            soundEffects.backEffect.audioSource.PlayOneShot(soundEffects.backEffect.audioSource.clip);
+            soundEffects.backEffect.audioSource.PlayOneShot(soundEffects.backEffect.audioSource.clip, GameSettings.EffectsVolumeFactor);
         }
     }
 }

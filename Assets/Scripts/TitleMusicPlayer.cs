@@ -44,6 +44,11 @@ public class TitleMusicPlayer : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
+    private void Start()
+    {
+        audioSource.volume *= GameSettings.MusicVolumeFactor;
+    }
+
     private void OnDestroy()
     {
         if (Instance == this)
